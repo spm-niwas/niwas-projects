@@ -898,6 +898,26 @@
     </div>
   </div>
 
+  <!-- MODAL 7: CONFIRM DELETE USER DIALOG -->
+  <div id="confirm-delete-user-modal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-md w-full p-6 sm:p-7 shadow-2xl border border-rose-200 space-y-4">
+      <div class="flex items-start gap-3">
+        <div class="w-10 h-10 rounded-2xl bg-rose-100 text-rose-700 flex items-center justify-center flex-shrink-0">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+        </div>
+        <div>
+          <h3 class="text-base font-extrabold text-slate-900">Remove Workspace User?</h3>
+          <p id="confirm-delete-user-message" class="text-xs text-slate-600 mt-1 leading-relaxed"></p>
+        </div>
+      </div>
+
+      <div class="flex items-center justify-end gap-2.5 pt-2 border-t border-slate-100">
+        <button type="button" onclick="closeConfirmDeleteUserModal()" class="px-4 py-2 rounded-xl border border-slate-200 text-slate-700 hover:bg-slate-50 text-xs sm:text-sm font-semibold">Cancel</button>
+        <button type="button" onclick="confirmDirectDeleteUser()" class="px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs sm:text-sm font-semibold">Yes, Remove User</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Toast Notification -->
   <div id="toast-banner" class="hidden fixed bottom-5 right-5 z-50 max-w-sm bg-slate-900 text-white px-4 py-3 rounded-2xl shadow-xl text-xs sm:text-sm font-semibold flex items-center gap-2.5">
     <span class="w-2 h-2 rounded-full bg-emerald-400 flex-shrink-0"></span>
@@ -1054,6 +1074,7 @@
       modalDocuments: [],
       welcomeTargetUser: null,
       reassignTargetUserId: null,
+      pendingDeleteUserId: null,
       pendingUserEdit: null,
       pageSize: 25,
       pages: {
@@ -1858,6 +1879,8 @@
 
       const nodal = getNodalById(item.nodalId);
       const caps = getRoleCapabilities();
+      const currentUser = getCurrentUser();
+      const canManageDocs = Boolean(caps.canDelete || (currentUser.id && item.nodalId === currentUser.id));
       const docs = Array.isArray(item.documents) ? item.documents : [];
       const history = Array.isArray(item.history) ? item.history : [];
 
@@ -1910,10 +1933,13 @@
             <h3 class="text-sm font-extrabold text-slate-900">Attached Documents (${docs.length})</h3>
             ${docs.length === 0 ? `<div class="text-xs text-slate-400">No documents attached yet.</div>` : `
               <div class="space-y-2">
-                ${docs.map(d => `
+                ${docs.map((d, idx) => `
                   <div class="flex items-center justify-between px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs">
                     <span class="font-semibold text-slate-800 truncate">${escapeHtml(d.name)}</span>
-                    <span class="text-slate-400 whitespace-nowrap ml-2">${escapeHtml(d.addedAt || '')}</span>
+                    <div class="flex items-center gap-2.5 ml-2 flex-shrink-0">
+                      <span class="text-slate-400 whitespace-nowrap">${escapeHtml(d.addedAt || '')}</span>
+                      ${canManageDocs ? `<button type="button" onclick="deleteItemDocument('${item.id}', ${idx})" class="text-rose-600 hover:text-rose-800 font-bold">Remove</button>` : ''}
+                    </div>
                   </div>
                 `).join('')}
               </div>
@@ -2288,11 +2314,12 @@
 
       const assignedItems = state.items.filter(i => i.nodalId === userId);
       if (assignedItems.length === 0) {
-        state.nodals = state.nodals.filter(u => u.id !== userId);
-        state.deletedNodals.push(target);
-        persistWorkspaceState();
-        renderAll();
-        showToast(`Removed ${target.name}.`);
+        state.pendingDeleteUserId = userId;
+        const msgEl = document.getElementById('confirm-delete-user-message');
+        if (msgEl) {
+          msgEl.innerHTML = `Are you sure you want to remove <span class="font-bold text-slate-900">${escapeHtml(target.name)}</span> (${escapeHtml(target.email)}) from the workspace? They will be moved to the Deleted section and can be restored later.`;
+        }
+        document.getElementById('confirm-delete-user-modal')?.classList.remove('hidden');
         return;
       }
 
@@ -2312,6 +2339,25 @@
       `).join('');
 
       document.getElementById('reassign-modal')?.classList.remove('hidden');
+    };
+
+    window.closeConfirmDeleteUserModal = function () {
+      state.pendingDeleteUserId = null;
+      document.getElementById('confirm-delete-user-modal')?.classList.add('hidden');
+    };
+
+    window.confirmDirectDeleteUser = function () {
+      const userId = state.pendingDeleteUserId;
+      if (!userId) return;
+      const target = state.nodals.find(u => u.id === userId);
+      if (target) {
+        state.nodals = state.nodals.filter(u => u.id !== userId);
+        state.deletedNodals.push(target);
+      }
+      closeConfirmDeleteUserModal();
+      persistWorkspaceState();
+      renderAll();
+      showToast(`Removed ${target ? target.name : 'user'}.`);
     };
 
     window.applyBulkReassign = function () {
@@ -2404,47 +2450,78 @@
 
     window.launchOneClickGmailWelcome = function () {
       const user = state.welcomeTargetUser;
-      const body = document.getElementById('welcome-email-preview')?.value || '';
       if (!user) return;
+      const loginUrl = window.location.href.split('#')[0];
       const welcomeTpl = state.emailTemplates.find(t => t.id === 'tpl-welcome') || INITIAL_EMAIL_TEMPLATES[0];
-      const subjectText = renderTemplatePlaceholders(welcomeTpl.subject, {
+      const subject = encodeURIComponent(renderTemplatePlaceholders(welcomeTpl.subject, {
         name: user.name,
         email: user.email,
         role: user.permission,
-        loginUrl: window.location.href.split('#')[0]
+        loginUrl
+      }));
+      const bodyText = document.getElementById('welcome-email-preview')?.value || renderTemplatePlaceholders(welcomeTpl.body, {
+        name: user.name,
+        email: user.email,
+        role: user.permission,
+        loginUrl
       });
-      const subject = encodeURIComponent(subjectText);
-      const encodedBody = encodeURIComponent(body);
-      const to = encodeURIComponent(user.email);
-      window.open(`https://mail.google.com/mail/?view=cm&fs=1&to=${to}&su=${subject}&body=${encodedBody}`, '_blank', 'noopener');
+      const body = encodeURIComponent(bodyText);
+      const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(user.email)}&su=${subject}&body=${body}`;
+      window.open(gmailUrl, '_blank', 'noopener,noreferrer');
       closeWelcomeEmailModal();
+      showToast(`Opened Gmail compose for ${user.email}.`);
     };
 
     window.openItemModal = function (type, itemId = null) {
-      const item = itemId ? state.items.find(i => i.id === itemId) : null;
-      document.getElementById('item-id').value = item ? item.id : '';
-      document.getElementById('item-type').value = item ? item.type : type;
-      document.getElementById('modal-heading').textContent = item ? `Edit ${item.type}` : `Create New ${type}`;
-      document.getElementById('item-title').value = item ? item.title : '';
-      document.getElementById('item-description').value = item ? item.description : '';
-      document.getElementById('item-due-date').value = item ? (item.dueDate || '') : '';
-
+      const modal = document.getElementById('item-modal');
+      const heading = document.getElementById('modal-heading');
       const nodalSelect = document.getElementById('item-nodal');
-      nodalSelect.innerHTML = state.nodals.map(n => `<option value="${n.id}">${escapeHtml(n.name)}</option>`).join('');
-      nodalSelect.value = item ? item.nodalId : (state.nodals[0]?.id || '');
+      if (!modal || !nodalSelect) return;
 
-      const statusSelect = document.getElementById('item-status');
-      statusSelect.value = item ? item.status : 'Not Started';
+      nodalSelect.innerHTML = state.nodals
+        .map(n => `<option value="${n.id}">${escapeHtml(n.name)} (${escapeHtml(n.email)})</option>`)
+        .join('');
 
-      state.modalDocuments = item && Array.isArray(item.documents) ? JSON.parse(JSON.stringify(item.documents)) : [];
+      if (itemId) {
+        const existing = state.items.find(i => i.id === itemId);
+        if (!existing) return;
+        heading.textContent = `Edit ${existing.type}`;
+        document.getElementById('item-id').value = existing.id;
+        document.getElementById('item-type').value = existing.type;
+        document.getElementById('item-title').value = existing.title;
+        document.getElementById('item-description').value = existing.description;
+        document.getElementById('item-nodal').value = existing.nodalId;
+        document.getElementById('item-status').value = existing.status;
+        document.getElementById('item-due-date').value = existing.dueDate || '';
+        state.modalDocuments = JSON.parse(JSON.stringify(existing.documents || []));
+      } else {
+        heading.textContent = `Add New ${type}`;
+        document.getElementById('item-id').value = '';
+        document.getElementById('item-type').value = type;
+        document.getElementById('item-title').value = '';
+        document.getElementById('item-description').value = '';
+        const currUser = getCurrentUser();
+        const defaultNodal = state.nodals.find(n => n.id === currUser.id) || state.nodals[0];
+        document.getElementById('item-nodal').value = defaultNodal ? defaultNodal.id : '';
+        document.getElementById('item-status').value = 'Not Started';
+        document.getElementById('item-due-date').value = '';
+        state.modalDocuments = [];
+      }
+
       renderModalDocumentsList();
-
-      document.getElementById('item-modal')?.classList.remove('hidden');
+      modal.classList.remove('hidden');
     };
 
     window.closeItemModal = function () {
       document.getElementById('item-modal')?.classList.add('hidden');
     };
+
+    function canCurrentUserDeleteDocsForItem(item) {
+      if (!item) return true;
+      const caps = getRoleCapabilities();
+      const currentUser = getCurrentUser();
+      return Boolean(caps.canDelete || (currentUser.id && item.nodalId === currentUser.id));
+    }
 
     function renderModalDocumentsList() {
       const listEl = document.getElementById('modal-documents-list');
@@ -2453,24 +2530,59 @@
         listEl.innerHTML = `<div class="text-slate-400">No files attached.</div>`;
         return;
       }
-      listEl.innerHTML = state.modalDocuments.map((docItem, idx) => `
-        <div class="flex items-center justify-between bg-white px-3 py-1.5 rounded-lg border border-slate-200">
-          <span class="font-medium text-slate-700 truncate">${escapeHtml(docItem.name)}</span>
-          <button type="button" onclick="removeModalDocument(${idx})" class="text-rose-600 hover:text-rose-800 font-bold ml-2">Remove</button>
-        </div>
-      `).join('');
+      const editingId = document.getElementById('item-id')?.value || '';
+      const editingItem = editingId ? state.items.find(i => i.id === editingId) : null;
+      const canRemoveSavedDocs = !editingItem || canCurrentUserDeleteDocsForItem(editingItem);
+
+      listEl.innerHTML = state.modalDocuments.map((docItem, idx) => {
+        const canRemoveThis = docItem.isNewUpload || canRemoveSavedDocs;
+        return `
+          <div class="flex items-center justify-between bg-white px-3 py-1.5 rounded-lg border border-slate-200">
+            <span class="font-medium text-slate-700 truncate">${escapeHtml(docItem.name)}</span>
+            ${canRemoveThis ? `<button type="button" onclick="removeModalDocument(${idx})" class="text-rose-600 hover:text-rose-800 font-bold ml-2">Remove</button>` : `<span class="text-[11px] text-slate-400 ml-2 whitespace-nowrap">Locked</span>`}
+          </div>
+        `;
+      }).join('');
     }
 
     window.removeModalDocument = function (index) {
+      const targetDoc = state.modalDocuments[index];
+      if (!targetDoc) return;
+      const editingId = document.getElementById('item-id')?.value || '';
+      const editingItem = editingId ? state.items.find(i => i.id === editingId) : null;
+      if (editingItem && !targetDoc.isNewUpload && !canCurrentUserDeleteDocsForItem(editingItem)) {
+        showToast('Only an Admin or the assigned Nodal Officer can remove documents.');
+        return;
+      }
       state.modalDocuments.splice(index, 1);
       renderModalDocumentsList();
+    };
+
+    window.deleteItemDocument = function (itemId, docIndex) {
+      const item = state.items.find(i => i.id === itemId);
+      if (!item) return;
+      if (!canCurrentUserDeleteDocsForItem(item)) {
+        showToast('Only an Admin or the assigned Nodal Officer can remove documents.');
+        return;
+      }
+      const docs = Array.isArray(item.documents) ? item.documents : [];
+      const removed = docs[docIndex];
+      if (!removed) return;
+      docs.splice(docIndex, 1);
+      const nowStr = formatNowTimestamp();
+      item.lastChanged = nowStr;
+      item.history = item.history || [];
+      item.history.unshift({ timestamp: nowStr, action: `Removed document "${removed.name}"`, by: getCurrentUser().name });
+      persistWorkspaceState();
+      renderAll();
+      showToast(`Removed "${removed.name}".`);
     };
 
     window.handleModalFileUpload = function (event) {
       const files = Array.from(event.target.files || []);
       const today = formatNowTimestamp().split(' ')[0];
       files.forEach(f => {
-        state.modalDocuments.push({ name: f.name, addedAt: today, source: 'Upload' });
+        state.modalDocuments.push({ name: f.name, addedAt: today, source: 'Upload', isNewUpload: true });
       });
       renderModalDocumentsList();
       event.target.value = '';
@@ -2508,19 +2620,29 @@
       if (id) {
         const existing = state.items.find(i => i.id === id);
         if (existing) {
+          const canDeleteDocs = canCurrentUserDeleteDocsForItem(existing);
+          const cleanedModalDocs = state.modalDocuments.map(({ isNewUpload, ...rest }) => rest);
+          const preservedOldDocs = canDeleteDocs
+            ? cleanedModalDocs
+            : [
+                ...(Array.isArray(existing.documents) ? existing.documents : []),
+                ...state.modalDocuments.filter(d => d.isNewUpload).map(({ isNewUpload, ...rest }) => rest)
+              ];
+
           existing.title = title;
           existing.description = description;
           existing.nodalId = nodalId;
           existing.status = requestedStatus;
           existing.dueDate = dueDate;
           existing.lastChanged = nowStr;
-          existing.documents = [...state.modalDocuments];
+          existing.documents = preservedOldDocs;
           existing.history = existing.history || [];
           existing.history.unshift({ timestamp: nowStr, action: 'Updated details', by: user.name });
         }
         showToast(`${type} updated.`);
       } else {
         const finalStatus = caps.canDirectCreate ? requestedStatus : 'Pending Approval';
+        const cleanedDocs = state.modalDocuments.map(({ isNewUpload, ...rest }) => rest);
         state.items.unshift({
           id: `${type === 'Project' ? 'prj' : 'tsk'}-${Date.now()}`,
           type,
@@ -2530,7 +2652,7 @@
           status: finalStatus,
           dueDate,
           lastChanged: nowStr,
-          documents: [...state.modalDocuments],
+          documents: cleanedDocs,
           history: [{ timestamp: nowStr, action: `${type} Created (${finalStatus})`, by: user.name }]
         });
         showToast(caps.canDirectCreate ? `${type} created.` : `${type} submitted for Admin approval.`);
