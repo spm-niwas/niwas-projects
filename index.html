@@ -55,7 +55,7 @@
     }
   </style>
 </head>
-<body class="bg-slate-50 text-slate-800 antialiased selection:bg-indigo-100 selection:text-indigo-900">
+<body class="bg-slate-50 text-slate-800 antialiased selection:bg-indigo-100 selection:text-indigo-900 overflow-x-hidden">
   <!-- FULL-SCREEN LOGIN GATE (SHOWN WHEN NOT LOGGED IN) -->
   <div id="login-gate-screen" class="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-slate-900 via-slate-800 to-indigo-950">
     <div class="bg-white rounded-3xl max-w-md w-full p-7 sm:p-8 shadow-2xl border border-slate-200/80 space-y-6 text-center">
@@ -97,7 +97,7 @@
   </div>
 
   <!-- AUTHENTICATED WORKSPACE SHELL (HIDDEN UNTIL SIGNED IN) -->
-  <div id="app-shell" class="hidden min-h-screen flex flex-col lg:flex-row">
+  <div id="app-shell" class="hidden min-h-screen w-full max-w-full flex flex-col lg:flex-row overflow-x-hidden">
     <!-- Left Sidebar -->
     <aside class="w-full lg:w-64 bg-slate-900 text-slate-200 flex-shrink-0 flex flex-col justify-between">
       <div>
@@ -194,7 +194,7 @@
     </aside>
 
     <!-- Main Workspace Area -->
-    <main class="flex-1 min-w-0 flex flex-col">
+    <main class="flex-1 min-w-0 max-w-full flex flex-col overflow-x-hidden">
       <!-- Top Header Bar (Hidden on Item Details Page) -->
       <header id="main-top-header" class="bg-white border-b border-slate-200 px-4 sm:px-8 py-4 flex flex-wrap items-center justify-between gap-3 sticky top-0 z-20">
         <div>
@@ -232,7 +232,7 @@
       </header>
 
       <!-- Main Content Container -->
-      <div id="workspace-body" class="p-4 sm:p-8 space-y-6 flex-1">
+      <div id="workspace-body" class="px-4 sm:px-8 pt-3 sm:pt-4 pb-6 sm:pb-8 space-y-5 flex-1 min-w-0 max-w-full">
         <!-- KPI Cards (Dashboard Only) -->
         <section id="kpi-cards-section" class="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div class="bg-white rounded-2xl border border-slate-200 p-5">
@@ -270,14 +270,14 @@
         </section>
 
         <!-- VIEW 1: DASHBOARD (UNIFIED TABLE) -->
-        <section id="view-overview" class="space-y-4">
+        <section id="view-overview" class="space-y-4 min-w-0">
           <div class="bg-white rounded-2xl border border-slate-200 p-4 flex flex-wrap items-center gap-3 w-full">
-            <div class="relative flex-1 min-w-[220px]">
+            <div class="relative flex-1 min-w-[200px]">
               <svg class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
               <input type="text" id="overview-search" oninput="resetPageAndRender('overview')" placeholder="Search projects, tasks, or descriptions..." class="w-full pl-9 pr-3.5 py-2 text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500" />
             </div>
 
-            <div class="inline-flex items-center gap-3 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs sm:text-sm font-medium text-slate-700 flex-shrink-0" role="radiogroup" aria-label="Filter by item type">
+            <div class="inline-flex flex-wrap items-center gap-3 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs sm:text-sm font-medium text-slate-700 max-w-full" role="radiogroup" aria-label="Filter by item type">
               <label class="inline-flex items-center gap-1.5 cursor-pointer select-none">
                 <input type="radio" name="overview-type-radio" value="All" checked onchange="resetPageAndRender('overview')" class="text-indigo-600 focus:ring-indigo-500" />
                 <span>All</span>
@@ -296,7 +296,7 @@
               </label>
             </div>
 
-            <select id="overview-status-filter" onchange="resetPageAndRender('overview')" class="text-xs sm:text-sm font-medium bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 flex-shrink-0">
+            <select id="overview-status-filter" onchange="resetPageAndRender('overview')" class="text-xs sm:text-sm font-medium bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500">
               <option value="All">All Statuses</option>
               <option value="Active">Active</option>
               <option value="Not Started">Not Started</option>
@@ -307,33 +307,31 @@
               <option value="Pending Approval">Pending Approval</option>
             </select>
 
-            <label class="inline-flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs sm:text-sm font-medium text-slate-700 cursor-pointer select-none hover:bg-slate-100/70 transition-colors flex-shrink-0">
+            <label class="inline-flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs sm:text-sm font-medium text-slate-700 cursor-pointer select-none hover:bg-slate-100/70 transition-colors">
               <input type="checkbox" id="overview-show-archived" onchange="resetPageAndRender('overview')" class="rounded text-indigo-600 focus:ring-indigo-500" />
               <span>Show Archived</span>
             </label>
           </div>
 
-          <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden">
-            <div class="overflow-x-auto">
+          <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden w-full">
+            <div class="w-full overflow-x-hidden">
               <table id="table-overview" class="w-full table-fixed border-collapse text-left">
                 <colgroup id="colgroup-overview">
-                  <col style="width: 11%" />
-                  <col style="width: 18%" />
-                  <col style="width: 25%" />
-                  <col style="width: 12%" />
                   <col style="width: 14%" />
-                  <col style="width: 11%" />
-                  <col style="width: 9%" />
+                  <col style="width: 21%" />
+                  <col style="width: 26%" />
+                  <col style="width: 14%" />
+                  <col style="width: 12%" />
+                  <col style="width: 13%" />
                 </colgroup>
                 <thead class="bg-slate-50 border-b border-slate-200 text-[11px] font-bold uppercase tracking-wider text-slate-500">
                   <tr>
-                    <th class="relative px-4 py-3.5 select-none">Status<span class="col-resizer" onmousedown="startColumnResize(event, 'overview', 0)"></span></th>
-                    <th class="relative px-4 py-3.5 select-none">Name<span class="col-resizer" onmousedown="startColumnResize(event, 'overview', 1)"></span></th>
-                    <th class="relative px-4 py-3.5 select-none">Description<span class="col-resizer" onmousedown="startColumnResize(event, 'overview', 2)"></span></th>
-                    <th class="relative px-4 py-3.5 select-none">Nodal<span class="col-resizer" onmousedown="startColumnResize(event, 'overview', 3)"></span></th>
-                    <th class="relative px-4 py-3.5 select-none">Last Changed<span class="col-resizer" onmousedown="startColumnResize(event, 'overview', 4)"></span></th>
-                    <th class="relative px-4 py-3.5 select-none">Documents Added<span class="col-resizer" onmousedown="startColumnResize(event, 'overview', 5)"></span></th>
-                    <th class="px-4 py-3.5 text-right select-none">Actions</th>
+                    <th class="relative px-3 py-3.5 select-none">Status<span class="col-resizer" onmousedown="startColumnResize(event, 'overview', 0)"></span></th>
+                    <th class="relative px-3 py-3.5 select-none">Name<span class="col-resizer" onmousedown="startColumnResize(event, 'overview', 1)"></span></th>
+                    <th class="relative px-3 py-3.5 select-none">Description<span class="col-resizer" onmousedown="startColumnResize(event, 'overview', 2)"></span></th>
+                    <th class="relative px-3 py-3.5 select-none">Nodal<span class="col-resizer" onmousedown="startColumnResize(event, 'overview', 3)"></span></th>
+                    <th class="relative px-3 py-3.5 select-none">Last Changed<span class="col-resizer" onmousedown="startColumnResize(event, 'overview', 4)"></span></th>
+                    <th class="px-3 py-3.5 text-right select-none">Actions</th>
                   </tr>
                 </thead>
                 <tbody id="overview-table-body" class="divide-y divide-slate-100 text-sm"></tbody>
@@ -344,14 +342,14 @@
         </section>
 
         <!-- VIEW 2: PROJECTS TABLE -->
-        <section id="view-projects" class="hidden space-y-4">
+        <section id="view-projects" class="hidden space-y-4 min-w-0">
           <div class="bg-white rounded-2xl border border-slate-200 p-4 flex flex-wrap items-center gap-3 w-full">
-            <div class="relative flex-1 min-w-[220px]">
+            <div class="relative flex-1 min-w-[200px]">
               <svg class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
               <input type="text" id="projects-search" oninput="resetPageAndRender('projects')" placeholder="Search projects..." class="w-full pl-9 pr-3.5 py-2 text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500" />
             </div>
 
-            <div class="inline-flex items-center gap-3 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs sm:text-sm font-medium text-slate-700 flex-shrink-0" role="radiogroup" aria-label="Switch between Projects and Tasks">
+            <div class="inline-flex flex-wrap items-center gap-3 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs sm:text-sm font-medium text-slate-700 max-w-full" role="radiogroup" aria-label="Switch between Projects and Tasks">
               <label class="inline-flex items-center gap-1.5 cursor-pointer select-none">
                 <input type="radio" name="projects-type-radio" value="Project" checked onchange="handleSubViewTypeRadio('Project')" class="text-indigo-600 focus:ring-indigo-500" />
                 <span>Projects</span>
@@ -362,7 +360,7 @@
               </label>
             </div>
 
-            <select id="projects-status-filter" onchange="resetPageAndRender('projects')" class="text-xs sm:text-sm font-medium bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 flex-shrink-0">
+            <select id="projects-status-filter" onchange="resetPageAndRender('projects')" class="text-xs sm:text-sm font-medium bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500">
               <option value="All">All Statuses</option>
               <option value="Not Started">Not Started</option>
               <option value="In Progress">In Progress</option>
@@ -371,33 +369,31 @@
               <option value="Pending Approval">Pending Approval</option>
             </select>
 
-            <label class="inline-flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs sm:text-sm font-medium text-slate-700 cursor-pointer select-none hover:bg-slate-100/70 transition-colors flex-shrink-0">
+            <label class="inline-flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs sm:text-sm font-medium text-slate-700 cursor-pointer select-none hover:bg-slate-100/70 transition-colors">
               <input type="checkbox" id="projects-show-archived" onchange="resetPageAndRender('projects')" class="rounded text-indigo-600 focus:ring-indigo-500" />
               <span>Show Archived</span>
             </label>
           </div>
 
-          <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden">
-            <div class="overflow-x-auto">
+          <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden w-full">
+            <div class="w-full overflow-x-hidden">
               <table id="table-projects" class="w-full table-fixed border-collapse text-left">
                 <colgroup id="colgroup-projects">
-                  <col style="width: 11%" />
-                  <col style="width: 18%" />
-                  <col style="width: 25%" />
-                  <col style="width: 12%" />
                   <col style="width: 14%" />
-                  <col style="width: 11%" />
-                  <col style="width: 9%" />
+                  <col style="width: 21%" />
+                  <col style="width: 26%" />
+                  <col style="width: 14%" />
+                  <col style="width: 12%" />
+                  <col style="width: 13%" />
                 </colgroup>
                 <thead class="bg-slate-50 border-b border-slate-200 text-[11px] font-bold uppercase tracking-wider text-slate-500">
                   <tr>
-                    <th class="relative px-4 py-3.5 select-none">Status<span class="col-resizer" onmousedown="startColumnResize(event, 'projects', 0)"></span></th>
-                    <th class="relative px-4 py-3.5 select-none">Name<span class="col-resizer" onmousedown="startColumnResize(event, 'projects', 1)"></span></th>
-                    <th class="relative px-4 py-3.5 select-none">Description<span class="col-resizer" onmousedown="startColumnResize(event, 'projects', 2)"></span></th>
-                    <th class="relative px-4 py-3.5 select-none">Nodal<span class="col-resizer" onmousedown="startColumnResize(event, 'projects', 3)"></span></th>
-                    <th class="relative px-4 py-3.5 select-none">Last Changed<span class="col-resizer" onmousedown="startColumnResize(event, 'projects', 4)"></span></th>
-                    <th class="relative px-4 py-3.5 select-none">Documents Added<span class="col-resizer" onmousedown="startColumnResize(event, 'projects', 5)"></span></th>
-                    <th class="px-4 py-3.5 text-right select-none">Actions</th>
+                    <th class="relative px-3 py-3.5 select-none">Status<span class="col-resizer" onmousedown="startColumnResize(event, 'projects', 0)"></span></th>
+                    <th class="relative px-3 py-3.5 select-none">Name<span class="col-resizer" onmousedown="startColumnResize(event, 'projects', 1)"></span></th>
+                    <th class="relative px-3 py-3.5 select-none">Description<span class="col-resizer" onmousedown="startColumnResize(event, 'projects', 2)"></span></th>
+                    <th class="relative px-3 py-3.5 select-none">Nodal<span class="col-resizer" onmousedown="startColumnResize(event, 'projects', 3)"></span></th>
+                    <th class="relative px-3 py-3.5 select-none">Last Changed<span class="col-resizer" onmousedown="startColumnResize(event, 'projects', 4)"></span></th>
+                    <th class="px-3 py-3.5 text-right select-none">Actions</th>
                   </tr>
                 </thead>
                 <tbody id="projects-table-body" class="divide-y divide-slate-100 text-sm"></tbody>
@@ -408,14 +404,14 @@
         </section>
 
         <!-- VIEW 3: TASKS TABLE -->
-        <section id="view-tasks" class="hidden space-y-4">
+        <section id="view-tasks" class="hidden space-y-4 min-w-0">
           <div class="bg-white rounded-2xl border border-slate-200 p-4 flex flex-wrap items-center gap-3 w-full">
-            <div class="relative flex-1 min-w-[220px]">
+            <div class="relative flex-1 min-w-[200px]">
               <svg class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
               <input type="text" id="tasks-search" oninput="resetPageAndRender('tasks')" placeholder="Search tasks..." class="w-full pl-9 pr-3.5 py-2 text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500" />
             </div>
 
-            <div class="inline-flex items-center gap-3 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs sm:text-sm font-medium text-slate-700 flex-shrink-0" role="radiogroup" aria-label="Switch between Projects and Tasks">
+            <div class="inline-flex flex-wrap items-center gap-3 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs sm:text-sm font-medium text-slate-700 max-w-full" role="radiogroup" aria-label="Switch between Projects and Tasks">
               <label class="inline-flex items-center gap-1.5 cursor-pointer select-none">
                 <input type="radio" name="tasks-type-radio" value="Project" onchange="handleSubViewTypeRadio('Project')" class="text-indigo-600 focus:ring-indigo-500" />
                 <span>Projects</span>
@@ -426,7 +422,7 @@
               </label>
             </div>
 
-            <select id="tasks-status-filter" onchange="resetPageAndRender('tasks')" class="text-xs sm:text-sm font-medium bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 flex-shrink-0">
+            <select id="tasks-status-filter" onchange="resetPageAndRender('tasks')" class="text-xs sm:text-sm font-medium bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500">
               <option value="All">All Statuses</option>
               <option value="Not Started">Not Started</option>
               <option value="In Progress">In Progress</option>
@@ -435,7 +431,7 @@
               <option value="Pending Approval">Pending Approval</option>
             </select>
 
-            <label class="inline-flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs sm:text-sm font-medium text-slate-700 cursor-pointer select-none hover:bg-slate-100/70 transition-colors flex-shrink-0">
+            <label class="inline-flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs sm:text-sm font-medium text-slate-700 cursor-pointer select-none hover:bg-slate-100/70 transition-colors">
               <input type="checkbox" id="tasks-show-archived" onchange="resetPageAndRender('tasks')" class="rounded text-indigo-600 focus:ring-indigo-500" />
               <span>Show Archived</span>
             </label>
@@ -450,27 +446,25 @@
             </button>
           </div>
 
-          <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden">
-            <div class="overflow-x-auto">
+          <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden w-full">
+            <div class="w-full overflow-x-hidden">
               <table id="table-tasks" class="w-full table-fixed border-collapse text-left">
                 <colgroup id="colgroup-tasks">
-                  <col style="width: 11%" />
-                  <col style="width: 18%" />
-                  <col style="width: 25%" />
-                  <col style="width: 12%" />
                   <col style="width: 14%" />
-                  <col style="width: 11%" />
-                  <col style="width: 9%" />
+                  <col style="width: 21%" />
+                  <col style="width: 26%" />
+                  <col style="width: 14%" />
+                  <col style="width: 12%" />
+                  <col style="width: 13%" />
                 </colgroup>
                 <thead class="bg-slate-50 border-b border-slate-200 text-[11px] font-bold uppercase tracking-wider text-slate-500">
                   <tr>
-                    <th class="relative px-4 py-3.5 select-none">Status<span class="col-resizer" onmousedown="startColumnResize(event, 'tasks', 0)"></span></th>
-                    <th class="relative px-4 py-3.5 select-none">Name<span class="col-resizer" onmousedown="startColumnResize(event, 'tasks', 1)"></span></th>
-                    <th class="relative px-4 py-3.5 select-none">Description<span class="col-resizer" onmousedown="startColumnResize(event, 'tasks', 2)"></span></th>
-                    <th class="relative px-4 py-3.5 select-none">Nodal<span class="col-resizer" onmousedown="startColumnResize(event, 'tasks', 3)"></span></th>
-                    <th class="relative px-4 py-3.5 select-none">Last Changed<span class="col-resizer" onmousedown="startColumnResize(event, 'tasks', 4)"></span></th>
-                    <th class="relative px-4 py-3.5 select-none">Documents Added<span class="col-resizer" onmousedown="startColumnResize(event, 'tasks', 5)"></span></th>
-                    <th class="px-4 py-3.5 text-right select-none">Actions</th>
+                    <th class="relative px-3 py-3.5 select-none">Status<span class="col-resizer" onmousedown="startColumnResize(event, 'tasks', 0)"></span></th>
+                    <th class="relative px-3 py-3.5 select-none">Name<span class="col-resizer" onmousedown="startColumnResize(event, 'tasks', 1)"></span></th>
+                    <th class="relative px-3 py-3.5 select-none">Description<span class="col-resizer" onmousedown="startColumnResize(event, 'tasks', 2)"></span></th>
+                    <th class="relative px-3 py-3.5 select-none">Nodal<span class="col-resizer" onmousedown="startColumnResize(event, 'tasks', 3)"></span></th>
+                    <th class="relative px-3 py-3.5 select-none">Last Changed<span class="col-resizer" onmousedown="startColumnResize(event, 'tasks', 4)"></span></th>
+                    <th class="px-3 py-3.5 text-right select-none">Actions</th>
                   </tr>
                 </thead>
                 <tbody id="tasks-table-body" class="divide-y divide-slate-100 text-sm"></tbody>
@@ -2369,7 +2363,7 @@
       if (pageItems.length === 0) {
         tbody.innerHTML = `
           <tr>
-            <td colspan="7" class="px-4 py-10 text-center text-xs sm:text-sm text-slate-400">
+            <td colspan="6" class="px-4 py-10 text-center text-xs sm:text-sm text-slate-400">
               No matching records found. Adjust your filters or create a new item.
             </td>
           </tr>
@@ -2383,46 +2377,42 @@
       tbody.innerHTML = pageItems.map(item => {
         const nodal = getNodalById(item.nodalId);
         const changed = formatLastChangedDisplay(item.lastChanged);
-        const docsCount = Array.isArray(item.documents) ? item.documents.length : 0;
         const readyBadge = isTaskReadyForProject(item)
           ? `<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800">⚡ Eligible for Project</span>`
           : '';
 
         return `
           <tr class="hover:bg-slate-50/90 transition-colors align-top">
-            <td class="px-4 py-3.5">
+            <td class="px-3 py-3.5 min-w-0">
               <div class="space-y-1.5">
                 ${getStatusBadgeHtml(item.status)}
                 <div>${getTypeBadgeHtml(item.type)}</div>
               </div>
             </td>
-            <td class="px-4 py-3.5">
-              <button type="button" onclick="openItemDetails('${item.id}')" class="text-left font-bold text-slate-900 hover:text-indigo-600 transition-colors line-clamp-2">
+            <td class="px-3 py-3.5 min-w-0">
+              <button type="button" onclick="openItemDetails('${item.id}')" class="text-left font-bold text-slate-900 hover:text-indigo-600 transition-colors line-clamp-2 break-words">
                 ${escapeHtml(item.title)}
               </button>
               ${readyBadge ? `<div class="mt-1">${readyBadge}</div>` : ''}
             </td>
-            <td class="px-4 py-3.5 text-xs text-slate-600">
-              <p class="line-clamp-2 leading-relaxed">${escapeHtml(item.description)}</p>
+            <td class="px-3 py-3.5 text-xs text-slate-600 min-w-0">
+              <p class="line-clamp-2 leading-relaxed break-words">${escapeHtml(item.description)}</p>
             </td>
-            <td class="px-4 py-3.5">
+            <td class="px-3 py-3.5 min-w-0">
               <div class="text-xs font-bold text-slate-800 truncate">${escapeHtml(nodal.name)}</div>
               <div class="text-[11px] text-slate-400 truncate">${escapeHtml(nodal.email)}</div>
             </td>
-            <td class="px-4 py-3.5">
+            <td class="px-3 py-3.5 min-w-0">
               <div class="text-xs font-bold text-slate-800">${changed.daysLabel}</div>
               <div class="text-[11px] text-slate-400">${changed.formattedDate}</div>
             </td>
-            <td class="px-4 py-3.5">
-              <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-slate-100 text-slate-700 text-xs font-semibold">
-                📎 ${docsCount} ${docsCount === 1 ? 'file' : 'files'}
-              </span>
-            </td>
-            <td class="px-4 py-3.5 text-right whitespace-nowrap space-x-1">
-              ${isTaskletLockedStatus(item)
-                ? `<button type="button" onclick="openItemDetails('${item.id}')" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold">View</button>`
-                : `<button type="button" onclick="openEditItemModal('${item.id}')" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold">Edit</button>`}
-              ${caps.canDelete ? `<button type="button" onclick="deleteItemRecord('${item.id}')" class="px-2.5 py-1 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-semibold">Delete</button>` : ''}
+            <td class="px-3 py-3.5 text-right min-w-0">
+              <div class="inline-flex flex-wrap items-center justify-end gap-1">
+                ${isTaskletLockedStatus(item)
+                  ? `<button type="button" onclick="openItemDetails('${item.id}')" class="px-2 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold">View</button>`
+                  : `<button type="button" onclick="openEditItemModal('${item.id}')" class="px-2 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold">Edit</button>`}
+                ${caps.canDelete ? `<button type="button" onclick="deleteItemRecord('${item.id}')" class="px-2 py-1 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-semibold">Delete</button>` : ''}
+              </div>
             </td>
           </tr>
         `;
@@ -2431,526 +2421,187 @@
       renderPaginationBar(`pagination-${sectionKey}`, sectionKey, filtered.length, currentPage);
     }
 
-    window.openItemDetails = function (itemId) {
-      const item = state.items.find(i => i.id === itemId);
-      if (!item) return;
-      if (item.type === 'Tasklet' && !getRoleCapabilities().canAccessTasklets) {
-        showToast('You do not have access to the Tasklet feature.');
-        return;
+    function countWords(text) {
+      const cleaned = String(text || '').trim();
+      if (!cleaned) return 0;
+      return cleaned.split(/\s+/).length;
+    }
+
+    function enforceWordLimit(textareaEl, maxWords) {
+      if (!textareaEl) return;
+      const val = String(textareaEl.value || '');
+      const words = val.trim() ? val.trim().split(/\s+/) : [];
+      if (words.length > maxWords) {
+        textareaEl.value = words.slice(0, maxWords).join(' ') + ' ';
       }
-      state.selectedItemId = itemId;
-      switchTab('details');
-      renderItemDetailsView();
+    }
+
+    window.handleTaskletUpdateTextareaInput = function (textareaEl) {
+      enforceWordLimit(textareaEl, TASKLET_UPDATE_MAX_WORDS);
+      const countEl = document.getElementById('tasklet-update-word-countdown');
+      if (!countEl) return;
+      const used = countWords(textareaEl.value);
+      const left = Math.max(0, TASKLET_UPDATE_MAX_WORDS - used);
+      countEl.textContent = `${left} ${left === 1 ? 'word' : 'words'} left`;
+      countEl.classList.toggle('text-rose-600', left <= 10);
+      countEl.classList.toggle('text-slate-400', left > 10);
     };
-
-    function renderItemDetailsView() {
-      const item = state.items.find(i => i.id === state.selectedItemId);
-      const card = document.getElementById('details-content-card');
-      if (!item || !card) return;
-
-      const nodal = getNodalById(item.nodalId);
-      const parentTab = item.type === 'Project' ? 'projects' : (item.type === 'Tasklet' ? 'tasklets' : 'tasks');
-      const parentLabel = item.type === 'Project' ? 'Projects' : (item.type === 'Tasklet' ? 'Tasklets' : 'Tasks');
-
-      const bcParent = document.getElementById('details-breadcrumb-parent');
-      const bcCurrent = document.getElementById('details-breadcrumb-current');
-      const backBtn = document.getElementById('details-back-btn');
-      if (bcParent) {
-        bcParent.textContent = parentLabel;
-        bcParent.onclick = () => switchTab(parentTab);
-      }
-      if (bcCurrent) bcCurrent.textContent = item.title;
-      if (backBtn) backBtn.onclick = () => switchTab(parentTab);
-
-      if (item.type === 'Tasklet') {
-        renderTaskletDetailsView(card, item);
-        return;
-      }
-
-      card.className = 'bg-white rounded-2xl border border-slate-200 p-6 space-y-6';
-      const caps = getRoleCapabilities();
-      const canRemoveDocs = canUserDeleteItemDocuments(item);
-      const docsHtml = (item.documents || []).length === 0
-        ? `<div class="text-xs text-slate-400 italic py-2">No documents or links attached yet.</div>`
-        : (item.documents || []).map((d, idx) => renderDocumentRowHtml(d, idx, item.id, canRemoveDocs)).join('');
-
-      const historyHtml = (item.history || []).slice().reverse().map(h => `
-        <div class="flex items-start justify-between gap-3 py-2 border-b border-slate-100 last:border-b-0 text-xs">
-          <div>
-            <span class="font-bold text-slate-800">${escapeHtml(h.action)}</span>
-            <span class="text-slate-500"> by ${escapeHtml(h.by || 'System')}</span>
-          </div>
-          <span class="text-[11px] text-slate-400 whitespace-nowrap">${escapeHtml(formatDateDDMMYY(h.timestamp, true))}</span>
-        </div>
-      `).join('');
-
-      card.innerHTML = `
-        <div class="flex flex-wrap items-start justify-between gap-4 border-b border-slate-100 pb-5">
-          <div class="space-y-2 max-w-2xl">
-            <div class="flex flex-wrap items-center gap-2">
-              ${getTypeBadgeHtml(item.type)}
-              ${getStatusBadgeHtml(item.status)}
-              ${isTaskReadyForProject(item) ? `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-100 text-amber-800">⚡ Eligible for Project</span>` : ''}
-            </div>
-            <h2 class="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight">${escapeHtml(item.title)}</h2>
-            <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">${escapeHtml(item.description)}</p>
-          </div>
-
-          <div class="flex flex-wrap items-center gap-2">
-            ${caps.canApprove && item.status === 'Pending Approval' ? `
-              <button type="button" onclick="approvePendingItem('${item.id}')" class="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold">
-                Approve &amp; Activate
-              </button>
-            ` : ''}
-            ${caps.canApprove && item.type === 'Task' ? `
-              <button type="button" onclick="convertTaskToProject('${item.id}')" class="px-3.5 py-2 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 text-xs font-semibold">
-                Convert to Project
-              </button>
-            ` : ''}
-            <button type="button" onclick="openEditItemModal('${item.id}')" class="px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold">
-              Edit ${escapeHtml(item.type)}
-            </button>
-            ${caps.canDelete ? `
-              <button type="button" onclick="deleteItemRecord('${item.id}'); switchTab('${parentTab}');" class="px-3.5 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-semibold">
-                Delete
-              </button>
-            ` : ''}
-          </div>
-        </div>
-
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 bg-slate-50 rounded-2xl p-4 border border-slate-200/70 text-xs">
-          <div>
-            <div class="font-bold uppercase tracking-wider text-slate-400 text-[10px]">Nodal Officer</div>
-            <div class="font-bold text-slate-900 mt-1">${escapeHtml(nodal.name)}</div>
-            <div class="text-slate-500">${escapeHtml(nodal.email)}</div>
-          </div>
-          <div>
-            <div class="font-bold uppercase tracking-wider text-slate-400 text-[10px]">Target Date</div>
-            <div class="font-bold text-slate-900 mt-1">${escapeHtml(formatDateDDMMYY(item.dueDate) || 'Not set')}</div>
-          </div>
-          <div>
-            <div class="font-bold uppercase tracking-wider text-slate-400 text-[10px]">Last Updated</div>
-            <div class="font-bold text-slate-900 mt-1">${escapeHtml(formatDateDDMMYY(item.lastChanged, true) || '—')}</div>
-          </div>
-        </div>
-
-        <div class="space-y-3">
-          <div class="flex flex-wrap items-center justify-between gap-2">
-            <div>
-              <h3 class="text-sm font-extrabold text-slate-900">Supporting Documents &amp; Links (${(item.documents || []).length})</h3>
-              <p class="text-[11px] text-slate-400">Uploaded files are stored in Firestore (max 700 KB/file). Google Drive &amp; web URLs are linked only.</p>
-            </div>
-            <label class="cursor-pointer px-3 py-1.5 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs font-bold">
-              + Upload File
-              <input type="file" multiple onchange="handleDetailsFileUpload(event, '${item.id}')" class="hidden" />
-            </label>
-          </div>
-          <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
-            <input type="url" id="details-doc-link-input" placeholder="Paste Google Drive or open-access web URL (https://...)" class="flex-1 px-3.5 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500" />
-            <button type="button" onclick="handleDetailsAddExternalLink('${item.id}')" class="px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold whitespace-nowrap transition-colors">
-              + Attach Link
-            </button>
-          </div>
-          <div class="space-y-2">${docsHtml}</div>
-        </div>
-
-        <div class="space-y-2 pt-2 border-t border-slate-100">
-          <h3 class="text-sm font-extrabold text-slate-900">Activity Audit Trail</h3>
-          <div class="bg-slate-50 rounded-2xl p-4 border border-slate-200/70">
-            ${historyHtml || '<div class="text-xs text-slate-400">No activity recorded yet.</div>'}
-          </div>
-        </div>
-      `;
-    }
-
-    window.approvePendingItem = function (itemId) {
-      if (!getRoleCapabilities().canApprove) return;
-      const item = state.items.find(i => i.id === itemId);
-      if (!item) return;
-      item.status = 'In Progress';
-      item.lastChanged = formatNowTimestamp();
-      item.history = item.history || [];
-      item.history.push({ timestamp: item.lastChanged, action: 'Approved by Admin', by: getCurrentUser().name });
-      persistWorkspaceState();
-      renderAll();
-      if (state.activeTab === 'details') renderItemDetailsView();
-      showToast(`Approved "${item.title}".`);
-    };
-
-    function getDocumentFileTypeLabel(docItem) {
-      if (!docItem) return 'FILE';
-      if (docItem.storageType === 'gdrive') return 'GOOGLE DRIVE';
-      if (docItem.storageType === 'web') return 'WEB LINK';
-      const name = String(docItem.name || '').trim();
-      const extMatch = name.match(/\.([a-zA-Z0-9]{1,8})$/);
-      if (extMatch && extMatch[1]) {
-        return extMatch[1].toUpperCase();
-      }
-      const mime = String(docItem.mimeType || '');
-      if (mime.includes('/')) {
-        return mime.split('/')[1].toUpperCase().slice(0, 10);
-      }
-      return 'FILE';
-    }
-
-    function renderTaskletDetailsView(card, item) {
-      card.className = 'grid grid-cols-1 lg:grid-cols-12 gap-6 items-start';
-      const docs = Array.isArray(item.documents) ? item.documents : [];
-      const isCompletedLocked = item.status === 'Completed';
-      const isAbandonedLocked = item.status === 'Abandoned';
-      const isTaskletLocked = isCompletedLocked || isAbandonedLocked;
-      const canRemoveDocs = !isTaskletLocked && canUserDeleteItemDocuments(item);
-      const canAddMoreDocs = !isTaskletLocked && docs.length < TASKLET_MAX_DOCS;
-
-      const fileCardsHtml = docs.length === 0
-        ? `
-          <div class="rounded-2xl border border-dashed border-slate-200 bg-slate-50/70 p-6 text-center text-xs text-slate-400">
-            No files attached to this tasklet yet (max ${TASKLET_MAX_DOCS}).
-          </div>
-        `
-        : `
-          <div class="flex flex-col gap-2.5 w-full">
-            ${docs.map((docItem, idx) => {
-              const icon = docItem.storageType === 'gdrive' ? '🔗' : (docItem.storageType === 'web' ? '🌐' : '📄');
-              const fileTypeLabel = getDocumentFileTypeLabel(docItem);
-              const sizeText = docItem.size ? formatBytesLabel(docItem.size) : (docItem.source || 'Attached file');
-
-              return `
-                <div onclick="previewTaskletDocumentInRightPane('${item.id}', ${idx})" class="group relative w-full rounded-2xl border border-slate-200 bg-slate-50/80 hover:bg-indigo-50/70 hover:border-indigo-300 transition-all cursor-pointer p-3.5 sm:p-4">
-                  <div class="flex items-start gap-3 w-full">
-                    <div class="w-10 h-10 rounded-xl bg-white border border-slate-200 group-hover:border-indigo-200 flex items-center justify-center text-lg flex-shrink-0">
-                      ${icon}
-                    </div>
-                    <div class="min-w-0 flex-1 pr-3">
-                      <div class="text-xs sm:text-sm font-bold text-slate-900 group-hover:text-indigo-700 break-words leading-snug transition-colors">
-                        ${escapeHtml(docItem.name)}
-                      </div>
-                      <div class="flex flex-wrap items-center gap-2 text-[11px] text-slate-400 mt-1.5">
-                        <span class="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-extrabold uppercase tracking-wider bg-slate-200/80 text-slate-700 group-hover:bg-indigo-100 group-hover:text-indigo-800 transition-colors flex-shrink-0">
-                          ${escapeHtml(fileTypeLabel)}
-                        </span>
-                        <span>• ${escapeHtml(sizeText)} • Added ${escapeHtml(formatDateDDMMYY(docItem.addedAt) || 'Recently')}</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  ${canRemoveDocs ? `
-                    <button type="button" title="Delete file" aria-label="Delete file" onclick="event.stopPropagation(); removeItemDocument('${item.id}', ${idx})" class="opacity-0 group-hover:opacity-100 focus:opacity-100 transition-opacity absolute top-2 right-2 w-6 h-6 rounded-full bg-white hover:bg-rose-600 text-slate-500 hover:text-white border border-slate-200 hover:border-rose-600 shadow-xs flex items-center justify-center text-xs font-bold">
-                      ✕
-                    </button>
-                  ` : ''}
-                </div>
-              `;
-            }).join('')}
-          </div>
-        `;
-
-      card.innerHTML = `
-        <!-- LEFT PANEL: Name, Description, Attached Files, and Status Actions -->
-        <div class="lg:col-span-6 bg-white rounded-2xl border border-slate-200 p-6 space-y-6">
-          <div class="space-y-1.5 border-b border-slate-100 pb-4">
-            <div class="flex flex-wrap items-center justify-between gap-2">
-              <div class="flex items-center gap-2">
-                <span class="inline-flex items-center px-2.5 py-0.5 rounded-md text-[10px] font-extrabold uppercase tracking-wider bg-emerald-100 text-emerald-800">Tasklet</span>
-                ${getStatusBadgeHtml(item.status)}
-              </div>
-              <div class="flex items-center gap-2.5">
-                <span class="text-xs font-medium text-slate-400">${escapeHtml(formatDateDDMMYY(item.dueDate))}</span>
-                ${isCompletedLocked ? `
-                  <button type="button" onclick="openTaskletLifecycleModal('${item.id}', 'reopen')" class="px-3 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold shadow-xs transition-colors">
-                    Open Tasklet
-                  </button>
-                ` : ''}
-              </div>
-            </div>
-            <h2 class="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight pt-1">${escapeHtml(item.title)}</h2>
-          </div>
-
-          ${isCompletedLocked ? `
-            <div class="rounded-2xl bg-emerald-50/80 border border-emerald-200 px-4 py-3 text-xs text-emerald-900 flex items-center justify-between gap-2">
-              <span>🔒 This Tasklet is marked as <strong>Completed</strong> and is locked for editing. Click <strong>Open Tasklet</strong> above to reopen it.</span>
-            </div>
-          ` : isAbandonedLocked ? `
-            <div class="rounded-2xl bg-rose-50/90 border border-rose-200 px-4 py-3 text-xs text-rose-900 space-y-1">
-              <div>🔒 This Tasklet is marked as <strong>Abandoned</strong> and is permanently locked against editing.</div>
-              ${item.abandonReason ? `<div class="text-[11px] text-rose-700"><strong>Reason:</strong> ${escapeHtml(item.abandonReason)}</div>` : ''}
-            </div>
-          ` : ''}
-
-          <div class="space-y-1.5">
-            <div class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Description</div>
-            <p class="text-xs sm:text-sm text-slate-600 leading-relaxed whitespace-pre-line">${item.description ? escapeHtml(item.description) : '<span class="italic text-slate-400">No description provided.</span>'}</p>
-          </div>
-
-          <div class="space-y-3 pt-2 border-t border-slate-100">
-            <div class="flex items-center justify-between gap-2">
-              <div class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Files &amp; Links (${docs.length} / ${TASKLET_MAX_DOCS} max)</div>
-              ${isTaskletLocked ? `
-                <span class="px-2.5 py-1 rounded-xl bg-slate-100 text-slate-500 text-[11px] font-semibold">Locked (${escapeHtml(item.status)})</span>
-              ` : canAddMoreDocs ? `
-                <label class="cursor-pointer px-3 py-1.5 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs font-bold transition-colors">
-                  + Upload File
-                  <input type="file" multiple onchange="handleDetailsFileUpload(event, '${item.id}')" class="hidden" />
-                </label>
-              ` : `
-                <span class="px-2.5 py-1 rounded-xl bg-slate-100 text-slate-500 text-[11px] font-semibold">Max ${TASKLET_MAX_DOCS} items reached</span>
-              `}
-            </div>
-            ${canAddMoreDocs ? `
-              <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
-                <input type="url" id="details-doc-link-input" placeholder="Or paste Google Drive / open-access web URL (https://...)" class="flex-1 px-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500" />
-                <button type="button" onclick="handleDetailsAddExternalLink('${item.id}')" class="px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold whitespace-nowrap transition-colors">
-                  + Add URL
-                </button>
-              </div>
-            ` : ''}
-            ${fileCardsHtml}
-          </div>
-
-          <!-- Bottom Status Buttons: Completed & Abandoned -->
-          ${!isTaskletLocked ? `
-            <div class="pt-4 border-t border-slate-100 flex flex-wrap items-center justify-end gap-2.5">
-              <button type="button" onclick="openTaskletLifecycleModal('${item.id}', 'abandon')" class="px-4 py-2 rounded-xl border text-xs sm:text-sm font-bold transition-colors bg-rose-50 hover:bg-rose-100 border-rose-200 text-rose-700">
-                Abandoned
-              </button>
-              <button type="button" onclick="openTaskletLifecycleModal('${item.id}', 'complete')" class="px-4 py-2 rounded-xl border text-xs sm:text-sm font-bold transition-colors bg-emerald-50 hover:bg-emerald-100 border-emerald-200 text-emerald-700">
-                Completed
-              </button>
-            </div>
-          ` : ''}
-        </div>
-
-        <!-- RIGHT PANEL: Tasklet Updates Feed & Document Preview -->
-        <div id="tasklet-details-right-panel" class="group relative lg:col-span-6 bg-white rounded-2xl border border-slate-200 p-5 sm:p-6 min-h-[420px] flex flex-col"></div>
-      `;
-
-      renderTaskletUpdatesDefaultPane(item);
-    }
 
     function renderTaskletUpdatesDefaultPane(item) {
-      const rightPanel = document.getElementById('tasklet-details-right-panel');
-      if (!rightPanel || !item) return;
-
       const updates = Array.isArray(item.updates) ? item.updates : [];
-      const totalUpdates = updates.length;
-      const isCompletedLocked = item.status === 'Completed';
-      const isAbandonedLocked = item.status === 'Abandoned';
-      const isTaskletLocked = isCompletedLocked || isAbandonedLocked;
-      const canAddMore = !isTaskletLocked && totalUpdates < TASKLET_MAX_UPDATES;
+      const isLocked = isTaskletLockedStatus(item);
+      const atMaxUpdates = updates.length >= TASKLET_MAX_UPDATES;
+      const numberedNewestFirst = updates
+        .map((u, idx) => ({ ...u, seqNumber: idx + 1 }))
+        .reverse();
 
-      // Oldest is at index 0 (numbered #1), newest is at index totalUpdates - 1 (numbered #totalUpdates)
-      const updatesCardsHtml = totalUpdates === 0
-        ? `
-          <div class="rounded-2xl border border-dashed border-slate-200 bg-slate-50/70 p-6 text-center text-xs text-slate-400">
-            No updates posted yet.${isTaskletLocked ? '' : ' Add your first update above.'}
-          </div>
-        `
-        : updates.map((upd, idx) => ({ upd, number: idx + 1 }))
-            .reverse()
-            .map(({ upd, number }) => `
-              <div class="w-full rounded-2xl border border-slate-200 bg-slate-50/80 p-3.5 sm:p-4 space-y-1.5">
-                <div class="flex items-center justify-between gap-2 text-[11px]">
-                  <span class="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-extrabold bg-indigo-100 text-indigo-800">
-                    #${number}
-                  </span>
-                  <span class="font-medium text-slate-400">${escapeHtml(formatDateDDMMYY(upd.timestamp, true))}${upd.by ? ` • ${escapeHtml(upd.by)}` : ''}</span>
-                </div>
-                <p class="text-xs sm:text-sm text-slate-800 whitespace-pre-line leading-relaxed">${escapeHtml(upd.text || '')}</p>
+      const cardsHtml = numberedNewestFirst.length === 0
+        ? `<div class="rounded-2xl border border-dashed border-slate-200 bg-white p-6 text-center text-xs text-slate-400">
+            No progress updates recorded yet.
+          </div>`
+        : numberedNewestFirst.map(u => `
+            <div class="bg-white rounded-2xl border border-slate-200/90 p-3.5 shadow-2xs space-y-1.5">
+              <div class="flex items-center justify-between gap-2">
+                <span class="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-extrabold bg-indigo-50 text-indigo-700 border border-indigo-100">
+                  #${u.seqNumber}
+                </span>
+                <span class="text-[11px] font-medium text-slate-400">
+                  ${escapeHtml(formatDateDDMMYY(u.timestamp || '', true))}
+                </span>
               </div>
-            `).join('');
+              <p class="text-xs sm:text-sm text-slate-700 whitespace-pre-line leading-relaxed break-words">${escapeHtml(u.text || '')}</p>
+            </div>
+          `).join('');
 
-      rightPanel.className = 'group relative lg:col-span-6 bg-white rounded-2xl border border-slate-200 p-5 sm:p-6 min-h-[420px] flex flex-col space-y-4';
-      rightPanel.innerHTML = `
-        <div class="space-y-2 border-b border-slate-100 pb-4">
-          <div class="flex items-center justify-between gap-2">
-            <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Progress Updates (${totalUpdates} / ${TASKLET_MAX_UPDATES} max)</span>
-            ${canAddMore ? `
-              <button type="button" onclick="addTaskletUpdate('${item.id}')" class="px-3.5 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold transition-colors">
-                Update
-              </button>
-            ` : ''}
+      const composerHtml = isLocked
+        ? `<div class="rounded-xl bg-slate-100 border border-slate-200 px-3.5 py-2.5 text-xs font-semibold text-slate-600">
+            This Tasklet is ${escapeHtml(item.status)}. Reopen it to post new updates.
+          </div>`
+        : atMaxUpdates
+          ? `<div class="rounded-xl bg-amber-50 border border-amber-200 px-3.5 py-2.5 text-xs font-semibold text-amber-800">
+              Maximum of ${TASKLET_MAX_UPDATES} updates reached for this Tasklet.
+            </div>`
+          : `<div class="space-y-1.5">
+              <div class="flex items-center justify-between gap-2">
+                <label for="tasklet-new-update-input" class="text-[11px] font-bold uppercase tracking-wider text-slate-500">
+                  Progress Updates (${updates.length}/${TASKLET_MAX_UPDATES})
+                </label>
+                <button type="button" onclick="addTaskletProgressUpdate('${item.id}')" class="px-3 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold transition-colors">
+                  Update
+                </button>
+              </div>
+              <div class="relative">
+                <textarea id="tasklet-new-update-input" rows="2" oninput="handleTaskletUpdateTextareaInput(this)" placeholder="Write a concise progress update (max ${TASKLET_UPDATE_MAX_WORDS} words)..." class="w-full px-3.5 pt-2.5 pb-6 text-xs sm:text-sm bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-none"></textarea>
+                <span id="tasklet-update-word-countdown" class="pointer-events-none absolute bottom-2 right-3 text-[11px] font-semibold text-slate-400">${TASKLET_UPDATE_MAX_WORDS} words left</span>
+              </div>
+            </div>`;
+
+      return `
+        <div class="space-y-4">
+          ${composerHtml}
+          <div class="space-y-2.5 max-h-[460px] overflow-y-auto custom-scrollbar pr-1">
+            ${cardsHtml}
           </div>
-          ${isCompletedLocked ? `
-            <div class="rounded-xl bg-slate-100 border border-slate-200 px-3.5 py-2.5 text-xs font-semibold text-slate-600">
-              Tasklet is completed. Click <strong>Open Tasklet</strong> to post new updates.
-            </div>
-          ` : isAbandonedLocked ? `
-            <div class="rounded-xl bg-rose-50 border border-rose-200 px-3.5 py-2.5 text-xs font-semibold text-rose-700">
-              Tasklet is abandoned and locked. No further updates can be added.
-            </div>
-          ` : canAddMore ? `
-            <div class="relative">
-              <textarea id="tasklet-new-update-input" rows="3" oninput="handleTaskletUpdateWordLimit(this)" placeholder="Write a quick update (max ${TASKLET_UPDATE_MAX_WORDS} words)..." class="w-full px-3.5 pt-2 pb-6 text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-y"></textarea>
-              <span id="tasklet-update-word-countdown" class="pointer-events-none absolute bottom-2 right-3 text-[11px] font-semibold text-slate-400">${TASKLET_UPDATE_MAX_WORDS} words left</span>
-            </div>
-          ` : `
-            <div class="rounded-xl bg-amber-50 border border-amber-200 px-3.5 py-2.5 text-xs font-semibold text-amber-800">
-              Maximum ${TASKLET_MAX_UPDATES} updates reached for this Tasklet.
-            </div>
-          `}
-        </div>
-
-        <div class="flex flex-col gap-2.5 w-full">
-          ${updatesCardsHtml}
         </div>
       `;
     }
 
-    function countWordsInText(str) {
-      const trimmed = String(str || '').trim();
-      if (!trimmed) return 0;
-      return trimmed.split(/\s+/).length;
-    }
-
-    function truncateToMaxWords(str, maxWords) {
-      const text = String(str || '');
-      const matches = Array.from(text.matchAll(/\S+/g));
-      if (matches.length <= maxWords) return text;
-      const cutoffIndex = matches[maxWords].index;
-      return text.slice(0, cutoffIndex).trimEnd();
-    }
-
-    window.handleTaskletUpdateWordLimit = function (textarea) {
-      if (!textarea) return;
-      const currentWords = countWordsInText(textarea.value);
-      if (currentWords > TASKLET_UPDATE_MAX_WORDS) {
-        textarea.value = truncateToMaxWords(textarea.value, TASKLET_UPDATE_MAX_WORDS);
-      }
-      const finalWords = countWordsInText(textarea.value);
-      const remaining = Math.max(0, TASKLET_UPDATE_MAX_WORDS - finalWords);
-      const counterEl = document.getElementById('tasklet-update-word-countdown');
-      if (counterEl) {
-        counterEl.textContent = `${remaining} ${remaining === 1 ? 'word' : 'words'} left`;
-        counterEl.classList.toggle('text-rose-600', remaining === 0);
-        counterEl.classList.toggle('text-amber-600', remaining > 0 && remaining <= 15);
-        counterEl.classList.toggle('text-slate-400', remaining > 15);
-      }
-    };
-
-    window.addTaskletUpdate = function (itemId) {
+    window.addTaskletProgressUpdate = function (itemId) {
       const item = state.items.find(i => i.id === itemId);
-      if (!item || item.type !== 'Tasklet') return;
-      if (isTaskletLockedStatus(item)) {
-        showToast(`${item.status} Tasklets are locked and cannot be edited.`);
+      if (!item || isTaskletLockedStatus(item)) return;
+      const input = document.getElementById('tasklet-new-update-input');
+      const text = String(input?.value || '').trim();
+      if (!text) {
+        showToast('Please enter an update before clicking Update.');
         return;
       }
-
-      item.updates = Array.isArray(item.updates) ? item.updates : [];
+      if (countWords(text) > TASKLET_UPDATE_MAX_WORDS) {
+        showToast(`Updates cannot exceed ${TASKLET_UPDATE_MAX_WORDS} words.`);
+        return;
+      }
+      if (!Array.isArray(item.updates)) item.updates = [];
       if (item.updates.length >= TASKLET_MAX_UPDATES) {
         showToast(`Maximum ${TASKLET_MAX_UPDATES} updates allowed per Tasklet.`);
         return;
       }
-
-      const input = document.getElementById('tasklet-new-update-input');
-      const rawText = (input?.value || '').trim();
-      if (!rawText) {
-        showToast('Please enter an update before clicking Update.');
-        input?.focus();
-        return;
-      }
-
-      const text = truncateToMaxWords(rawText, TASKLET_UPDATE_MAX_WORDS);
-
-      const nowStr = formatNowTimestamp();
-      const userName = getCurrentUser().name;
+      const now = formatNowTimestamp();
       item.updates.push({
-        id: `upd-${Date.now()}`,
         text,
-        timestamp: nowStr,
-        by: userName
+        timestamp: now,
+        by: getCurrentUser().name
       });
-      item.lastChanged = nowStr;
-      item.history = item.history || [];
+      item.lastChanged = now;
+      if (!Array.isArray(item.history)) item.history = [];
       item.history.push({
-        timestamp: nowStr,
+        timestamp: now,
         action: `Added update #${item.updates.length}`,
-        by: userName
+        by: getCurrentUser().name
       });
-
       persistWorkspaceState();
+      renderItemDetailsView();
       renderAll();
-      renderTaskletUpdatesDefaultPane(item);
-      showToast(`Update #${item.updates.length} added.`);
+      showToast('Tasklet update added.');
     };
 
-    window.openTaskletLifecycleModal = function (itemId, mode) {
+    window.openTaskletLifecycleModal = function (itemId, actionType) {
       const item = state.items.find(i => i.id === itemId);
-      if (!item || item.type !== 'Tasklet') return;
+      if (!item) return;
+      state.taskletLifecycleAction = { itemId, actionType };
 
-      if (item.status === 'Abandoned') {
-        showToast('Abandoned Tasklets are locked and cannot be modified.');
-        return;
-      }
-      if (mode === 'complete' && item.status === 'Completed') {
-        showToast('Tasklet is already marked as Completed.');
-        return;
-      }
-
-      state.taskletLifecycleAction = { itemId, mode };
       const modal = document.getElementById('tasklet-lifecycle-modal');
-      const iconEl = document.getElementById('tasklet-lifecycle-icon');
-      const titleEl = document.getElementById('tasklet-lifecycle-title');
-      const msgEl = document.getElementById('tasklet-lifecycle-message');
+      const icon = document.getElementById('tasklet-lifecycle-icon');
+      const title = document.getElementById('tasklet-lifecycle-title');
+      const message = document.getElementById('tasklet-lifecycle-message');
       const reasonWrap = document.getElementById('tasklet-lifecycle-reason-wrap');
       const reasonLabel = document.getElementById('tasklet-lifecycle-reason-label');
       const reasonInput = document.getElementById('tasklet-lifecycle-reason-input');
-      const countdownEl = document.getElementById('tasklet-lifecycle-word-countdown');
+      const wordCountdown = document.getElementById('tasklet-lifecycle-word-countdown');
       const errorEl = document.getElementById('tasklet-lifecycle-error');
       const confirmBtn = document.getElementById('tasklet-lifecycle-confirm-btn');
 
-      if (errorEl) errorEl.classList.add('hidden');
+      if (!modal) return;
       if (reasonInput) reasonInput.value = '';
+      if (errorEl) errorEl.classList.add('hidden');
 
-      if (mode === 'complete') {
-        if (iconEl) {
-          iconEl.className = 'w-10 h-10 rounded-2xl bg-amber-100 text-amber-700 flex items-center justify-center flex-shrink-0';
-        }
-        if (titleEl) titleEl.textContent = 'Mark Tasklet as Completed?';
-        if (msgEl) msgEl.textContent = 'Warning: Once marked as Completed, this Tasklet will be locked and cannot be edited unless you reopen it using "Open Tasklet".';
-        if (reasonWrap) reasonWrap.classList.add('hidden');
-        if (countdownEl) countdownEl.classList.add('hidden');
+      if (actionType === 'complete') {
+        if (icon) icon.className = 'w-10 h-10 rounded-2xl bg-amber-100 text-amber-700 flex items-center justify-center flex-shrink-0';
+        if (title) title.textContent = 'Mark Tasklet as Completed?';
+        if (message) message.textContent = 'Warning: Once marked as Completed, this Tasklet will be locked and cannot be edited unless you reopen it.';
+        reasonWrap?.classList.add('hidden');
         if (confirmBtn) {
           confirmBtn.textContent = 'Yes, Complete Tasklet';
           confirmBtn.className = 'px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs sm:text-sm font-semibold';
         }
-      } else if (mode === 'reopen') {
-        if (iconEl) {
-          iconEl.className = 'w-10 h-10 rounded-2xl bg-indigo-100 text-indigo-700 flex items-center justify-center flex-shrink-0';
+      } else if (actionType === 'abandon') {
+        if (icon) icon.className = 'w-10 h-10 rounded-2xl bg-rose-100 text-rose-700 flex items-center justify-center flex-shrink-0';
+        if (title) title.textContent = 'Abandon Tasklet';
+        if (message) message.textContent = 'Once abandoned, this Tasklet will be permanently locked. Please provide a brief reason (maximum 20 words).';
+        reasonWrap?.classList.remove('hidden');
+        if (reasonLabel) reasonLabel.textContent = 'Reason for Abandoning (max 20 words)';
+        if (reasonInput) reasonInput.placeholder = 'State why this Tasklet is being abandoned...';
+        if (wordCountdown) {
+          wordCountdown.classList.remove('hidden');
+          wordCountdown.textContent = `${TASKLET_ABANDON_MAX_WORDS} words left`;
         }
-        if (titleEl) titleEl.textContent = 'Open Tasklet';
-        if (msgEl) msgEl.textContent = 'Reopening this completed Tasklet will allow edits, uploads, and new progress updates again.';
-        if (reasonWrap) reasonWrap.classList.remove('hidden');
+        if (confirmBtn) {
+          confirmBtn.textContent = 'Abandon Tasklet';
+          confirmBtn.className = 'px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs sm:text-sm font-semibold';
+        }
+      } else if (actionType === 'reopen') {
+        if (icon) icon.className = 'w-10 h-10 rounded-2xl bg-indigo-100 text-indigo-700 flex items-center justify-center flex-shrink-0';
+        if (title) title.textContent = 'Open Tasklet for Editing';
+        if (message) message.textContent = 'Reopening will restore this Tasklet to Active status so you can edit it again.';
+        reasonWrap?.classList.remove('hidden');
         if (reasonLabel) reasonLabel.textContent = 'Why do you want to open this Tasklet?';
-        if (reasonInput) reasonInput.placeholder = 'Explain why you want to reopen this Tasklet...';
-        if (countdownEl) countdownEl.classList.add('hidden');
+        if (reasonInput) reasonInput.placeholder = 'Enter reason for reopening this Tasklet...';
+        wordCountdown?.classList.add('hidden');
         if (confirmBtn) {
           confirmBtn.textContent = 'Open Tasklet';
           confirmBtn.className = 'px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs sm:text-sm font-semibold';
         }
-      } else if (mode === 'abandon') {
-        if (iconEl) {
-          iconEl.className = 'w-10 h-10 rounded-2xl bg-rose-100 text-rose-700 flex items-center justify-center flex-shrink-0';
-        }
-        if (titleEl) titleEl.textContent = 'Abandon Tasklet';
-        if (msgEl) msgEl.textContent = 'Please provide a brief reason for abandoning this Tasklet (maximum 20 words).';
-        if (reasonWrap) reasonWrap.classList.remove('hidden');
-        if (reasonLabel) reasonLabel.textContent = 'Reason for Abandoning (max 20 words)';
-        if (reasonInput) reasonInput.placeholder = 'Enter reason (max 20 words)...';
-        if (countdownEl) {
-          countdownEl.textContent = `${TASKLET_ABANDON_MAX_WORDS} words left`;
-          countdownEl.className = 'pointer-events-none absolute bottom-2 right-3 text-[11px] font-semibold text-slate-400';
-          countdownEl.classList.remove('hidden');
-        }
-        if (confirmBtn) {
-          confirmBtn.textContent = 'Confirm Abandon';
-          confirmBtn.className = 'px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs sm:text-sm font-semibold';
-        }
       }
 
-      modal?.classList.remove('hidden');
-      if (mode !== 'complete') {
-        setTimeout(() => reasonInput?.focus(), 30);
-      }
+      modal.classList.remove('hidden');
     };
 
     window.closeTaskletLifecycleModal = function () {
@@ -2958,19 +2609,15 @@
       document.getElementById('tasklet-lifecycle-modal')?.classList.add('hidden');
     };
 
-    window.handleTaskletLifecycleReasonInput = function (textarea) {
-      if (!textarea || !state.taskletLifecycleAction) return;
-      if (state.taskletLifecycleAction.mode === 'abandon') {
-        if (countWordsInText(textarea.value) > TASKLET_ABANDON_MAX_WORDS) {
-          textarea.value = truncateToMaxWords(textarea.value, TASKLET_ABANDON_MAX_WORDS);
-        }
-        const remaining = Math.max(0, TASKLET_ABANDON_MAX_WORDS - countWordsInText(textarea.value));
-        const countdownEl = document.getElementById('tasklet-lifecycle-word-countdown');
-        if (countdownEl) {
-          countdownEl.textContent = `${remaining} ${remaining === 1 ? 'word' : 'words'} left`;
-          countdownEl.classList.toggle('text-rose-600', remaining === 0);
-          countdownEl.classList.toggle('text-amber-600', remaining > 0 && remaining <= 5);
-          countdownEl.classList.toggle('text-slate-400', remaining > 5);
+    window.handleTaskletLifecycleReasonInput = function (textareaEl) {
+      const action = state.taskletLifecycleAction;
+      if (!action) return;
+      if (action.actionType === 'abandon') {
+        enforceWordLimit(textareaEl, TASKLET_ABANDON_MAX_WORDS);
+        const countdown = document.getElementById('tasklet-lifecycle-word-countdown');
+        if (countdown) {
+          const left = Math.max(0, TASKLET_ABANDON_MAX_WORDS - countWords(textareaEl.value));
+          countdown.textContent = `${left} ${left === 1 ? 'word' : 'words'} left`;
         }
       }
     };
@@ -2979,770 +2626,404 @@
       const action = state.taskletLifecycleAction;
       if (!action) return;
       const item = state.items.find(i => i.id === action.itemId);
-      if (!item || item.type !== 'Tasklet') {
-        closeTaskletLifecycleModal();
-        return;
-      }
+      if (!item) return;
 
       const reasonInput = document.getElementById('tasklet-lifecycle-reason-input');
       const errorEl = document.getElementById('tasklet-lifecycle-error');
-      const rawReason = (reasonInput?.value || '').trim();
-      const nowStr = formatNowTimestamp();
-      const userName = getCurrentUser().name;
+      const reason = String(reasonInput?.value || '').trim();
+      const now = formatNowTimestamp();
+      const actor = getCurrentUser().name;
 
-      if (action.mode === 'complete') {
+      if (action.actionType === 'complete') {
         item.status = 'Completed';
-        item.lastChanged = nowStr;
-        item.history = item.history || [];
-        item.history.push({ timestamp: nowStr, action: 'Marked as Completed (Locked)', by: userName });
-        persistWorkspaceState();
+        item.lastChanged = now;
+        if (!Array.isArray(item.history)) item.history = [];
+        item.history.push({ timestamp: now, action: 'Marked Tasklet as Completed', by: actor });
         closeTaskletLifecycleModal();
-        renderAll();
+        persistWorkspaceState();
         renderItemDetailsView();
+        renderAll();
         showToast('Tasklet marked as Completed and locked.');
-        return;
-      }
-
-      if (!rawReason) {
-        if (errorEl) {
-          errorEl.textContent = action.mode === 'reopen'
-            ? 'Please enter why you want to open this Tasklet.'
-            : 'Please enter a reason for abandoning this Tasklet.';
-          errorEl.classList.remove('hidden');
+      } else if (action.actionType === 'abandon') {
+        if (!reason) {
+          if (errorEl) {
+            errorEl.textContent = 'Please provide a reason for abandoning this Tasklet.';
+            errorEl.classList.remove('hidden');
+          }
+          return;
         }
-        reasonInput?.focus();
-        return;
-      }
-
-      if (action.mode === 'reopen') {
-        item.status = 'Active';
-        item.lastChanged = nowStr;
-        item.updates = Array.isArray(item.updates) ? item.updates : [];
-        if (item.updates.length < TASKLET_MAX_UPDATES) {
-          item.updates.push({
-            id: `upd-${Date.now()}`,
-            text: `Reopened Tasklet: ${rawReason}`,
-            timestamp: nowStr,
-            by: userName
-          });
+        if (countWords(reason) > TASKLET_ABANDON_MAX_WORDS) {
+          if (errorEl) {
+            errorEl.textContent = `Reason must be ${TASKLET_ABANDON_MAX_WORDS} words or fewer.`;
+            errorEl.classList.remove('hidden');
+          }
+          return;
         }
-        item.history = item.history || [];
-        item.history.push({ timestamp: nowStr, action: `Reopened Tasklet (${rawReason})`, by: userName });
-        persistWorkspaceState();
-        closeTaskletLifecycleModal();
-        renderAll();
-        renderItemDetailsView();
-        showToast('Tasklet reopened for editing.');
-        return;
-      }
-
-      if (action.mode === 'abandon') {
-        const cleanReason = truncateToMaxWords(rawReason, TASKLET_ABANDON_MAX_WORDS);
         item.status = 'Abandoned';
-        item.abandonReason = cleanReason;
-        item.lastChanged = nowStr;
-        item.updates = Array.isArray(item.updates) ? item.updates : [];
+        item.abandonReason = reason;
+        item.lastChanged = now;
+        if (!Array.isArray(item.history)) item.history = [];
+        item.history.push({ timestamp: now, action: `Abandoned Tasklet: ${reason}`, by: actor });
+        closeTaskletLifecycleModal();
+        persistWorkspaceState();
+        renderItemDetailsView();
+        renderAll();
+        showToast('Tasklet marked as Abandoned and locked.');
+      } else if (action.actionType === 'reopen') {
+        if (!reason) {
+          if (errorEl) {
+            errorEl.textContent = 'Please answer why you want to open this Tasklet.';
+            errorEl.classList.remove('hidden');
+          }
+          return;
+        }
+        item.status = 'Active';
+        item.lastChanged = now;
+        if (!Array.isArray(item.updates)) item.updates = [];
         if (item.updates.length < TASKLET_MAX_UPDATES) {
           item.updates.push({
-            id: `upd-${Date.now()}`,
-            text: `Abandoned: ${cleanReason}`,
-            timestamp: nowStr,
-            by: userName
+            text: `[Reopened] ${reason}`,
+            timestamp: now,
+            by: actor
           });
         }
-        item.history = item.history || [];
-        item.history.push({ timestamp: nowStr, action: `Marked as Abandoned (${cleanReason})`, by: userName });
-        persistWorkspaceState();
+        if (!Array.isArray(item.history)) item.history = [];
+        item.history.push({ timestamp: now, action: `Reopened Tasklet: ${reason}`, by: actor });
         closeTaskletLifecycleModal();
-        renderAll();
+        persistWorkspaceState();
         renderItemDetailsView();
-        showToast('Tasklet marked as Abandoned.');
+        renderAll();
+        showToast('Tasklet reopened for editing.');
       }
     };
 
-    let activeTaskletPreviewBlobUrl = null;
+    window.openItemDetails = function (itemId) {
+      state.selectedItemId = itemId;
+      switchTab('details');
+      renderItemDetailsView();
+    };
 
-    window.resetTaskletRightPane = function () {
-      const rightPanel = document.getElementById('tasklet-details-right-panel');
-      if (activeTaskletPreviewBlobUrl) {
-        try {
-          URL.revokeObjectURL(activeTaskletPreviewBlobUrl);
-        } catch (_) {}
-        activeTaskletPreviewBlobUrl = null;
-      }
-      if (!rightPanel) return;
+    window.closeTaskletDocumentPreview = function () {
       const item = state.items.find(i => i.id === state.selectedItemId);
-      if (item && item.type === 'Tasklet') {
-        renderTaskletUpdatesDefaultPane(item);
-        return;
-      }
-      rightPanel.className = 'group relative lg:col-span-6 bg-white rounded-2xl border border-slate-200 p-6 min-h-[420px] flex flex-col';
-      rightPanel.innerHTML = '';
+      const pane = document.getElementById('details-preview-pane');
+      const closeBtn = document.getElementById('details-preview-close-btn');
+      const label = document.getElementById('details-right-pane-title');
+      if (!item || !pane) return;
+      if (label) label.textContent = 'Tasklet Updates';
+      if (closeBtn) closeBtn.classList.add('hidden');
+      pane.innerHTML = renderTaskletUpdatesDefaultPane(item);
     };
 
-    window.previewTaskletDocumentInRightPane = async function (itemId, docIndex) {
-      const item = state.items.find(i => i.id === itemId);
-      const rightPanel = document.getElementById('tasklet-details-right-panel');
-      if (!item || !rightPanel) return;
-      const docItem = (item.documents || [])[docIndex];
-      if (!docItem) return;
+    function renderItemDetailsView() {
+      const item = state.items.find(i => i.id === state.selectedItemId);
+      const container = document.getElementById('details-content-card');
+      if (!item || !container) return;
 
-      if (activeTaskletPreviewBlobUrl) {
-        try {
-          URL.revokeObjectURL(activeTaskletPreviewBlobUrl);
-        } catch (_) {}
-        activeTaskletPreviewBlobUrl = null;
+      const nodal = getNodalById(item.nodalId);
+      const isTasklet = item.type === 'Tasklet';
+      const isLocked = isTaskletLockedStatus(item);
+      const canDeleteDocs = !isLocked && canUserDeleteItemDocuments(item);
+
+      const parentBtn = document.getElementById('details-breadcrumb-parent');
+      const backBtn = document.getElementById('details-back-btn');
+      const currentCrumb = document.getElementById('details-breadcrumb-current');
+      if (parentBtn) {
+        parentBtn.textContent = isTasklet ? 'Tasklets' : (item.type === 'Project' ? 'Projects' : 'Tasks');
+        parentBtn.onclick = () => switchTab(isTasklet ? 'tasklets' : (item.type === 'Project' ? 'projects' : 'tasks'));
       }
+      if (backBtn) {
+        backBtn.onclick = () => switchTab(isTasklet ? 'tasklets' : (item.type === 'Project' ? 'projects' : 'tasks'));
+      }
+      if (currentCrumb) currentCrumb.textContent = item.title;
 
-      const fileTypeLabel = getDocumentFileTypeLabel(docItem);
-      const sizeText = docItem.size ? formatBytesLabel(docItem.size) : (docItem.source || 'Attached file');
-      const closeOverlayBtnHtml = `
-        <button type="button" title="Close preview" aria-label="Close preview" onclick="resetTaskletRightPane()" class="opacity-0 group-hover:opacity-100 focus:opacity-100 transition-opacity absolute top-2 right-2 z-20 w-6 h-6 rounded-full bg-white/95 hover:bg-rose-600 text-slate-600 hover:text-white border border-slate-200 hover:border-rose-600 shadow-sm flex items-center justify-center text-[11px] font-bold">
-          ✕
-        </button>
+      const docs = Array.isArray(item.documents) ? item.documents : [];
+      const history = Array.isArray(item.history) ? item.history : [];
+
+      const docsHtml = docs.length === 0
+        ? `<div class="rounded-xl border border-dashed border-slate-200 p-4 text-xs text-slate-400 text-center">No supporting documents or URLs attached yet.</div>`
+        : docs.map((docItem, idx) => `
+            <div class="flex items-center justify-between gap-2 p-2.5 rounded-xl bg-slate-50 border border-slate-200/80 hover:border-indigo-300 transition-colors">
+              <button type="button" onclick="previewItemDocument('${item.id}', ${idx})" class="min-w-0 flex-1 text-left flex items-center gap-2.5">
+                <span class="px-2 py-0.5 rounded-md text-[10px] font-extrabold uppercase bg-indigo-100 text-indigo-700">${escapeHtml(docItem.source || 'File')}</span>
+                <span class="text-xs font-bold text-slate-800 hover:text-indigo-600 truncate">${escapeHtml(docItem.name)}</span>
+              </button>
+              <div class="flex items-center gap-2 flex-shrink-0">
+                <span class="text-[11px] text-slate-400">${escapeHtml(formatDateDDMMYY(docItem.addedAt || ''))}</span>
+                ${canDeleteDocs ? `<button type="button" onclick="removeItemDocument('${item.id}', ${idx})" title="Remove document" class="p-1 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50">✕</button>` : ''}
+              </div>
+            </div>
+          `).join('');
+
+      const lifecycleActionsHtml = isTasklet
+        ? (item.status === 'Completed'
+            ? `<button type="button" onclick="openTaskletLifecycleModal('${item.id}', 'reopen')" class="px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold transition-colors">Open Tasklet</button>`
+            : item.status === 'Abandoned'
+              ? `<span class="px-3 py-1.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-bold">Locked (Abandoned)</span>`
+              : `<div class="flex flex-wrap items-center gap-2">
+                  <button type="button" onclick="openTaskletLifecycleModal('${item.id}', 'complete')" class="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition-colors">Completed</button>
+                  <button type="button" onclick="openTaskletLifecycleModal('${item.id}', 'abandon')" class="px-3.5 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 border border-rose-200 text-rose-700 text-xs font-bold transition-colors">Abandoned</button>
+                </div>`)
+        : `<div class="flex flex-wrap items-center gap-2">
+            ${isTaskReadyForProject(item) ? `<button type="button" onclick="convertTaskToProject('${item.id}')" class="px-3.5 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold transition-colors">⚡ Convert to Project</button>` : ''}
+            <button type="button" onclick="openEditItemModal('${item.id}')" class="px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold transition-colors">Edit ${escapeHtml(item.type)}</button>
+          </div>`;
+
+      const uploadControlsHtml = isLocked ? '' : `
+        <div class="flex flex-wrap items-center gap-2 pt-2">
+          <label class="cursor-pointer px-3 py-1.5 rounded-xl bg-white border border-slate-300 hover:bg-slate-100 text-xs font-semibold text-slate-700">
+            + Upload Document
+            <input type="file" onchange="handleDetailsFileUpload(event, '${item.id}')" class="hidden" />
+          </label>
+          <div class="flex-1 min-w-[200px] flex items-center gap-1.5">
+            <input type="url" id="details-doc-url-input" placeholder="Paste Google Drive or web URL (https://...)" class="flex-1 px-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+            <button type="button" onclick="handleDetailsAddLink('${item.id}')" class="px-3 py-1.5 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs font-bold whitespace-nowrap">Add URL</button>
+          </div>
+        </div>
       `;
 
-      rightPanel.className = 'group relative lg:col-span-6 bg-white rounded-2xl border border-slate-200 p-3 sm:p-4 h-[78vh] min-h-[540px] flex flex-col overflow-hidden';
+      const rightPaneDefaultHtml = isTasklet
+        ? renderTaskletUpdatesDefaultPane(item)
+        : `<div class="rounded-2xl border border-dashed border-slate-200 bg-white p-8 text-center text-xs text-slate-400">
+            Click any attached document or URL on the left to preview it here.
+          </div>`;
 
-      if ((docItem.storageType === 'gdrive' || docItem.storageType === 'web') && docItem.url) {
-        let embedUrl = docItem.url;
-        if (docItem.storageType === 'gdrive') {
-          embedUrl = docItem.url.replace(/\/view(\?.*)?$/, '/preview').replace(/\/edit(\?.*)?$/, '/preview');
-        }
-        rightPanel.innerHTML = `
-          ${closeOverlayBtnHtml}
-          <div class="flex items-center justify-between gap-2 border-b border-slate-100 pb-2 mb-2 pr-7 flex-shrink-0">
-            <div class="min-w-0 flex-1 flex items-center gap-2">
-              <span class="text-xs font-bold text-slate-900 truncate">${escapeHtml(docItem.name)}</span>
-              <span class="text-[10px] text-slate-400 whitespace-nowrap flex-shrink-0">• ${escapeHtml(fileTypeLabel)}</span>
+      container.innerHTML = `
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          <div class="lg:col-span-7 space-y-5">
+            <div class="flex flex-wrap items-start justify-between gap-3 border-b border-slate-100 pb-4">
+              <div class="space-y-1.5 min-w-0 flex-1">
+                <div class="flex flex-wrap items-center gap-2">
+                  ${getTypeBadgeHtml(item.type)}
+                  ${getStatusBadgeHtml(item.status)}
+                </div>
+                <h2 class="text-xl sm:text-2xl font-extrabold text-slate-900 break-words">${escapeHtml(item.title)}</h2>
+              </div>
+              ${lifecycleActionsHtml}
             </div>
-            <a href="${escapeHtml(docItem.url)}" target="_blank" rel="noopener noreferrer" class="px-2 py-1 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-[11px] font-bold flex-shrink-0">
-              Open ↗
+
+            ${item.status === 'Abandoned' && item.abandonReason ? `
+              <div class="rounded-2xl bg-rose-50 border border-rose-200 p-3.5 text-xs text-rose-900">
+                <span class="font-extrabold">Reason for Abandoning:</span> ${escapeHtml(item.abandonReason)}
+              </div>
+            ` : ''}
+
+            <div class="space-y-1">
+              <div class="text-xs font-bold uppercase tracking-wider text-slate-400">Description &amp; Scope</div>
+              <p class="text-sm text-slate-700 leading-relaxed whitespace-pre-line">${escapeHtml(item.description || 'No description provided.')}</p>
+            </div>
+
+            <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 bg-slate-50 rounded-2xl p-4 border border-slate-200/80 text-xs">
+              <div>
+                <div class="text-slate-400 font-bold uppercase tracking-wider text-[10px]">Nodal Officer</div>
+                <div class="font-bold text-slate-900 mt-0.5">${escapeHtml(nodal.name)}</div>
+              </div>
+              <div>
+                <div class="text-slate-400 font-bold uppercase tracking-wider text-[10px]">Target / Created Date</div>
+                <div class="font-bold text-slate-900 mt-0.5">${escapeHtml(formatDateDDMMYY(item.dueDate || '') || '—')}</div>
+              </div>
+              <div>
+                <div class="text-slate-400 font-bold uppercase tracking-wider text-[10px]">Last Updated</div>
+                <div class="font-bold text-slate-900 mt-0.5">${escapeHtml(formatDateDDMMYY(item.lastChanged || '', true) || '—')}</div>
+              </div>
+            </div>
+
+            <div class="space-y-2.5">
+              <div class="text-xs font-bold uppercase tracking-wider text-slate-500">Attached Documents &amp; Links (${docs.length})</div>
+              <div class="space-y-2">${docsHtml}</div>
+              ${uploadControlsHtml}
+            </div>
+
+            <div class="space-y-2 pt-2 border-t border-slate-100">
+              <div class="text-xs font-bold uppercase tracking-wider text-slate-500">Activity History</div>
+              <div class="space-y-1.5 max-h-44 overflow-y-auto custom-scrollbar">
+                ${history.slice().reverse().map(h => `
+                  <div class="flex items-center justify-between gap-2 text-xs py-1 border-b border-slate-100/80">
+                    <span class="text-slate-700 font-medium">${escapeHtml(h.action)}</span>
+                    <span class="text-[11px] text-slate-400 whitespace-nowrap">${escapeHtml(h.by || '')} • ${escapeHtml(formatDateDDMMYY(h.timestamp || '', true))}</span>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+          </div>
+
+          <div class="lg:col-span-5 bg-slate-50/80 rounded-2xl border border-slate-200/90 p-4 sm:p-5 flex flex-col justify-between">
+            <div class="space-y-3">
+              <div class="flex items-center justify-between border-b border-slate-200/80 pb-2.5">
+                <span id="details-right-pane-title" class="text-xs font-extrabold uppercase tracking-wider text-slate-600">${isTasklet ? 'Tasklet Updates' : 'Document Preview'}</span>
+                ${isTasklet ? `<button type="button" id="details-preview-close-btn" onclick="closeTaskletDocumentPreview()" class="hidden px-2 py-0.5 rounded-lg bg-slate-200 hover:bg-slate-300 text-slate-700 text-xs font-bold">✕ Back to Updates</button>` : ''}
+              </div>
+              <div id="details-preview-pane">${rightPaneDefaultHtml}</div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    window.previewItemDocument = function (itemId, docIndex) {
+      const item = state.items.find(i => i.id === itemId);
+      const pane = document.getElementById('details-preview-pane');
+      const titleEl = document.getElementById('details-right-pane-title');
+      const closeBtn = document.getElementById('details-preview-close-btn');
+      if (!item || !pane || !item.documents || !item.documents[docIndex]) return;
+
+      const docObj = item.documents[docIndex];
+      if (titleEl) titleEl.textContent = docObj.name;
+      if (closeBtn) closeBtn.classList.remove('hidden');
+
+      const blobUrl = docObj.localBlobKey ? localStoredFileBlobs.get(docObj.localBlobKey) : null;
+      const targetUrl = docObj.url || docObj.dataUrl || blobUrl || '';
+
+      if (targetUrl && docObj.source === 'Link') {
+        pane.innerHTML = `
+          <div class="bg-white rounded-2xl border border-slate-200 p-4 space-y-3">
+            <div class="text-xs font-bold text-slate-800 break-all">${escapeHtml(docObj.url)}</div>
+            <a href="${escapeHtml(docObj.url)}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold">
+              Open External Link ↗
             </a>
           </div>
-          <div class="flex-1 min-h-0 overflow-auto rounded-xl border border-slate-200 bg-slate-50">
-            <iframe src="${escapeHtml(embedUrl)}" class="w-full h-full min-h-[520px] border-0" title="${escapeHtml(docItem.name)}"></iframe>
+        `;
+      } else if (targetUrl && (String(docObj.mimeType || '').startsWith('image/') || /\.(png|jpe?g|gif|webp)$/i.test(docObj.name))) {
+        pane.innerHTML = `<img src="${escapeHtml(targetUrl)}" alt="${escapeHtml(docObj.name)}" class="w-full rounded-xl border border-slate-200 bg-white" />`;
+      } else if (targetUrl && (docObj.mimeType === 'application/pdf' || /\.pdf$/i.test(docObj.name))) {
+        pane.innerHTML = `<iframe src="${escapeHtml(targetUrl)}" class="w-full h-[420px] rounded-xl border border-slate-200 bg-white"></iframe>`;
+      } else {
+        pane.innerHTML = `
+          <div class="bg-white rounded-2xl border border-slate-200 p-5 text-center space-y-2.5">
+            <div class="text-sm font-extrabold text-slate-800">${escapeHtml(docObj.name)}</div>
+            <div class="text-xs text-slate-500">Added on ${escapeHtml(formatDateDDMMYY(docObj.addedAt || ''))}</div>
+            ${targetUrl ? `<a href="${escapeHtml(targetUrl)}" download="${escapeHtml(docObj.name)}" class="inline-block px-3.5 py-2 rounded-xl bg-indigo-600 text-white text-xs font-bold">Download File</a>` : `<p class="text-[11px] text-slate-400">Preview metadata recorded in workspace.</p>`}
           </div>
         `;
-        return;
       }
-
-      if (docItem.storageType === 'firestore' && docItem.firestoreDocId) {
-        rightPanel.innerHTML = `
-          ${closeOverlayBtnHtml}
-          <div class="flex-1 flex items-center justify-center text-xs text-slate-400">
-            Loading preview...
-          </div>
-        `;
-        try {
-          let record = localStoredFileBlobs.get(docItem.firestoreDocId);
-          if (!record && db && isCloudReady) {
-            const fileRef = doc(db, 'artifacts', appId, 'public', 'data', 'niwas_documents', docItem.firestoreDocId);
-            const snap = await getDoc(fileRef);
-            if (snap.exists()) {
-              record = snap.data();
-              localStoredFileBlobs.set(docItem.firestoreDocId, record);
-            }
-          }
-          if (!record || !record.dataUrl) {
-            rightPanel.innerHTML = `
-              ${closeOverlayBtnHtml}
-              <div class="flex-1 flex flex-col items-center justify-center text-center p-6 space-y-2">
-                <div class="text-sm font-bold text-slate-700">${escapeHtml(docItem.name)}</div>
-                <div class="text-xs text-slate-400">File binary payload is not available for inline preview.</div>
-              </div>
-            `;
-            return;
-          }
-
-          const res = await fetch(record.dataUrl);
-          const blob = await res.blob();
-          const blobUrl = URL.createObjectURL(blob);
-          activeTaskletPreviewBlobUrl = blobUrl;
-          const mime = String(record.mimeType || docItem.mimeType || '').toLowerCase();
-          const isImage = mime.startsWith('image/');
-          const isPdf = mime.includes('pdf') || String(docItem.name || '').toLowerCase().endsWith('.pdf');
-          const isText = mime.startsWith('text/');
-
-          const previewBodyHtml = isImage
-            ? `<div class="flex-1 min-h-0 overflow-auto custom-scrollbar bg-slate-50 rounded-xl border border-slate-200 p-3 flex items-start justify-center"><img src="${blobUrl}" alt="${escapeHtml(docItem.name)}" class="max-w-full h-auto rounded-lg object-contain" /></div>`
-            : isPdf
-              ? `<div class="flex-1 min-h-0 overflow-auto custom-scrollbar rounded-xl border border-slate-200 bg-slate-100"><iframe src="${blobUrl}#toolbar=1&navpanes=0&scrollbar=1&view=FitH" class="w-full h-full min-h-[540px] border-0 block" title="${escapeHtml(docItem.name)}"></iframe></div>`
-              : isText
-                ? `<div class="flex-1 min-h-0 overflow-auto custom-scrollbar rounded-xl border border-slate-200 bg-white"><iframe src="${blobUrl}" class="w-full h-full min-h-[540px] border-0 block" title="${escapeHtml(docItem.name)}"></iframe></div>`
-                : `
-                  <div class="flex-1 min-h-0 overflow-auto flex flex-col items-center justify-center bg-slate-50 rounded-xl border border-slate-200 p-6 text-center space-y-3">
-                    <div class="text-3xl">📄</div>
-                    <div class="text-sm font-bold text-slate-800 break-words max-w-md">${escapeHtml(docItem.name)}</div>
-                    <div class="text-xs text-slate-500">Inline preview is not supported for ${escapeHtml(fileTypeLabel)} files.</div>
-                    <a href="${blobUrl}" download="${escapeHtml(docItem.name)}" class="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold">
-                      Download File
-                    </a>
-                  </div>
-                `;
-
-          rightPanel.innerHTML = `
-            ${closeOverlayBtnHtml}
-            <div class="flex items-center justify-between gap-2 border-b border-slate-100 pb-2 mb-2 pr-7 flex-shrink-0">
-              <div class="min-w-0 flex-1 flex items-center gap-2">
-                <span class="text-xs font-bold text-slate-900 truncate">${escapeHtml(docItem.name)}</span>
-                <span class="text-[10px] text-slate-400 whitespace-nowrap flex-shrink-0">• ${escapeHtml(fileTypeLabel)} • ${escapeHtml(sizeText)}</span>
-              </div>
-              <a href="${blobUrl}" download="${escapeHtml(docItem.name)}" class="px-2 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-bold flex-shrink-0">
-                Download
-              </a>
-            </div>
-            ${previewBodyHtml}
-          `;
-        } catch (_) {
-          rightPanel.innerHTML = `
-            ${closeOverlayBtnHtml}
-            <div class="flex-1 flex items-center justify-center text-xs text-rose-500">
-              Unable to load document preview.
-            </div>
-          `;
-        }
-        return;
-      }
-
-      rightPanel.innerHTML = `
-        ${closeOverlayBtnHtml}
-        <div class="flex-1 flex flex-col items-center justify-center text-center p-6 space-y-2">
-          <div class="text-2xl">📄</div>
-          <div class="text-sm font-bold text-slate-800 break-words max-w-md">${escapeHtml(docItem.name)}</div>
-          <div class="text-xs text-slate-400">${escapeHtml(fileTypeLabel)} • ${escapeHtml(sizeText)}</div>
-        </div>
-      `;
     };
 
-    window.convertTaskToProject = function (itemId) {
-      if (!getRoleCapabilities().canApprove) return;
+    window.handleDetailsFileUpload = function (event, itemId) {
       const item = state.items.find(i => i.id === itemId);
-      if (!item) return;
-      item.type = 'Project';
-      item.lastChanged = formatNowTimestamp();
-      item.history = item.history || [];
-      item.history.push({ timestamp: item.lastChanged, action: 'Converted from Task to Project', by: getCurrentUser().name });
-      persistWorkspaceState();
-      renderAll();
-      if (state.activeTab === 'details') renderItemDetailsView();
-      showToast(`"${item.title}" converted to a Project.`);
-    };
-
-    window.deleteItemRecord = function (itemId) {
-      if (!getRoleCapabilities().canDelete) {
-        showToast('Only Admins can delete tasks or projects.');
+      const file = event.target?.files?.[0];
+      if (!item || !file || isTaskletLockedStatus(item)) return;
+      if (item.type === 'Tasklet' && (item.documents?.length || 0) >= TASKLET_MAX_DOCS) {
+        showToast(`Maximum ${TASKLET_MAX_DOCS} documents allowed per Tasklet.`);
+        event.target.value = '';
         return;
       }
-      const idx = state.items.findIndex(i => i.id === itemId);
-      if (idx === -1) return;
-      const removed = state.items.splice(idx, 1)[0];
-      (removed.documents || []).forEach(d => {
-        if (d && d.firestoreDocId) deleteFirestoreFileBlob(d.firestoreDocId);
-      });
-      persistWorkspaceState();
-      renderAll();
-      showToast(`Deleted "${removed.title}".`);
-    };
-
-    function formatBytesLabel(bytes) {
-      const n = Number(bytes) || 0;
-      if (!n) return '';
-      if (n < 1024) return `${n} B`;
-      if (n < 1024 * 1024) return `${(n / 1024).toFixed(1)} KB`;
-      return `${(n / (1024 * 1024)).toFixed(2)} MB`;
-    }
-
-    function readFileAsDataUrl(file) {
-      return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => resolve(String(reader.result || ''));
-        reader.onerror = () => reject(new Error('Failed to read file.'));
-        reader.readAsDataURL(file);
-      });
-    }
-
-    async function saveUploadedFileToFirestore(file) {
       if (file.size > FIRESTORE_MAX_FILE_BYTES) {
-        throw new Error(`"${file.name}" exceeds the 700 KB Firestore limit (${formatBytesLabel(file.size)}). Share it via Google Drive link instead.`);
+        showToast('File exceeds 700 KB limit. Please link via Google Drive URL instead.');
+        event.target.value = '';
+        return;
       }
-      const dataUrl = await readFileAsDataUrl(file);
-      const docId = `fdoc-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
-      const today = formatNowTimestamp().split(' ')[0];
-      localStoredFileBlobs.set(docId, {
-        name: file.name,
-        mimeType: file.type || 'application/octet-stream',
-        size: file.size,
-        dataUrl
-      });
-
-      if (db && isCloudReady) {
-        const fileRef = doc(db, 'artifacts', appId, 'public', 'data', 'niwas_documents', docId);
-        await setDoc(fileRef, {
+      const reader = new FileReader();
+      reader.onload = () => {
+        const now = formatNowTimestamp();
+        if (!Array.isArray(item.documents)) item.documents = [];
+        item.documents.push({
           name: file.name,
-          mimeType: file.type || 'application/octet-stream',
-          size: file.size,
-          dataUrl,
-          uploadedBy: getCurrentUser().email || 'unknown',
-          uploadedAt: new Date().toISOString()
+          addedAt: now.split(' ')[0],
+          source: 'Upload',
+          mimeType: file.type || '',
+          dataUrl: typeof reader.result === 'string' ? reader.result : ''
         });
-      }
-
-      return {
-        name: file.name,
-        addedAt: today,
-        source: 'Firestore Upload',
-        storageType: 'firestore',
-        firestoreDocId: docId,
-        mimeType: file.type || 'application/octet-stream',
-        size: file.size
-      };
-    }
-
-    async function deleteFirestoreFileBlob(docId) {
-      if (!docId) return;
-      localStoredFileBlobs.delete(docId);
-      if (db && isCloudReady) {
-        try {
-          const fileRef = doc(db, 'artifacts', appId, 'public', 'data', 'niwas_documents', docId);
-          await deleteDoc(fileRef);
-        } catch (err) {
-          console.warn('Firestore file cleanup skipped:', err);
-        }
-      }
-    }
-
-    window.openStoredFirestoreDocument = async function (docId, fallbackName) {
-      if (!docId) return;
-      try {
-        let record = localStoredFileBlobs.get(docId);
-        if (!record && db && isCloudReady) {
-          const fileRef = doc(db, 'artifacts', appId, 'public', 'data', 'niwas_documents', docId);
-          const snap = await getDoc(fileRef);
-          if (snap.exists()) {
-            record = snap.data();
-            localStoredFileBlobs.set(docId, record);
-          }
-        }
-        if (!record || !record.dataUrl) {
-          showToast('File payload not found in Firestore.');
-          return;
-        }
-        const res = await fetch(record.dataUrl);
-        const blob = await res.blob();
-        const blobUrl = URL.createObjectURL(blob);
-        const win = window.open(blobUrl, '_blank', 'noopener,noreferrer');
-        if (!win) {
-          const a = document.createElement('a');
-          a.href = blobUrl;
-          a.download = record.name || fallbackName || 'document';
-          a.click();
-        }
-        setTimeout(() => URL.revokeObjectURL(blobUrl), 60000);
-      } catch (err) {
-        showToast('Unable to open Firestore document.');
-      }
-    };
-
-    function isGoogleDriveUrl(urlObj) {
-      const host = urlObj.hostname.toLowerCase();
-      return host === 'drive.google.com' || host === 'docs.google.com' || host.endsWith('.drive.google.com');
-    }
-
-    function extractGoogleDriveLabel(urlObj) {
-      const path = urlObj.pathname;
-      if (path.includes('/spreadsheets/')) return 'Google Sheet (Drive Link)';
-      if (path.includes('/document/')) return 'Google Doc (Drive Link)';
-      if (path.includes('/presentation/')) return 'Google Slides (Drive Link)';
-      if (path.includes('/folders/')) return 'Google Drive Folder';
-      return 'Google Drive File';
-    }
-
-    async function validateExternalDocumentLink(rawUrl) {
-      const trimmed = String(rawUrl || '').trim();
-      if (!trimmed) {
-        throw new Error('Please enter a valid https:// URL.');
-      }
-      let urlObj;
-      try {
-        urlObj = new URL(trimmed);
-      } catch (_) {
-        throw new Error('Invalid URL format. Please paste a full https:// link.');
-      }
-      if (urlObj.protocol !== 'https:' && urlObj.protocol !== 'http:') {
-        throw new Error('Only HTTP/HTTPS links are supported.');
-      }
-
-      const today = formatNowTimestamp().split(' ')[0];
-
-      if (isGoogleDriveUrl(urlObj)) {
-        const hasSharingKey = urlObj.searchParams.has('usp') || urlObj.searchParams.has('resourcekey') || urlObj.pathname.includes('/file/d/') || urlObj.pathname.includes('/folders/') || urlObj.pathname.includes('/d/');
-        if (!hasSharingKey) {
-          throw new Error('Please paste a valid Google Drive share link (/file/d/..., /folders/..., or Google Docs/Sheets/Slides URL).');
-        }
-
-        let permissionStatus = 'Verified Link (Ensure "Anyone with the link" or org access is enabled)';
-        try {
-          const controller = new AbortController();
-          const timer = setTimeout(() => controller.abort(), 4500);
-          const probe = await fetch(urlObj.toString(), { method: 'HEAD', mode: 'no-cors', signal: controller.signal });
-          clearTimeout(timer);
-          if (probe) {
-            permissionStatus = 'Google Drive Link • Sharing Checked';
-          }
-        } catch (_) {
-          throw new Error('Unable to verify Google Drive link accessibility. Check your network or Drive sharing permissions.');
-        }
-
-        return {
-          name: extractGoogleDriveLabel(urlObj),
-          addedAt: today,
-          source: permissionStatus,
-          storageType: 'gdrive',
-          url: urlObj.toString()
-        };
-      }
-
-      let openAccessStatus = 'Open-Access Web URL (Linked Only)';
-      try {
-        const controller = new AbortController();
-        const timer = setTimeout(() => controller.abort(), 5000);
-        const resp = await fetch(urlObj.toString(), { method: 'HEAD', signal: controller.signal });
-        clearTimeout(timer);
-        if (resp.status === 401 || resp.status === 403) {
-          throw new Error(`Access denied (HTTP ${resp.status}). Only open-access public web URLs can be linked.`);
-        }
-        if (!resp.ok && resp.status !== 405) {
-          throw new Error(`Web URL returned HTTP ${resp.status}. Please verify the link is publicly reachable.`);
-        }
-        openAccessStatus = 'Open-Access Web URL • Verified';
-      } catch (err) {
-        if (err && err.message && (err.message.includes('Access denied') || err.message.includes('Web URL returned'))) {
-          throw err;
-        }
-        try {
-          const controller2 = new AbortController();
-          const timer2 = setTimeout(() => controller2.abort(), 4500);
-          await fetch(urlObj.toString(), { method: 'HEAD', mode: 'no-cors', signal: controller2.signal });
-          clearTimeout(timer2);
-          openAccessStatus = 'Open-Access Web URL (Linked Only)';
-        } catch (_) {
-          throw new Error('Could not reach the provided web URL. Check that it is publicly accessible.');
-        }
-      }
-
-      const lastSegment = decodeURIComponent(urlObj.pathname.split('/').filter(Boolean).pop() || urlObj.hostname);
-      return {
-        name: lastSegment.slice(0, 80),
-        addedAt: today,
-        source: openAccessStatus,
-        storageType: 'web',
-        url: urlObj.toString()
-      };
-    }
-
-    function renderDocumentRowHtml(docItem, idx, itemId, canRemoveDocs) {
-      const isFirestore = docItem.storageType === 'firestore' && docItem.firestoreDocId;
-      const isExternalLink = (docItem.storageType === 'gdrive' || docItem.storageType === 'web') && docItem.url;
-      const icon = docItem.storageType === 'gdrive' ? '🔗' : (docItem.storageType === 'web' ? '🌐' : '📄');
-      const sizeText = docItem.size ? ` • ${formatBytesLabel(docItem.size)}` : '';
-
-      const openActionHtml = isFirestore
-        ? `<button type="button" onclick="openStoredFirestoreDocument('${escapeHtml(docItem.firestoreDocId)}', '${escapeHtml(docItem.name)}')" class="px-2.5 py-1 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-bold flex-shrink-0">Open</button>`
-        : isExternalLink
-          ? `<a href="${escapeHtml(docItem.url)}" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-bold flex-shrink-0">Open Link ↗</a>`
-          : '';
-
-      return `
-        <div class="flex items-center justify-between gap-3 px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200/80 text-xs">
-          <div class="min-w-0 flex-1">
-            <div class="font-bold text-slate-800 truncate">${icon} ${escapeHtml(docItem.name)}</div>
-            <div class="text-[11px] text-slate-400 truncate">Added ${escapeHtml(formatDateDDMMYY(docItem.addedAt) || 'Recently')} • ${escapeHtml(docItem.source || 'Upload')}${sizeText}</div>
-            ${isExternalLink ? `<div class="text-[11px] text-indigo-600 truncate mt-0.5">${escapeHtml(docItem.url)}</div>` : ''}
-          </div>
-          <div class="flex items-center gap-1.5 flex-shrink-0">
-            ${openActionHtml}
-            ${canRemoveDocs ? `
-              <button type="button" onclick="removeItemDocument('${itemId}', ${idx})" class="px-2.5 py-1 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold">
-                Remove
-              </button>
-            ` : ''}
-          </div>
-        </div>
-      `;
-    }
-
-    window.handleDetailsAddExternalLink = async function (itemId) {
-      const input = document.getElementById('details-doc-link-input');
-      const item = state.items.find(i => i.id === itemId);
-      if (!input || !item) return;
-      if (isTaskletLockedStatus(item)) {
-        showToast(`${item.status} Tasklets are locked and cannot be edited.`);
-        return;
-      }
-      item.documents = item.documents || [];
-      if (item.type === 'Tasklet' && item.documents.length >= TASKLET_MAX_DOCS) {
-        showToast(`Maximum ${TASKLET_MAX_DOCS} documents or links can be added to a Tasklet.`);
-        return;
-      }
-      try {
-        const linkedDoc = await validateExternalDocumentLink(input.value);
-        item.documents.push(linkedDoc);
-        item.lastChanged = formatNowTimestamp();
+        item.lastChanged = now;
         item.history = item.history || [];
-        item.history.push({ timestamp: item.lastChanged, action: `Linked ${linkedDoc.name}`, by: getCurrentUser().name });
-        input.value = '';
+        item.history.push({ timestamp: now, action: `Uploaded ${file.name}`, by: getCurrentUser().name });
         persistWorkspaceState();
-        renderAll();
         renderItemDetailsView();
-        showToast(`${linkedDoc.source} attached.`);
-      } catch (err) {
-        showToast(err.message || 'Unable to attach link.');
-      }
-    };
-
-    window.handleDetailsFileUpload = async function (event, itemId) {
-      const files = Array.from(event.target.files || []);
+        renderAll();
+        showToast(`Uploaded ${file.name}`);
+      };
+      reader.readAsDataURL(file);
       event.target.value = '';
-      if (!files.length) return;
-      const item = state.items.find(i => i.id === itemId);
-      if (!item) return;
-      if (isTaskletLockedStatus(item)) {
-        showToast(`${item.status} Tasklets are locked and cannot be edited.`);
-        return;
-      }
-
-      item.documents = item.documents || [];
-      let filesToProcess = files;
-      if (item.type === 'Tasklet') {
-        const remainingSlots = TASKLET_MAX_DOCS - item.documents.length;
-        if (remainingSlots <= 0) {
-          showToast(`Maximum ${TASKLET_MAX_DOCS} documents can be added to a Tasklet.`);
-          return;
-        }
-        if (files.length > remainingSlots) {
-          showToast(`Only ${remainingSlots} more file(s) allowed (max ${TASKLET_MAX_DOCS} per Tasklet).`);
-          filesToProcess = files.slice(0, remainingSlots);
-        }
-      }
-
-      let uploadedCount = 0;
-      for (const f of filesToProcess) {
-        try {
-          const savedDoc = await saveUploadedFileToFirestore(f);
-          item.documents.push(savedDoc);
-          uploadedCount += 1;
-        } catch (err) {
-          showToast(err.message || `Failed to upload ${f.name}`);
-        }
-      }
-
-      if (uploadedCount > 0) {
-        item.lastChanged = formatNowTimestamp();
-        item.history = item.history || [];
-        item.history.push({ timestamp: item.lastChanged, action: `Uploaded ${uploadedCount} file(s) to Firestore`, by: getCurrentUser().name });
-        persistWorkspaceState();
-        renderAll();
-        renderItemDetailsView();
-        showToast(`Stored ${uploadedCount} file(s) in Firestore.`);
-      }
     };
 
-    window.removeItemDocument = function (itemId, docIndex) {
+    window.handleDetailsAddLink = function (itemId) {
       const item = state.items.find(i => i.id === itemId);
-      if (isTaskletLockedStatus(item)) {
-        showToast(`${item.status} Tasklets are locked and cannot be edited.`);
+      const input = document.getElementById('details-doc-url-input');
+      const rawUrl = String(input?.value || '').trim();
+      if (!item || !rawUrl || isTaskletLockedStatus(item)) return;
+      if (!/^https?:\/\//i.test(rawUrl)) {
+        showToast('Please enter a valid http:// or https:// URL.');
         return;
       }
-      if (!item || !canUserDeleteItemDocuments(item)) {
-        showToast('Only Admins or the assigned Nodal Officer can remove documents.');
+      if (item.type === 'Tasklet' && (item.documents?.length || 0) >= TASKLET_MAX_DOCS) {
+        showToast(`Maximum ${TASKLET_MAX_DOCS} documents allowed per Tasklet.`);
         return;
       }
-      const removed = item.documents.splice(docIndex, 1)[0];
-      if (removed && removed.firestoreDocId) {
-        deleteFirestoreFileBlob(removed.firestoreDocId);
-      }
-      item.lastChanged = formatNowTimestamp();
+      const now = formatNowTimestamp();
+      if (!Array.isArray(item.documents)) item.documents = [];
+      item.documents.push({
+        name: rawUrl,
+        url: rawUrl,
+        addedAt: now.split(' ')[0],
+        source: 'Link'
+      });
+      item.lastChanged = now;
       item.history = item.history || [];
-      item.history.push({ timestamp: item.lastChanged, action: `Removed ${removed?.name || 'document'}`, by: getCurrentUser().name });
+      item.history.push({ timestamp: now, action: 'Attached external URL', by: getCurrentUser().name });
+      input.value = '';
       persistWorkspaceState();
-      renderAll();
       renderItemDetailsView();
+      renderAll();
+      showToast('URL attached.');
+    };
+
+    window.removeItemDocument = function (itemId, docIdx) {
+      const item = state.items.find(i => i.id === itemId);
+      if (!item || isTaskletLockedStatus(item) || !canUserDeleteItemDocuments(item)) return;
+      const removed = item.documents.splice(docIdx, 1)[0];
+      const now = formatNowTimestamp();
+      item.lastChanged = now;
+      item.history = item.history || [];
+      item.history.push({ timestamp: now, action: `Removed ${removed?.name || 'document'}`, by: getCurrentUser().name });
+      persistWorkspaceState();
+      renderItemDetailsView();
+      renderAll();
       showToast('Document removed.');
     };
 
-    function populateNodalSelectOptions(selectedId) {
-      const sel = document.getElementById('item-nodal');
-      if (!sel) return;
-      sel.innerHTML = state.nodals.map(n => `
-        <option value="${escapeHtml(n.id)}" ${n.id === selectedId ? 'selected' : ''}>${escapeHtml(n.name)} (${escapeHtml(n.permission)})</option>
-      `).join('');
-    }
-
-    function renderModalDocumentsList(canDeleteDocs) {
-      const listEl = document.getElementById('modal-documents-list');
-      if (!listEl) return;
-      if (!state.modalDocuments.length) {
-        listEl.innerHTML = `<div class="text-slate-400 italic">No documents or links attached yet.</div>`;
-        return;
-      }
-      listEl.innerHTML = state.modalDocuments.map((docObj, idx) => {
-        const icon = docObj.storageType === 'gdrive' ? '🔗' : (docObj.storageType === 'web' ? '🌐' : '📄');
-        const badge = docObj.storageType === 'firestore'
-          ? `Firestore${docObj.size ? ` (${formatBytesLabel(docObj.size)})` : ''}`
-          : (docObj.storageType === 'gdrive' ? 'Google Drive Link' : (docObj.storageType === 'web' ? 'Web URL' : (docObj.source || 'Upload')));
-        const openBtn = docObj.storageType === 'firestore' && docObj.firestoreDocId
-          ? `<button type="button" onclick="openStoredFirestoreDocument('${escapeHtml(docObj.firestoreDocId)}', '${escapeHtml(docObj.name)}')" class="text-indigo-600 hover:text-indigo-800 font-bold text-[11px]">Open</button>`
-          : docObj.url
-            ? `<a href="${escapeHtml(docObj.url)}" target="_blank" rel="noopener noreferrer" class="text-indigo-600 hover:text-indigo-800 font-bold text-[11px]">Open ↗</a>`
-            : '';
-
-        return `
-          <div class="flex items-center justify-between gap-2 bg-white px-3 py-1.5 rounded-xl border border-slate-200">
-            <div class="min-w-0 flex-1">
-              <div class="truncate font-medium text-slate-700">${icon} ${escapeHtml(docObj.name)}</div>
-              <div class="text-[10px] text-slate-400 truncate">${escapeHtml(badge)}${docObj.url ? ` • ${escapeHtml(docObj.url)}` : ''}</div>
-            </div>
-            <div class="flex items-center gap-2 flex-shrink-0">
-              ${openBtn}
-              ${canDeleteDocs ? `
-                <button type="button" onclick="removeModalDocument(${idx})" class="text-rose-600 hover:text-rose-800 font-bold text-[11px]">Remove</button>
-              ` : ''}
-            </div>
-          </div>
-        `;
-      }).join('');
-    }
-
-    window.handleModalAddExternalLink = async function () {
-      const input = document.getElementById('modal-doc-link-input');
-      if (!input) return;
-      try {
-        const linkedDoc = await validateExternalDocumentLink(input.value);
-        state.modalDocuments.push(linkedDoc);
-        input.value = '';
-        const existingId = document.getElementById('item-id')?.value;
-        const existingItem = existingId ? state.items.find(i => i.id === existingId) : null;
-        renderModalDocumentsList(existingItem ? canUserDeleteItemDocuments(existingItem) : true);
-        showToast(`${linkedDoc.source} added.`);
-      } catch (err) {
-        showToast(err.message || 'Unable to verify link.');
-      }
-    };
-
-    window.handleModalFileUpload = async function (event) {
-      const files = Array.from(event.target.files || []);
-      event.target.value = '';
-      if (!files.length) return;
-      const modalType = document.getElementById('item-type')?.value || '';
-      let filesToProcess = files;
-      if (modalType === 'Tasklet') {
-        const remainingSlots = TASKLET_MAX_DOCS - state.modalDocuments.length;
-        if (remainingSlots <= 0) {
-          showToast(`Maximum ${TASKLET_MAX_DOCS} documents can be added to a Tasklet.`);
-          return;
-        }
-        if (files.length > remainingSlots) {
-          showToast(`Only ${remainingSlots} more file(s) allowed (max ${TASKLET_MAX_DOCS} per Tasklet).`);
-          filesToProcess = files.slice(0, remainingSlots);
-        }
-      }
-
-      let addedCount = 0;
-      for (const f of filesToProcess) {
-        try {
-          const savedDoc = await saveUploadedFileToFirestore(f);
-          state.modalDocuments.push(savedDoc);
-          addedCount += 1;
-        } catch (err) {
-          showToast(err.message || `Failed to upload ${f.name}`);
-        }
-      }
-      const existingId = document.getElementById('item-id')?.value;
-      const existingItem = existingId ? state.items.find(i => i.id === existingId) : null;
-      renderModalDocumentsList(existingItem ? canUserDeleteItemDocuments(existingItem) : true);
-      if (addedCount > 0) {
-        showToast(`Uploaded ${addedCount} file(s) to Firestore.`);
-      }
-    };
-
-    window.removeModalDocument = function (idx) {
-      const existingId = document.getElementById('item-id')?.value;
-      const existingItem = existingId ? state.items.find(i => i.id === existingId) : null;
-      if (existingItem && !canUserDeleteItemDocuments(existingItem)) {
-        showToast('Only Admins or the assigned Nodal Officer can remove documents.');
-        return;
-      }
-      const removed = state.modalDocuments.splice(idx, 1)[0];
-      if (removed && removed.firestoreDocId && (!existingItem || !(existingItem.documents || []).some(d => d.firestoreDocId === removed.firestoreDocId))) {
-        deleteFirestoreFileBlob(removed.firestoreDocId);
-      }
-      renderModalDocumentsList(existingItem ? canUserDeleteItemDocuments(existingItem) : true);
+    window.convertTaskToProject = function (itemId) {
+      const item = state.items.find(i => i.id === itemId);
+      if (!item || item.type !== 'Task') return;
+      const now = formatNowTimestamp();
+      item.type = 'Project';
+      item.lastChanged = now;
+      item.history = item.history || [];
+      item.history.push({ timestamp: now, action: 'Converted Task to Project', by: getCurrentUser().name });
+      persistWorkspaceState();
+      renderItemDetailsView();
+      renderAll();
+      showToast('Task converted to Project.');
     };
 
     window.openItemModal = function (type) {
-      const user = getCurrentUser();
-      const caps = getRoleCapabilities();
       if (type === 'Tasklet') {
-        if (!caps.canAccessTasklets) {
-          showToast('You do not have access to the Tasklet feature.');
-          return;
-        }
         openTaskletModal();
         return;
       }
       document.getElementById('item-id').value = '';
-      document.getElementById('item-type').value = type;
-      document.getElementById('modal-heading').textContent = `Create New ${type}`;
+      document.getElementById('item-type').value = type || 'Project';
+      document.getElementById('modal-heading').textContent = `Add New ${type || 'Project'}`;
       document.getElementById('item-title').value = '';
       document.getElementById('item-description').value = '';
+      document.getElementById('item-status').value = 'Not Started';
       document.getElementById('item-due-date').value = '';
-
-      const defaultNodal = state.nodals.find(n => n.id === user.id) ? user.id : (state.nodals[0]?.id || '');
-      populateNodalSelectOptions(defaultNodal);
-      const nodalSel = document.getElementById('item-nodal');
-      if (nodalSel) {
-        nodalSel.disabled = !caps.canManageUsers;
-      }
-
-      const statusSel = document.getElementById('item-status');
-      if (statusSel) {
-        statusSel.value = caps.canDirectCreate ? 'Not Started' : 'Pending Approval';
-      }
-
       state.modalDocuments = [];
-      renderModalDocumentsList(true);
+      populateModalNodalSelect(getCurrentUser().id);
+      renderModalDocumentsList();
       document.getElementById('item-modal')?.classList.remove('hidden');
     };
 
     window.openEditItemModal = function (itemId) {
       const item = state.items.find(i => i.id === itemId);
-      if (!item) return;
-      if (isTaskletLockedStatus(item)) {
-        showToast(item.status === 'Completed'
-          ? 'Completed Tasklets cannot be edited. Open the Tasklet and click "Open Tasklet" first.'
-          : 'Abandoned Tasklets are locked and cannot be edited.');
-        return;
-      }
-      const caps = getRoleCapabilities();
+      if (!item || isTaskletLockedStatus(item)) return;
       document.getElementById('item-id').value = item.id;
       document.getElementById('item-type').value = item.type;
       document.getElementById('modal-heading').textContent = `Edit ${item.type}`;
-      document.getElementById('item-title').value = item.title;
-      document.getElementById('item-description').value = item.description;
+      document.getElementById('item-title').value = item.title || '';
+      document.getElementById('item-description').value = item.description || '';
+      document.getElementById('item-status').value = item.status === 'Ongoing' ? 'Active' : (item.status || 'Not Started');
       document.getElementById('item-due-date').value = item.dueDate || '';
-
-      populateNodalSelectOptions(item.nodalId);
-      const nodalSel = document.getElementById('item-nodal');
-      if (nodalSel) {
-        nodalSel.disabled = !caps.canManageUsers;
-      }
-
-      const statusSel = document.getElementById('item-status');
-      if (statusSel) statusSel.value = item.status;
-
-      state.modalDocuments = JSON.parse(JSON.stringify(item.documents || []));
-      renderModalDocumentsList(canUserDeleteItemDocuments(item));
+      state.modalDocuments = Array.isArray(item.documents) ? JSON.parse(JSON.stringify(item.documents)) : [];
+      populateModalNodalSelect(item.nodalId);
+      renderModalDocumentsList();
       document.getElementById('item-modal')?.classList.remove('hidden');
     };
 
@@ -3750,342 +3031,314 @@
       document.getElementById('item-modal')?.classList.add('hidden');
     };
 
-    function renderTaskletModalFilePreview() {
-      const previewEl = document.getElementById('tasklet-file-preview');
-      const uploadLabel = document.getElementById('tasklet-file-upload-label');
-      const urlRow = document.getElementById('tasklet-url-input-row');
-      if (!previewEl) return;
-
-      if (!state.taskletModalDocument) {
-        previewEl.className = 'text-xs text-slate-500 italic';
-        previewEl.innerHTML = 'No file or URL attached.';
-        if (uploadLabel) uploadLabel.classList.remove('opacity-50', 'pointer-events-none');
-        if (urlRow) urlRow.classList.remove('hidden');
-        return;
-      }
-
-      const docObj = state.taskletModalDocument;
-      const isLink = docObj.storageType === 'gdrive' || docObj.storageType === 'web';
-      const icon = docObj.storageType === 'gdrive' ? '🔗' : (docObj.storageType === 'web' ? '🌐' : '📄');
-      const metaText = isLink
-        ? `${escapeHtml(docObj.source || 'External Link')}${docObj.url ? ` • ${escapeHtml(docObj.url)}` : ''}`
-        : `Firestore${docObj.size ? ` (${formatBytesLabel(docObj.size)})` : ''} • Max 1 item attached`;
-
-      previewEl.className = 'flex items-center justify-between gap-2 bg-white px-3 py-2 rounded-xl border border-slate-200 text-xs not-italic';
-      previewEl.innerHTML = `
-        <div class="min-w-0 flex-1">
-          <div class="truncate font-semibold text-slate-800">${icon} ${escapeHtml(docObj.name)}</div>
-          <div class="text-[10px] text-slate-400 truncate">${metaText}</div>
-        </div>
-        <button type="button" onclick="removeTaskletModalFile()" class="text-rose-600 hover:text-rose-800 font-bold text-[11px] flex-shrink-0">Remove</button>
-      `;
-      if (uploadLabel) uploadLabel.classList.add('opacity-50', 'pointer-events-none');
-      if (urlRow) urlRow.classList.add('hidden');
+    function populateModalNodalSelect(selectedId) {
+      const sel = document.getElementById('item-nodal');
+      if (!sel) return;
+      sel.innerHTML = state.nodals.map(n => `<option value="${escapeHtml(n.id)}" ${n.id === selectedId ? 'selected' : ''}>${escapeHtml(n.name)} (${escapeHtml(n.email)})</option>`).join('');
     }
 
-    window.openTaskletModal = function () {
-      const caps = getRoleCapabilities();
-      if (!caps.canAccessTasklets) {
-        showToast('You do not have access to the Tasklet feature.');
+    function renderModalDocumentsList() {
+      const list = document.getElementById('modal-documents-list');
+      if (!list) return;
+      if (state.modalDocuments.length === 0) {
+        list.innerHTML = `<div class="text-slate-400 italic">No documents attached yet.</div>`;
         return;
       }
-      const nameInput = document.getElementById('tasklet-name');
-      const descInput = document.getElementById('tasklet-description');
-      const dateInput = document.getElementById('tasklet-date');
-      const fileInput = document.getElementById('tasklet-file-input');
-      const linkInput = document.getElementById('tasklet-doc-link-input');
+      list.innerHTML = state.modalDocuments.map((d, idx) => `
+        <div class="flex items-center justify-between bg-white px-3 py-1.5 rounded-xl border border-slate-200">
+          <span class="truncate font-semibold text-slate-700">${escapeHtml(d.name)}</span>
+          <button type="button" onclick="removeModalDocument(${idx})" class="text-rose-600 font-bold ml-2">✕</button>
+        </div>
+      `).join('');
+    }
 
-      if (nameInput) nameInput.value = '';
-      if (descInput) descInput.value = '';
-      if (dateInput) dateInput.value = formatNowTimestamp().split(' ')[0];
-      if (fileInput) fileInput.value = '';
-      if (linkInput) linkInput.value = '';
-      state.taskletModalDocument = null;
-      renderTaskletModalFilePreview();
-      document.getElementById('tasklet-modal')?.classList.remove('hidden');
-      setTimeout(() => nameInput?.focus(), 30);
+    window.removeModalDocument = function (idx) {
+      state.modalDocuments.splice(idx, 1);
+      renderModalDocumentsList();
     };
 
-    window.closeTaskletModal = function () {
-      if (state.taskletModalDocument?.firestoreDocId) {
-        deleteFirestoreFileBlob(state.taskletModalDocument.firestoreDocId);
-      }
-      state.taskletModalDocument = null;
-      document.getElementById('tasklet-modal')?.classList.add('hidden');
-    };
-
-    window.handleTaskletModalAddLink = async function () {
-      if (state.taskletModalDocument) {
-        showToast('Maximum 1 file or URL allowed at Tasklet creation time.');
-        return;
-      }
-      const input = document.getElementById('tasklet-doc-link-input');
-      if (!input) return;
-      try {
-        const linkedDoc = await validateExternalDocumentLink(input.value);
-        state.taskletModalDocument = linkedDoc;
-        input.value = '';
-        renderTaskletModalFilePreview();
-        showToast(`${linkedDoc.source} attached.`);
-      } catch (err) {
-        showToast(err.message || 'Unable to verify URL.');
-      }
-    };
-
-    window.handleTaskletFileUpload = async function (event) {
-      const files = Array.from(event.target.files || []);
+    window.handleModalFileUpload = function (event) {
+      const files = Array.from(event.target?.files || []);
+      files.forEach(file => {
+        if (file.size > FIRESTORE_MAX_FILE_BYTES) {
+          showToast(`${file.name} exceeds 700 KB limit.`);
+          return;
+        }
+        const reader = new FileReader();
+        reader.onload = () => {
+          state.modalDocuments.push({
+            name: file.name,
+            addedAt: formatNowTimestamp().split(' ')[0],
+            source: 'Upload',
+            mimeType: file.type || '',
+            dataUrl: typeof reader.result === 'string' ? reader.result : ''
+          });
+          renderModalDocumentsList();
+        };
+        reader.readAsDataURL(file);
+      });
       event.target.value = '';
-      if (!files.length) return;
-      if (state.taskletModalDocument) {
-        showToast('Maximum 1 file allowed at Tasklet creation time.');
-        return;
-      }
-      if (files.length > 1) {
-        showToast('Only the first file was selected (max 1 file allowed).');
-      }
-      try {
-        const savedDoc = await saveUploadedFileToFirestore(files[0]);
-        state.taskletModalDocument = savedDoc;
-        renderTaskletModalFilePreview();
-        showToast(`Attached "${savedDoc.name}".`);
-      } catch (err) {
-        showToast(err.message || 'Failed to upload file.');
-      }
     };
 
-    window.removeTaskletModalFile = function () {
-      if (state.taskletModalDocument?.firestoreDocId) {
-        deleteFirestoreFileBlob(state.taskletModalDocument.firestoreDocId);
-      }
-      state.taskletModalDocument = null;
-      renderTaskletModalFilePreview();
-    };
-
-    window.handleSaveTasklet = function (event) {
-      event.preventDefault();
-      const user = getCurrentUser();
-      const caps = getRoleCapabilities();
-      if (!caps.canAccessTasklets) {
-        showToast('You do not have access to the Tasklet feature.');
+    window.handleModalAddExternalLink = function () {
+      const input = document.getElementById('modal-doc-link-input');
+      const rawUrl = String(input?.value || '').trim();
+      if (!/^https?:\/\//i.test(rawUrl)) {
+        showToast('Enter a valid URL starting with http:// or https://');
         return;
       }
-
-      const title = (document.getElementById('tasklet-name')?.value || '').trim();
-      const description = (document.getElementById('tasklet-description')?.value || '').trim();
-      const dueDate = document.getElementById('tasklet-date')?.value || formatNowTimestamp().split(' ')[0];
-      if (!title) return;
-
-      const nowStr = formatNowTimestamp();
-      const defaultNodal = state.nodals.find(n => n.id === user.id) ? user.id : (state.nodals[0]?.id || 'usr-1');
-      const docs = state.taskletModalDocument ? [JSON.parse(JSON.stringify(state.taskletModalDocument))] : [];
-
-      const newTasklet = {
-        id: `tkl-${Date.now()}`,
-        type: 'Tasklet',
-        title,
-        description,
-        nodalId: defaultNodal,
-        status: 'Active',
-        dueDate,
-        lastChanged: nowStr,
-        documents: docs,
-        history: [
-          { timestamp: nowStr, action: 'Tasklet Created', by: user.name }
-        ]
-      };
-
-      state.items.unshift(newTasklet);
-      state.taskletModalDocument = null;
-      persistWorkspaceState();
-      document.getElementById('tasklet-modal')?.classList.add('hidden');
-      renderAll();
-      showToast('Tasklet created.');
+      state.modalDocuments.push({
+        name: rawUrl,
+        url: rawUrl,
+        addedAt: formatNowTimestamp().split(' ')[0],
+        source: 'Link'
+      });
+      input.value = '';
+      renderModalDocumentsList();
     };
 
     window.proposeTitleAndDescriptionWithAI = function () {
       const titleInput = document.getElementById('item-title');
       const descInput = document.getElementById('item-description');
-      const type = document.getElementById('item-type')?.value || 'Task';
-      const rawTitle = (titleInput?.value || '').trim();
-      const docNames = state.modalDocuments.map(d => d.name).join(', ');
-
-      if (!rawTitle && !docNames) {
-        showToast('Enter a working title or attach a file first for AI drafting.');
-        return;
+      const baseTitle = String(titleInput?.value || '').trim() || 'SPM-NIWAS Initiative';
+      if (titleInput && !titleInput.value.trim()) {
+        titleInput.value = baseTitle;
       }
-      const baseTitle = rawTitle || docNames.replace(/\.[^/.]+$/, '').replace(/[_-]+/g, ' ');
-      if (titleInput && !rawTitle) titleInput.value = baseTitle;
       if (descInput) {
-        descInput.value = `Structured ${type.toLowerCase()} execution plan for "${baseTitle}", covering stakeholder coordination, milestone tracking, documentation compliance${docNames ? ` (referencing ${docNames})` : ''}, and timely submission to SPM-NIWAS.`;
+        descInput.value = `Coordinate end-to-end execution, stakeholder reviews, and milestone reporting for ${baseTitle} across designated SPM-NIWAS nodal teams.`;
       }
       showToast('AI draft populated.');
     };
 
     window.handleSaveItem = function (event) {
       event.preventDefault();
-      const user = getCurrentUser();
-      const caps = getRoleCapabilities();
-      const existingId = document.getElementById('item-id').value;
-      const type = document.getElementById('item-type').value || 'Task';
+      const id = document.getElementById('item-id').value;
+      const type = document.getElementById('item-type').value || 'Project';
       const title = document.getElementById('item-title').value.trim();
       const description = document.getElementById('item-description').value.trim();
-      const requestedNodalId = document.getElementById('item-nodal').value;
+      const nodalId = document.getElementById('item-nodal').value;
       const status = document.getElementById('item-status').value;
       const dueDate = document.getElementById('item-due-date').value;
-      const nowStr = formatNowTimestamp();
+      const now = formatNowTimestamp();
+      const actor = getCurrentUser().name;
 
-      if (!title) return;
-
-      if (existingId) {
-        const item = state.items.find(i => i.id === existingId);
-        if (!item) return;
-        if (isTaskletLockedStatus(item)) {
-          showToast(`${item.status} Tasklets are locked and cannot be edited.`);
-          return;
+      if (id) {
+        const existing = state.items.find(i => i.id === id);
+        if (existing) {
+          existing.title = title;
+          existing.description = description;
+          existing.nodalId = nodalId;
+          existing.status = status;
+          existing.dueDate = dueDate;
+          existing.documents = state.modalDocuments;
+          existing.lastChanged = now;
+          existing.history = existing.history || [];
+          existing.history.push({ timestamp: now, action: `Updated ${existing.type}`, by: actor });
         }
-        if (item.type === 'Tasklet' && state.modalDocuments.length > TASKLET_MAX_DOCS) {
-          showToast(`Maximum ${TASKLET_MAX_DOCS} documents can be added to a Tasklet.`);
-          return;
-        }
-        item.title = title;
-        item.description = description;
-        if (caps.canManageUsers && requestedNodalId) {
-          item.nodalId = requestedNodalId;
-        }
-        item.status = status;
-        item.dueDate = dueDate;
-        item.lastChanged = nowStr;
-        item.documents = JSON.parse(JSON.stringify(state.modalDocuments));
-        item.history = item.history || [];
-        item.history.push({ timestamp: nowStr, action: `${item.type} Updated`, by: user.name });
-        showToast(`${item.type} updated.`);
       } else {
         const prefix = type === 'Project' ? 'prj' : (type === 'Tasklet' ? 'tkl' : 'tsk');
-        const defaultNodal = state.nodals.find(n => n.id === user.id) ? user.id : (state.nodals[0]?.id || 'usr-1');
-        const assignedNodalId = caps.canManageUsers && requestedNodalId ? requestedNodalId : defaultNodal;
-        const effectiveStatus = caps.canDirectCreate ? status : 'Pending Approval';
-
-        const newItem = {
+        state.items.unshift({
           id: `${prefix}-${Date.now()}`,
           type,
           title,
           description,
-          nodalId: assignedNodalId,
-          status: effectiveStatus,
+          nodalId,
+          status: type === 'Tasklet' ? 'Active' : status,
           dueDate,
-          lastChanged: nowStr,
-          documents: JSON.parse(JSON.stringify(state.modalDocuments)),
-          history: [
-            { timestamp: nowStr, action: `${type} Created (${effectiveStatus})`, by: user.name }
-          ]
-        };
-        state.items.unshift(newItem);
-        showToast(effectiveStatus === 'Pending Approval' ? `${type} submitted for Admin approval.` : `${type} created.`);
+          lastChanged: now,
+          documents: state.modalDocuments,
+          updates: [],
+          history: [{ timestamp: now, action: `${type} Created`, by: actor }]
+        });
       }
 
-      persistWorkspaceState();
       closeItemModal();
-      renderAll();
+      persistWorkspaceState();
       if (state.activeTab === 'details') renderItemDetailsView();
+      renderAll();
+      showToast(`${type} saved.`);
+    };
+
+    window.deleteItemRecord = function (itemId) {
+      if (!getRoleCapabilities().canDelete) return;
+      state.items = state.items.filter(i => i.id !== itemId);
+      persistWorkspaceState();
+      renderAll();
+      showToast('Record deleted.');
+    };
+
+    window.openTaskletModal = function () {
+      if (!getRoleCapabilities().canAccessTasklets) return;
+      document.getElementById('tasklet-name').value = '';
+      document.getElementById('tasklet-description').value = '';
+      document.getElementById('tasklet-date').value = formatNowTimestamp().split(' ')[0];
+      document.getElementById('tasklet-doc-link-input').value = '';
+      state.taskletModalDocument = null;
+      updateTaskletModalAttachmentUI();
+      document.getElementById('tasklet-modal')?.classList.remove('hidden');
+    };
+
+    window.closeTaskletModal = function () {
+      document.getElementById('tasklet-modal')?.classList.add('hidden');
+    };
+
+    function updateTaskletModalAttachmentUI() {
+      const preview = document.getElementById('tasklet-file-preview');
+      if (!preview) return;
+      if (!state.taskletModalDocument) {
+        preview.innerHTML = `<span class="text-slate-400 italic">No file or URL attached.</span>`;
+        return;
+      }
+      preview.innerHTML = `
+        <div class="flex items-center justify-between bg-white px-3 py-1.5 rounded-xl border border-slate-200 text-slate-700 font-semibold">
+          <span class="truncate">${escapeHtml(state.taskletModalDocument.name)}</span>
+          <button type="button" onclick="clearTaskletModalAttachment()" class="text-rose-600 font-bold ml-2">✕</button>
+        </div>
+      `;
+    }
+
+    window.clearTaskletModalAttachment = function () {
+      state.taskletModalDocument = null;
+      updateTaskletModalAttachmentUI();
+    };
+
+    window.handleTaskletFileUpload = function (event) {
+      const file = event.target?.files?.[0];
+      if (!file) return;
+      if (file.size > FIRESTORE_MAX_FILE_BYTES) {
+        showToast('File exceeds 700 KB limit.');
+        event.target.value = '';
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = () => {
+        state.taskletModalDocument = {
+          name: file.name,
+          addedAt: formatNowTimestamp().split(' ')[0],
+          source: 'Upload',
+          mimeType: file.type || '',
+          dataUrl: typeof reader.result === 'string' ? reader.result : ''
+        };
+        updateTaskletModalAttachmentUI();
+      };
+      reader.readAsDataURL(file);
+      event.target.value = '';
+    };
+
+    window.handleTaskletModalAddLink = function () {
+      const input = document.getElementById('tasklet-doc-link-input');
+      const rawUrl = String(input?.value || '').trim();
+      if (!/^https?:\/\//i.test(rawUrl)) {
+        showToast('Enter a valid URL starting with http:// or https://');
+        return;
+      }
+      state.taskletModalDocument = {
+        name: rawUrl,
+        url: rawUrl,
+        addedAt: formatNowTimestamp().split(' ')[0],
+        source: 'Link'
+      };
+      input.value = '';
+      updateTaskletModalAttachmentUI();
+    };
+
+    window.handleSaveTasklet = function (event) {
+      event.preventDefault();
+      const title = document.getElementById('tasklet-name').value.trim();
+      const description = document.getElementById('tasklet-description').value.trim();
+      const dateVal = document.getElementById('tasklet-date').value || formatNowTimestamp().split(' ')[0];
+      const now = formatNowTimestamp();
+      const user = getCurrentUser();
+
+      state.items.unshift({
+        id: `tkl-${Date.now()}`,
+        type: 'Tasklet',
+        title,
+        description,
+        nodalId: user.id || 'usr-2',
+        status: 'Active',
+        dueDate: dateVal,
+        lastChanged: now,
+        documents: state.taskletModalDocument ? [state.taskletModalDocument] : [],
+        updates: [],
+        history: [{ timestamp: now, action: 'Tasklet Created', by: user.name }]
+      });
+
+      closeTaskletModal();
+      persistWorkspaceState();
+      renderAll();
+      showToast('Tasklet created.');
     };
 
     function renderNodalsTable() {
-      const allBody = document.getElementById('nodals-table-body');
-      const usageBody = document.getElementById('users-usage-table-body');
+      const tbody = document.getElementById('nodals-table-body');
+      const usageTbody = document.getElementById('users-usage-table-body');
       const searchVal = (document.getElementById('user-search-input')?.value || '').trim().toLowerCase();
-      const caps = getRoleCapabilities();
+      const filteredUsers = state.nodals.filter(u => !searchVal || `${u.name} ${u.email} ${u.permission}`.toLowerCase().includes(searchVal));
 
-      const filteredUsers = state.nodals.filter(u => {
-        if (!searchVal) return true;
-        return `${u.name} ${u.email} ${u.permission}`.toLowerCase().includes(searchVal);
-      });
-
-      if (allBody) {
+      if (tbody) {
         const totalPages = Math.max(1, Math.ceil(filteredUsers.length / state.pageSize));
-        const currentPage = Math.min(state.pages.nodals || 1, totalPages);
-        state.pages.nodals = currentPage;
-        const pageUsers = filteredUsers.slice((currentPage - 1) * state.pageSize, currentPage * state.pageSize);
+        const page = Math.min(state.pages.nodals || 1, totalPages);
+        state.pages.nodals = page;
+        const pageUsers = filteredUsers.slice((page - 1) * state.pageSize, page * state.pageSize);
 
-        const activeRows = pageUsers.map(u => {
+        tbody.innerHTML = pageUsers.map(u => {
           const isSuper = Boolean(u.isSuperAdmin || u.permission === 'Super Admin');
           const assignedCount = state.items.filter(i => i.nodalId === u.id && i.status !== 'Archived').length;
-          const roleBadge = isSuper
-            ? `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-purple-100 text-purple-800">Super Admin</span>`
-            : u.permission === 'Admin'
-              ? `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-indigo-100 text-indigo-800">Admin</span>`
-              : `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-slate-100 text-slate-700">User</span>`;
-
           return `
-            <tr class="hover:bg-slate-50/90 transition-colors">
+            <tr class="hover:bg-slate-50/80">
               <td class="px-4 py-3.5 font-bold text-slate-900">${escapeHtml(u.name)}</td>
               <td class="px-4 py-3.5 text-xs text-slate-600">${escapeHtml(u.email)}</td>
-              <td class="px-4 py-3.5">${roleBadge}</td>
-              <td class="px-4 py-3.5 text-xs font-semibold text-slate-700">${assignedCount} active item(s)</td>
-              <td class="px-4 py-3.5 text-right whitespace-nowrap space-x-1.5">
-                <button type="button" onclick="openWelcomeEmailModal('${u.id}')" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold">Welcome Email</button>
-                ${caps.canManageUsers ? `
-                  <button type="button" onclick="openEditUserModal('${u.id}')" class="px-2.5 py-1 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs font-semibold">Edit</button>
-                  ${!isSuper ? `<button type="button" onclick="initiateDeleteUser('${u.id}')" class="px-2.5 py-1 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-semibold">Remove</button>` : ''}
-                ` : ''}
+              <td class="px-4 py-3.5">
+                <span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold ${isSuper ? 'bg-purple-100 text-purple-800' : (u.permission === 'Admin' ? 'bg-indigo-100 text-indigo-800' : 'bg-slate-100 text-slate-700')}">
+                  ${escapeHtml(isSuper ? 'Super Admin' : u.permission)}
+                </span>
+              </td>
+              <td class="px-4 py-3.5 text-xs font-semibold text-slate-600">${assignedCount} active items</td>
+              <td class="px-4 py-3.5 text-right space-x-1.5">
+                <button type="button" onclick="openWelcomeEmailModal('${u.id}', 'tpl-welcome')" class="px-2.5 py-1 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs font-semibold">Welcome Email</button>
+                ${isSuper ? '' : `
+                  <button type="button" onclick="openEditUserModal('${u.id}')" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold">Edit</button>
+                  <button type="button" onclick="initiateDeleteUser('${u.id}')" class="px-2.5 py-1 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-semibold">Remove</button>
+                `}
               </td>
             </tr>
           `;
         }).join('');
-
-        const deletedRows = state.deletedNodals.length > 0 ? `
-          <tr class="bg-slate-100/80">
-            <td colspan="5" class="px-4 py-2 text-[11px] font-extrabold uppercase tracking-wider text-slate-500">Removed Users (${state.deletedNodals.length})</td>
-          </tr>
-          ${state.deletedNodals.map(du => `
-            <tr class="bg-slate-50/60 text-slate-400">
-              <td class="px-4 py-3 font-semibold">${escapeHtml(du.name)}</td>
-              <td class="px-4 py-3 text-xs">${escapeHtml(du.email)}</td>
-              <td class="px-4 py-3 text-xs">${escapeHtml(du.permission)}</td>
-              <td class="px-4 py-3 text-xs">Removed</td>
-              <td class="px-4 py-3 text-right">
-                ${caps.canManageUsers ? `<button type="button" onclick="restoreDeletedUser('${du.id}')" class="px-2.5 py-1 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-xs font-bold">Restore</button>` : ''}
-              </td>
-            </tr>
-          `).join('')}
-        ` : '';
-
-        allBody.innerHTML = activeRows + deletedRows;
-        renderPaginationBar('pagination-nodals', 'nodals', filteredUsers.length, currentPage);
+        renderPaginationBar('pagination-nodals', 'nodals', filteredUsers.length, page);
       }
 
-      if (usageBody) {
+      if (usageTbody) {
         const totalPages = Math.max(1, Math.ceil(filteredUsers.length / state.pageSize));
-        const currentPage = Math.min(state.pages.usage || 1, totalPages);
-        state.pages.usage = currentPage;
-        const pageUsers = filteredUsers.slice((currentPage - 1) * state.pageSize, currentPage * state.pageSize);
+        const page = Math.min(state.pages.usage || 1, totalPages);
+        state.pages.usage = page;
+        const pageUsers = filteredUsers.slice((page - 1) * state.pageSize, page * state.pageSize);
 
-        usageBody.innerHTML = pageUsers.map(u => {
-          const isSuper = Boolean(u.isSuperAdmin || u.permission === 'Super Admin');
-          const roleText = isSuper ? 'Super Admin' : u.permission;
-          const loginDisplay = formatLastLoginUsageDisplay(u.lastLogin);
-          const hrs = Number(u.usageHours30d || 0).toFixed(1);
+        usageTbody.innerHTML = pageUsers.map(u => {
+          const loginInfo = formatLastLoginUsageDisplay(u.lastLogin);
           return `
-            <tr class="hover:bg-slate-50/90 transition-colors">
+            <tr class="hover:bg-slate-50/80">
               <td class="px-4 py-3.5">
                 <div class="font-bold text-slate-900">${escapeHtml(u.name)}</div>
                 <div class="text-[11px] text-slate-400">${escapeHtml(u.email)}</div>
               </td>
-              <td class="px-4 py-3.5 text-xs font-semibold text-slate-700">${escapeHtml(roleText)}</td>
+              <td class="px-4 py-3.5 text-xs font-semibold text-slate-700">${escapeHtml(u.isSuperAdmin ? 'Super Admin' : u.permission)}</td>
               <td class="px-4 py-3.5">
-                <div class="text-xs font-bold text-slate-900">${loginDisplay.firstLine}</div>
-                <div class="text-[11px] text-slate-400">${loginDisplay.secondLine}</div>
+                <div class="text-xs font-bold text-slate-800">${escapeHtml(loginInfo.firstLine)}</div>
+                <div class="text-[11px] text-slate-400">${escapeHtml(loginInfo.secondLine)}</div>
               </td>
-              <td class="px-4 py-3.5 text-xs font-extrabold text-indigo-700">${hrs} hrs</td>
+              <td class="px-4 py-3.5 text-xs font-extrabold text-indigo-700">${Number(u.usageHours30d || 0).toFixed(1)} hrs</td>
             </tr>
           `;
         }).join('');
-        renderPaginationBar('pagination-usage', 'usage', filteredUsers.length, currentPage);
+        renderPaginationBar('pagination-usage', 'usage', filteredUsers.length, page);
       }
     }
 
     window.openAddUserModal = function () {
+      document.getElementById('new-user-name').value = '';
+      document.getElementById('new-user-email').value = '';
       document.getElementById('add-user-error')?.classList.add('hidden');
-      document.getElementById('add-user-form')?.reset();
       document.getElementById('add-user-modal')?.classList.remove('hidden');
     };
 
@@ -4095,14 +3348,11 @@
 
     window.handleAddNodalUser = function (event) {
       event.preventDefault();
-      if (!getRoleCapabilities().canManageUsers) return;
       const name = document.getElementById('new-user-name').value.trim();
       const email = document.getElementById('new-user-email').value.trim().toLowerCase();
-      const roleRadio = document.querySelector('input[name="new-user-role-radio"]:checked');
-      const permission = roleRadio ? roleRadio.value : 'User';
+      const role = document.querySelector('input[name="new-user-role-radio"]:checked')?.value || 'User';
       const errEl = document.getElementById('add-user-error');
 
-      if (!name || !email) return;
       if (state.nodals.some(u => u.email.toLowerCase() === email)) {
         if (errEl) {
           errEl.textContent = 'A user with this Google email already exists.';
@@ -4115,31 +3365,26 @@
         id: `usr-${Date.now()}`,
         name,
         email,
-        permission,
+        permission: role,
+        canAccessTasklets: false,
         lastLogin: '',
         usageHours30d: 0
       };
       state.nodals.push(newUser);
-      persistWorkspaceState();
       closeAddUserModal();
+      persistWorkspaceState();
       renderAll();
-      openWelcomeEmailModal(newUser.id);
+      openWelcomeEmailModal(newUser.id, 'tpl-welcome');
     };
 
     window.openEditUserModal = function (userId) {
       const user = state.nodals.find(u => u.id === userId);
       if (!user) return;
-      document.getElementById('edit-user-error')?.classList.add('hidden');
       document.getElementById('edit-user-id').value = user.id;
       document.getElementById('edit-user-name').value = user.name;
       document.getElementById('edit-user-email').value = user.email;
-
-      const isSuper = Boolean(user.isSuperAdmin || user.permission === 'Super Admin');
-      const roleWrap = document.getElementById('edit-user-role-wrapper');
-      const roleSel = document.getElementById('edit-user-permission');
-      if (roleWrap) roleWrap.classList.toggle('hidden', isSuper);
-      if (roleSel && !isSuper) roleSel.value = user.permission;
-
+      document.getElementById('edit-user-permission').value = user.permission === 'Admin' ? 'Admin' : 'User';
+      document.getElementById('edit-user-error')?.classList.add('hidden');
       document.getElementById('edit-user-modal')?.classList.remove('hidden');
     };
 
@@ -4150,36 +3395,23 @@
     window.handleSaveEditedUser = function (event) {
       event.preventDefault();
       const userId = document.getElementById('edit-user-id').value;
+      const name = document.getElementById('edit-user-name').value.trim();
+      const email = document.getElementById('edit-user-email').value.trim().toLowerCase();
+      const permission = document.getElementById('edit-user-permission').value;
       const user = state.nodals.find(u => u.id === userId);
       if (!user) return;
 
-      const nextName = document.getElementById('edit-user-name').value.trim();
-      const nextEmail = document.getElementById('edit-user-email').value.trim().toLowerCase();
-      const isSuper = Boolean(user.isSuperAdmin || user.permission === 'Super Admin');
-      const nextPerm = isSuper ? 'Super Admin' : document.getElementById('edit-user-permission').value;
-      const errEl = document.getElementById('edit-user-error');
-
-      if (state.nodals.some(u => u.id !== userId && u.email.toLowerCase() === nextEmail)) {
-        if (errEl) {
-          errEl.textContent = 'Another user already uses this Google email.';
-          errEl.classList.remove('hidden');
-        }
-        return;
+      state.pendingUserEdit = { userId, name, email, permission };
+      const summary = document.getElementById('confirm-user-edit-summary');
+      const changes = document.getElementById('confirm-user-edit-changes');
+      if (summary) summary.textContent = `Review updated access details for ${user.name}.`;
+      if (changes) {
+        changes.innerHTML = `
+          <div><strong>Name:</strong> ${escapeHtml(name)}</div>
+          <div><strong>Email:</strong> ${escapeHtml(email)}</div>
+          <div><strong>Role:</strong> ${escapeHtml(permission)}</div>
+        `;
       }
-
-      const changes = [];
-      if (user.name !== nextName) changes.push(`Name: "${user.name}" → "${nextName}"`);
-      if (user.email.toLowerCase() !== nextEmail) changes.push(`Email: "${user.email}" → "${nextEmail}"`);
-      if (user.permission !== nextPerm) changes.push(`Role: "${user.permission}" → "${nextPerm}"`);
-
-      if (!changes.length) {
-        closeEditUserModal();
-        return;
-      }
-
-      state.pendingUserEdit = { userId, nextName, nextEmail, nextPerm };
-      document.getElementById('confirm-user-edit-summary').textContent = `You are updating workspace credentials for ${user.name}:`;
-      document.getElementById('confirm-user-edit-changes').innerHTML = changes.map(c => `<div>• ${escapeHtml(c)}</div>`).join('');
       closeEditUserModal();
       document.getElementById('confirm-user-edit-modal')?.classList.remove('hidden');
     };
@@ -4190,64 +3422,43 @@
     };
 
     window.commitSavedUserEdit = function () {
-      if (!state.pendingUserEdit) return;
-      const { userId, nextName, nextEmail, nextPerm } = state.pendingUserEdit;
-      const user = state.nodals.find(u => u.id === userId);
+      const pending = state.pendingUserEdit;
+      if (!pending) return;
+      const user = state.nodals.find(u => u.id === pending.userId);
       if (user) {
-        user.name = nextName;
-        user.email = nextEmail;
-        user.permission = nextPerm;
-        persistWorkspaceState();
-        renderAll();
-        showToast(`Updated details for ${nextName}.`);
+        user.name = pending.name;
+        user.email = pending.email;
+        user.permission = pending.permission;
       }
       closeConfirmUserEditModal();
+      persistWorkspaceState();
+      renderAll();
+      showToast('User details updated.');
     };
 
     window.initiateDeleteUser = function (userId) {
       const user = state.nodals.find(u => u.id === userId);
-      if (!user || user.isSuperAdmin || user.permission === 'Super Admin') return;
-
-      const assignedItems = state.items.filter(i => i.nodalId === userId);
-      if (assignedItems.length > 0) {
+      if (!user) return;
+      const assigned = state.items.filter(i => i.nodalId === userId);
+      if (assigned.length > 0) {
         state.reassignTargetUserId = userId;
         const otherUsers = state.nodals.filter(u => u.id !== userId);
-        const optionsHtml = otherUsers.map(u => `<option value="${escapeHtml(u.id)}">${escapeHtml(u.name)} (${escapeHtml(u.email)})</option>`).join('');
-
-        document.getElementById('reassign-modal-subtitle').textContent = `${user.name} is assigned to ${assignedItems.length} item(s). Reassign them before removal:`;
-        document.getElementById('bulk-reassign-select').innerHTML = optionsHtml;
-        document.getElementById('reassign-items-list').innerHTML = assignedItems.map(item => `
-          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs">
-            <div class="font-bold text-slate-800 truncate">${escapeHtml(item.title)} <span class="text-slate-400 font-normal">(${escapeHtml(item.type)})</span></div>
-            <select data-reassign-item-id="${escapeHtml(item.id)}" class="px-2.5 py-1.5 rounded-lg bg-white border border-slate-300 font-medium text-slate-800">
-              ${optionsHtml}
+        document.getElementById('reassign-modal-subtitle').textContent = `${user.name} has ${assigned.length} assigned items. Reassign them before removal.`;
+        document.getElementById('bulk-reassign-select').innerHTML = otherUsers.map(u => `<option value="${u.id}">${escapeHtml(u.name)}</option>`).join('');
+        document.getElementById('reassign-items-list').innerHTML = assigned.map(item => `
+          <div class="flex items-center justify-between gap-2 bg-slate-50 p-2.5 rounded-xl border border-slate-200 text-xs">
+            <span class="font-bold text-slate-800 truncate">${escapeHtml(item.title)}</span>
+            <select data-reassign-item="${item.id}" class="px-2.5 py-1 rounded-lg bg-white border border-slate-200">
+              ${otherUsers.map(u => `<option value="${u.id}">${escapeHtml(u.name)}</option>`).join('')}
             </select>
           </div>
         `).join('');
         document.getElementById('reassign-modal')?.classList.remove('hidden');
       } else {
         state.pendingDeleteUserId = userId;
-        document.getElementById('confirm-delete-user-message').textContent = `Are you sure you want to remove ${user.name} (${user.email}) from the workspace?`;
+        document.getElementById('confirm-delete-user-message').textContent = `Remove ${user.name} (${user.email}) from the workspace?`;
         document.getElementById('confirm-delete-user-modal')?.classList.remove('hidden');
       }
-    };
-
-    window.closeConfirmDeleteUserModal = function () {
-      state.pendingDeleteUserId = null;
-      document.getElementById('confirm-delete-user-modal')?.classList.add('hidden');
-    };
-
-    window.confirmDirectDeleteUser = function () {
-      if (!state.pendingDeleteUserId) return;
-      const idx = state.nodals.findIndex(u => u.id === state.pendingDeleteUserId);
-      if (idx !== -1) {
-        const removed = state.nodals.splice(idx, 1)[0];
-        state.deletedNodals.push(removed);
-        persistWorkspaceState();
-        renderAll();
-        showToast(`Removed ${removed.name}.`);
-      }
-      closeConfirmDeleteUserModal();
     };
 
     window.closeReassignModal = function () {
@@ -4256,97 +3467,60 @@
     };
 
     window.applyBulkReassign = function () {
-      const bulkVal = document.getElementById('bulk-reassign-select')?.value;
-      if (!bulkVal) return;
-      document.querySelectorAll('[data-reassign-item-id]').forEach(sel => {
-        sel.value = bulkVal;
+      const targetId = document.getElementById('bulk-reassign-select')?.value;
+      document.querySelectorAll('select[data-reassign-item]').forEach(sel => {
+        sel.value = targetId;
       });
     };
 
     window.confirmReassignAndDeleteUser = function () {
-      if (!state.reassignTargetUserId) return;
-      document.querySelectorAll('[data-reassign-item-id]').forEach(sel => {
-        const itemId = sel.getAttribute('data-reassign-item-id');
-        const nextNodalId = sel.value;
-        const item = state.items.find(i => i.id === itemId);
-        if (item && nextNodalId) {
-          item.nodalId = nextNodalId;
-        }
+      const userId = state.reassignTargetUserId;
+      if (!userId) return;
+      document.querySelectorAll('select[data-reassign-item]').forEach(sel => {
+        const item = state.items.find(i => i.id === sel.getAttribute('data-reassign-item'));
+        if (item) item.nodalId = sel.value;
       });
-
-      const idx = state.nodals.findIndex(u => u.id === state.reassignTargetUserId);
-      if (idx !== -1) {
-        const removed = state.nodals.splice(idx, 1)[0];
-        state.deletedNodals.push(removed);
-        persistWorkspaceState();
-        renderAll();
-        showToast(`Reassigned items and removed ${removed.name}.`);
-      }
+      state.nodals = state.nodals.filter(u => u.id !== userId);
       closeReassignModal();
-    };
-
-    window.restoreDeletedUser = function (userId) {
-      if (!getRoleCapabilities().canManageUsers) return;
-      const idx = state.deletedNodals.findIndex(u => u.id === userId);
-      if (idx === -1) return;
-      const restored = state.deletedNodals.splice(idx, 1)[0];
-      state.nodals.push(restored);
       persistWorkspaceState();
       renderAll();
-      showToast(`Restored ${restored.name}.`);
+      showToast('Items reassigned and user removed.');
     };
 
-    function getPortalLoginUrl() {
-      try {
-        if (window.location?.origin && window.location.origin !== 'null' && !window.location.protocol.startsWith('blob')) {
-          return `${window.location.origin}${window.location.pathname || ''}`;
-        }
-      } catch (_) {}
-      return 'https://niwas-pm.web.app';
-    }
+    window.closeConfirmDeleteUserModal = function () {
+      state.pendingDeleteUserId = null;
+      document.getElementById('confirm-delete-user-modal')?.classList.add('hidden');
+    };
 
-    function applyTemplatePlaceholders(templateStr, vars) {
-      return String(templateStr || '')
-        .replace(/\{\{\s*name\s*\}\}/gi, vars.name || '')
-        .replace(/\{\{\s*email\s*\}\}/gi, vars.email || '')
-        .replace(/\{\{\s*role\s*\}\}/gi, vars.role || '')
-        .replace(/\{\{\s*loginUrl\s*\}\}/gi, vars.loginUrl || getPortalLoginUrl())
-        .replace(/\{\{\s*title\s*\}\}/gi, vars.title || '');
-    }
+    window.confirmDirectDeleteUser = function () {
+      const userId = state.pendingDeleteUserId;
+      if (!userId) return;
+      state.nodals = state.nodals.filter(u => u.id !== userId);
+      closeConfirmDeleteUserModal();
+      persistWorkspaceState();
+      renderAll();
+      showToast('User removed.');
+    };
 
     window.openWelcomeEmailModal = function (userId, templateId = 'tpl-welcome') {
       const user = state.nodals.find(u => u.id === userId);
       if (!user) return;
       state.welcomeTargetUser = user;
       state.activeEmailTemplateId = templateId;
-      const targetTpl = state.emailTemplates.find(t => t.id === templateId)
-        || INITIAL_EMAIL_TEMPLATES.find(t => t.id === templateId)
-        || state.emailTemplates[0];
-      const renderedBody = applyTemplatePlaceholders(targetTpl?.body || '', {
-        name: user.name,
-        email: user.email,
-        role: user.permission,
-        loginUrl: getPortalLoginUrl()
-      });
+      const tpl = state.emailTemplates.find(t => t.id === templateId) || state.emailTemplates[0];
+      const body = (tpl?.body || '')
+        .replace(/\{\{name\}\}/g, user.name)
+        .replace(/\{\{email\}\}/g, user.email)
+        .replace(/\{\{role\}\}/g, user.permission)
+        .replace(/\{\{loginUrl\}\}/g, window.location.origin);
 
-      const titleEl = document.getElementById('welcome-modal-title');
-      const bannerEl = document.getElementById('welcome-email-status-banner');
-      const isTaskletInvite = templateId === 'tpl-tasklet-access';
-      if (titleEl) titleEl.textContent = isTaskletInvite ? 'Send Tasklet Access Notification' : 'Send Welcome Email';
-      if (bannerEl) {
-        bannerEl.textContent = isTaskletInvite
-          ? 'Click below to open Gmail with the Tasklet access notification pre-filled for this user.'
-          : 'Click below to open Gmail with the welcome message pre-filled for your new user.';
-      }
-
-      document.getElementById('welcome-modal-recipient').textContent = `Recipient: ${user.name} <${user.email}>`;
-      document.getElementById('welcome-email-preview').value = renderedBody;
+      document.getElementById('welcome-modal-title').textContent = tpl?.name || 'Send Email';
+      document.getElementById('welcome-modal-recipient').textContent = `To: ${user.name} <${user.email}>`;
+      document.getElementById('welcome-email-preview').value = body;
       document.getElementById('welcome-email-modal')?.classList.remove('hidden');
     };
 
     window.closeWelcomeEmailModal = function () {
-      state.welcomeTargetUser = null;
-      state.activeEmailTemplateId = 'tpl-welcome';
       document.getElementById('welcome-email-modal')?.classList.add('hidden');
     };
 
@@ -4354,65 +3528,48 @@
       const ta = document.getElementById('welcome-email-preview');
       if (!ta) return;
       ta.select();
-      try {
-        document.execCommand('copy');
-        showToast('Email text copied to clipboard.');
-      } catch (_) {
-        showToast('Unable to copy text.');
-      }
+      document.execCommand('copy');
+      showToast('Email text copied to clipboard.');
     };
 
     window.launchOneClickGmailWelcome = function () {
-      if (!state.welcomeTargetUser) return;
-      const tplId = state.activeEmailTemplateId || 'tpl-welcome';
-      const targetTpl = state.emailTemplates.find(t => t.id === tplId)
-        || INITIAL_EMAIL_TEMPLATES.find(t => t.id === tplId)
-        || state.emailTemplates[0];
-      const subject = applyTemplatePlaceholders(targetTpl?.subject || 'Welcome to SPM-NIWAS', {
-        name: state.welcomeTargetUser.name,
-        email: state.welcomeTargetUser.email,
-        role: state.welcomeTargetUser.permission,
-        loginUrl: getPortalLoginUrl()
-      });
-      const body = document.getElementById('welcome-email-preview')?.value || '';
-      const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(state.welcomeTargetUser.email)}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-      window.open(gmailUrl, '_blank', 'noopener,noreferrer');
+      const user = state.welcomeTargetUser;
+      if (!user) return;
+      const tpl = state.emailTemplates.find(t => t.id === state.activeEmailTemplateId) || state.emailTemplates[0];
+      const subject = encodeURIComponent(tpl?.subject || 'Welcome to SPM-NIWAS');
+      const body = encodeURIComponent(document.getElementById('welcome-email-preview')?.value || '');
+      window.open(`https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(user.email)}&su=${subject}&body=${body}`, '_blank');
       closeWelcomeEmailModal();
     };
 
     function renderEmailInboxView() {
       const inboxesEl = document.getElementById('connected-inboxes-list');
       const proposalsEl = document.getElementById('email-proposals-list');
-
       if (inboxesEl) {
-        inboxesEl.innerHTML = state.connectedInboxes.map((box, idx) => `
-          <div class="flex items-center justify-between gap-3 p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80 text-xs">
-            <div class="min-w-0">
-              <div class="font-bold text-slate-900 truncate">${escapeHtml(box.email)}</div>
-              <div class="text-[11px] text-slate-500">${escapeHtml(box.provider)} • Last scanned: ${escapeHtml(box.lastScan)}</div>
+        inboxesEl.innerHTML = state.connectedInboxes.map(ib => `
+          <div class="flex items-center justify-between p-3 rounded-xl bg-slate-50 border border-slate-200/80 text-xs">
+            <div>
+              <div class="font-bold text-slate-900">${escapeHtml(ib.email)}</div>
+              <div class="text-slate-500">${escapeHtml(ib.provider)} • Last scan: ${escapeHtml(ib.lastScan)}</div>
             </div>
-            <div class="flex items-center gap-2 flex-shrink-0">
-              <span class="px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-bold text-[11px]">${escapeHtml(box.status)}</span>
-              <button type="button" onclick="disconnectInbox(${idx})" class="text-slate-400 hover:text-rose-600 font-bold">✕</button>
-            </div>
+            <span class="px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 font-bold">${escapeHtml(ib.status)}</span>
           </div>
         `).join('');
       }
-
       if (proposalsEl) {
-        if (!state.emailProposals.length) {
-          proposalsEl.innerHTML = `<div class="text-xs text-slate-400 py-4 text-center">No pending email proposals in queue.</div>`;
+        if (state.emailProposals.length === 0) {
+          proposalsEl.innerHTML = `<div class="text-xs text-slate-400 text-center py-6">No pending AI-extracted proposals.</div>`;
         } else {
-          proposalsEl.innerHTML = state.emailProposals.map(prop => `
-            <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
-              <div class="space-y-1">
-                <div class="font-bold text-slate-900">${escapeHtml(prop.subject)}</div>
-                <div class="text-slate-500">From: ${escapeHtml(prop.sender)}</div>
-                <div class="text-slate-700">${escapeHtml(prop.proposedSummary)}</div>
+          proposalsEl.innerHTML = state.emailProposals.map(p => `
+            <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 flex flex-wrap items-center justify-between gap-3 text-xs">
+              <div class="space-y-1 min-w-0 flex-1">
+                <div class="font-extrabold text-slate-900">${escapeHtml(p.subject)}</div>
+                <div class="text-slate-600">${escapeHtml(p.proposedSummary)}</div>
+                <div class="text-[11px] text-slate-400">From: ${escapeHtml(p.sender)}</div>
               </div>
-              <div class="flex items-center gap-2 flex-shrink-0">
-                <button type="button" onclick="dismissEmailProposal('${prop.id}')" class="px-3 py-1.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-100 text-slate-600 font-semibold">Dismiss</button>
-                <button type="button" onclick="importEmailProposal('${prop.id}')" class="px-3.5 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold">Import to Workspace</button>
+              <div class="flex items-center gap-2">
+                <button type="button" onclick="acceptEmailProposal('${p.id}')" class="px-3 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold">Import</button>
+                <button type="button" onclick="dismissEmailProposal('${p.id}')" class="px-3 py-1.5 rounded-xl bg-white border border-slate-200 text-slate-600 font-semibold">Dismiss</button>
               </div>
             </div>
           `).join('');
@@ -4421,57 +3578,38 @@
     }
 
     window.scanConnectedInboxes = function () {
-      const nowTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-      state.connectedInboxes.forEach(b => {
-        b.lastScan = `Today, ${nowTime}`;
-      });
+      const now = formatNowTimestamp();
+      state.connectedInboxes.forEach(ib => { ib.lastScan = formatDateDDMMYY(now, true); });
       persistWorkspaceState();
       renderEmailInboxView();
-      showToast('Scanned all connected Gmail inboxes.');
+      showToast('Inboxes scanned.');
     };
 
     window.connectGmailInboxPrompt = function () {
-      const senderInput = document.getElementById('intake-email-sender');
-      const emailVal = (senderInput?.value || '').trim();
-      if (!emailVal || !emailVal.includes('@')) {
-        showToast('Enter a valid Gmail address in Sender Email to connect.');
-        senderInput?.focus();
-        return;
-      }
-      if (!state.connectedInboxes.some(b => b.email.toLowerCase() === emailVal.toLowerCase())) {
-        state.connectedInboxes.push({
-          email: emailVal,
-          provider: emailVal.endsWith('@spmniwas.in') ? 'Google Workspace' : 'External Gmail',
-          status: 'Connected',
-          lastScan: 'Just now'
-        });
+      const user = getCurrentUser();
+      if (user.email && !state.connectedInboxes.some(i => i.email === user.email)) {
+        state.connectedInboxes.push({ email: user.email, provider: 'Google Workspace', status: 'Connected', lastScan: 'Just now' });
         persistWorkspaceState();
         renderEmailInboxView();
-        showToast(`Connected ${emailVal}.`);
+        showToast(`Connected ${user.email}`);
+      } else {
+        showToast('Current Google account inbox is already connected.');
       }
-    };
-
-    window.disconnectInbox = function (idx) {
-      state.connectedInboxes.splice(idx, 1);
-      persistWorkspaceState();
-      renderEmailInboxView();
-      showToast('Inbox disconnected.');
     };
 
     window.analyzeEmailWithAI = function () {
-      const sender = (document.getElementById('intake-email-sender')?.value || '').trim() || 'nodal@spmniwas.in';
-      const subject = (document.getElementById('intake-email-subject')?.value || '').trim();
-      const body = (document.getElementById('intake-email-body')?.value || '').trim();
+      const sender = document.getElementById('intake-email-sender').value.trim() || 'nodal@spmniwas.in';
+      const subject = document.getElementById('intake-email-subject').value.trim();
+      const body = document.getElementById('intake-email-body').value.trim();
       if (!subject && !body) {
-        showToast('Enter an email subject or body to extract a proposal.');
+        showToast('Paste an email subject or body first.');
         return;
       }
       state.emailProposals.unshift({
         id: `prop-${Date.now()}`,
         sender,
-        subject: subject || 'Incoming Email Action Item',
-        targetItemId: '',
-        proposedSummary: body ? body.slice(0, 160) : `Follow up on "${subject}"`,
+        subject: subject || 'Extracted Action Item',
+        proposedSummary: body.slice(0, 180) || subject,
         proposedDocs: []
       });
       document.getElementById('intake-email-subject').value = '';
@@ -4481,11 +3619,11 @@
       showToast('AI extracted a new proposal.');
     };
 
-    window.importEmailProposal = function (propId) {
+    window.acceptEmailProposal = function (propId) {
       const idx = state.emailProposals.findIndex(p => p.id === propId);
       if (idx === -1) return;
       const prop = state.emailProposals.splice(idx, 1)[0];
-      const nowStr = formatNowTimestamp();
+      const now = formatNowTimestamp();
       state.items.unshift({
         id: `tsk-${Date.now()}`,
         type: 'Task',
@@ -4493,100 +3631,87 @@
         description: prop.proposedSummary,
         nodalId: getCurrentUser().id || 'usr-1',
         status: 'Not Started',
-        dueDate: '',
-        lastChanged: nowStr,
+        dueDate: now.split(' ')[0],
+        lastChanged: now,
         documents: [],
-        history: [{ timestamp: nowStr, action: `Imported from Email (${prop.sender})`, by: getCurrentUser().name }]
+        history: [{ timestamp: now, action: `Imported from email (${prop.sender})`, by: getCurrentUser().name }]
       });
       persistWorkspaceState();
       renderAll();
-      showToast(`Imported "${prop.subject}" as a Task.`);
+      showToast('Proposal imported as Task.');
     };
 
     window.dismissEmailProposal = function (propId) {
       state.emailProposals = state.emailProposals.filter(p => p.id !== propId);
       persistWorkspaceState();
       renderAll();
-      showToast('Proposal dismissed.');
     };
 
     function renderEmailTemplatesView() {
       const listEl = document.getElementById('email-templates-list');
       if (!listEl) return;
-
-      if (!state.emailTemplates.some(t => t.id === state.selectedTemplateId)) {
-        state.selectedTemplateId = state.emailTemplates[0]?.id || '';
+      if (!state.selectedTemplateId && state.emailTemplates.length > 0) {
+        state.selectedTemplateId = state.emailTemplates[0].id;
       }
-
       listEl.innerHTML = state.emailTemplates.map(tpl => {
-        const isSelected = tpl.id === state.selectedTemplateId;
+        const active = tpl.id === state.selectedTemplateId;
         return `
-          <button type="button" onclick="selectEmailTemplate('${escapeHtml(tpl.id)}')" class="w-full text-left px-3.5 py-3 rounded-xl border transition-all ${isSelected ? 'bg-indigo-600 text-white border-indigo-600 shadow-xs' : 'bg-white hover:bg-slate-100 text-slate-800 border-slate-200'}">
-            <div class="text-xs sm:text-sm font-bold truncate">${escapeHtml(tpl.name)}</div>
-            <div class="text-[11px] truncate mt-0.5 ${isSelected ? 'text-indigo-100' : 'text-slate-400'}">${escapeHtml(tpl.subject)}</div>
+          <button type="button" onclick="selectEmailTemplate('${tpl.id}')" class="w-full text-left px-3.5 py-2.5 rounded-xl border text-xs transition-all ${active ? 'bg-indigo-600 text-white border-indigo-600 font-bold' : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-100 font-semibold'}">
+            ${escapeHtml(tpl.name)}
           </button>
         `;
       }).join('');
 
-      const activeTpl = state.emailTemplates.find(t => t.id === state.selectedTemplateId);
-      const nameInput = document.getElementById('template-editor-name');
-      const subjectInput = document.getElementById('template-editor-subject');
-      const bodyInput = document.getElementById('template-editor-body');
-      const deleteBtn = document.getElementById('btn-delete-template');
-
-      if (activeTpl && nameInput && subjectInput && bodyInput) {
-        nameInput.value = activeTpl.name;
-        subjectInput.value = activeTpl.subject;
-        bodyInput.value = activeTpl.body;
-        if (deleteBtn) deleteBtn.classList.toggle('hidden', Boolean(activeTpl.isSystem));
+      const selected = state.emailTemplates.find(t => t.id === state.selectedTemplateId);
+      if (selected) {
+        document.getElementById('template-editor-name').value = selected.name || '';
+        document.getElementById('template-editor-subject').value = selected.subject || '';
+        document.getElementById('template-editor-body').value = selected.body || '';
+        document.getElementById('btn-delete-template')?.classList.toggle('hidden', Boolean(selected.isSystem));
       }
     }
 
     window.selectEmailTemplate = function (tplId) {
       state.selectedTemplateId = tplId;
-      const statusEl = document.getElementById('template-editor-status');
-      if (statusEl) statusEl.textContent = 'All changes saved';
       renderEmailTemplatesView();
     };
 
     window.handleTemplateFieldInput = function () {
-      const activeTpl = state.emailTemplates.find(t => t.id === state.selectedTemplateId);
-      if (!activeTpl) return;
-      activeTpl.name = document.getElementById('template-editor-name')?.value || activeTpl.name;
-      activeTpl.subject = document.getElementById('template-editor-subject')?.value || '';
-      activeTpl.body = document.getElementById('template-editor-body')?.value || '';
-      const statusEl = document.getElementById('template-editor-status');
-      if (statusEl) statusEl.textContent = 'Editing draft...';
-    };
-
-    window.saveSelectedEmailTemplate = function () {
-      handleTemplateFieldInput();
-      persistWorkspaceState();
-      const statusEl = document.getElementById('template-editor-status');
-      if (statusEl) statusEl.textContent = 'Saved just now';
-      renderEmailTemplatesView();
-      showToast('Email template saved.');
+      const status = document.getElementById('template-editor-status');
+      if (status) status.textContent = 'Unsaved changes...';
     };
 
     window.createNewEmailTemplate = function () {
       const newTpl = {
         id: `tpl-${Date.now()}`,
-        name: 'Custom Notification Template',
-        subject: 'Update from SPM-NIWAS: {{title}}',
-        body: 'Dear {{name}},\n\nPlease log in to the SPM-NIWAS portal to view the latest update:\n{{loginUrl}}\n\nRegards,\nSPM-NIWAS Coordination Desk',
+        name: 'Custom Template',
+        subject: 'SPM-NIWAS Notification: {{title}}',
+        body: 'Dear {{name}},\n\nPlease review the update on {{loginUrl}}.\n\nRegards,\nSPM-NIWAS',
         isSystem: false
       };
       state.emailTemplates.push(newTpl);
       state.selectedTemplateId = newTpl.id;
       persistWorkspaceState();
       renderEmailTemplatesView();
-      showToast('New template created.');
+    };
+
+    window.saveSelectedEmailTemplate = function () {
+      const selected = state.emailTemplates.find(t => t.id === state.selectedTemplateId);
+      if (!selected) return;
+      selected.name = document.getElementById('template-editor-name').value.trim() || selected.name;
+      selected.subject = document.getElementById('template-editor-subject').value;
+      selected.body = document.getElementById('template-editor-body').value;
+      const status = document.getElementById('template-editor-status');
+      if (status) status.textContent = 'All changes saved';
+      persistWorkspaceState();
+      renderEmailTemplatesView();
+      showToast('Template saved.');
     };
 
     window.deleteSelectedEmailTemplate = function () {
-      const activeTpl = state.emailTemplates.find(t => t.id === state.selectedTemplateId);
-      if (!activeTpl || activeTpl.isSystem) return;
-      state.emailTemplates = state.emailTemplates.filter(t => t.id !== activeTpl.id);
+      const selected = state.emailTemplates.find(t => t.id === state.selectedTemplateId);
+      if (!selected || selected.isSystem) return;
+      state.emailTemplates = state.emailTemplates.filter(t => t.id !== selected.id);
       state.selectedTemplateId = state.emailTemplates[0]?.id || '';
       persistWorkspaceState();
       renderEmailTemplatesView();
@@ -4597,59 +3722,30 @@
       const tbody = document.getElementById('tasklet-access-table-body');
       const countBadge = document.getElementById('tasklet-access-count-badge');
       if (!tbody) return;
+      const search = (document.getElementById('tasklet-access-search')?.value || '').trim().toLowerCase();
+      const filtered = state.nodals.filter(u => !search || `${u.name} ${u.email}`.toLowerCase().includes(search));
+      const enabledCount = state.nodals.filter(u => u.isSuperAdmin || u.permission === 'Super Admin' || u.canAccessTasklets).length;
+      if (countBadge) countBadge.textContent = `${enabledCount} enabled`;
 
-      const searchVal = (document.getElementById('tasklet-access-search')?.value || '').trim().toLowerCase();
-      const eligibleUsers = state.nodals
-        .filter(u => !(u.isSuperAdmin || u.permission === 'Super Admin'))
-        .sort((a, b) => String(a.name || '').localeCompare(String(b.name || ''), undefined, { sensitivity: 'base' }));
-
-      const enabledTotal = eligibleUsers.filter(u => u.canAccessTasklets === true).length;
-      if (countBadge) {
-        countBadge.textContent = `${enabledTotal} user${enabledTotal === 1 ? '' : 's'} enabled`;
-      }
-
-      const filteredUsers = eligibleUsers.filter(u => {
-        if (!searchVal) return true;
-        return `${u.name} ${u.email} ${u.permission}`.toLowerCase().includes(searchVal);
-      });
-
-      if (!filteredUsers.length) {
-        tbody.innerHTML = `
-          <tr>
-            <td colspan="4" class="px-4 py-8 text-center text-xs text-slate-400">No matching users found.</td>
-          </tr>
-        `;
-        return;
-      }
-
-      tbody.innerHTML = filteredUsers.map(u => {
-        const hasAccess = u.canAccessTasklets === true;
-        const roleLabel = u.permission;
-
+      tbody.innerHTML = filtered.map(u => {
+        const isSuper = Boolean(u.isSuperAdmin || u.permission === 'Super Admin');
+        const hasAccess = isSuper || Boolean(u.canAccessTasklets);
         return `
-          <tr class="hover:bg-slate-50/90 transition-colors">
+          <tr class="hover:bg-slate-50/80">
             <td class="px-4 py-3.5">
               <div class="font-bold text-slate-900">${escapeHtml(u.name)}</div>
-              <div class="text-[11px] text-slate-400">${escapeHtml(u.email)}</div>
+              <div class="text-xs text-slate-500">${escapeHtml(u.email)}</div>
             </td>
-            <td class="px-4 py-3.5 text-xs font-semibold text-slate-700">${escapeHtml(roleLabel)}</td>
+            <td class="px-4 py-3.5 text-xs font-semibold text-slate-700">${escapeHtml(isSuper ? 'Super Admin' : u.permission)}</td>
             <td class="px-4 py-3.5">
-              ${hasAccess
-                ? `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-800">Allowed</span>`
-                : `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-slate-100 text-slate-500">No Access</span>`}
+              <span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold ${hasAccess ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-slate-100 text-slate-500 border border-slate-200'}">
+                ${hasAccess ? 'Enabled' : 'Disabled'}
+              </span>
             </td>
             <td class="px-4 py-3.5 text-right">
-              <div class="inline-flex items-center justify-end gap-3">
-                ${hasAccess ? `
-                  <button type="button" onclick="openWelcomeEmailModal('${escapeHtml(u.id)}', 'tpl-tasklet-access')" class="px-2.5 py-1 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs font-semibold transition-colors">
-                    Notify Email
-                  </button>
-                ` : ''}
-                <label class="inline-flex items-center gap-2 cursor-pointer select-none">
-                  <input type="checkbox" ${hasAccess ? 'checked' : ''} onchange="toggleUserTaskletAccess('${escapeHtml(u.id)}', this.checked)" class="w-4 h-4 rounded text-indigo-600 focus:ring-indigo-500" />
-                  <span class="text-xs font-semibold text-slate-700">${hasAccess ? 'Enabled' : 'Disabled'}</span>
-                </label>
-              </div>
+              ${isSuper
+                ? `<span class="text-xs text-slate-400 italic">Always Enabled</span>`
+                : `<input type="checkbox" ${hasAccess ? 'checked' : ''} onchange="toggleUserTaskletAccess('${u.id}', this.checked)" class="rounded text-indigo-600 focus:ring-indigo-500 cursor-pointer" />`}
             </td>
           </tr>
         `;
