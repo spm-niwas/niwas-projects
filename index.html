@@ -85,12 +85,6 @@
         <span>Sign in with Google</span>
       </button>
 
-      <div id="login-preview-fallback" class="pt-2 border-t border-slate-100">
-        <button type="button" onclick="signInPreviewSuperAdmin()" class="w-full py-2.5 px-4 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition-colors">
-          Continue as Super Admin (Design Console Preview)
-        </button>
-      </div>
-
       <p class="text-[11px] text-slate-400">
         Authorized Google / Gmail accounts only • Session stays active for 7 days
       </p>
@@ -1021,14 +1015,10 @@
     function updateAuthGateVisibility() {
       const loginGate = document.getElementById('login-gate-screen');
       const appShell = document.getElementById('app-shell');
-      const previewFallback = document.getElementById('login-preview-fallback');
       const isAuthenticated = Boolean(state.authUser);
 
       if (loginGate) loginGate.classList.toggle('hidden', isAuthenticated);
       if (appShell) appShell.classList.toggle('hidden', !isAuthenticated);
-      if (previewFallback) {
-        previewFallback.classList.toggle('hidden', Boolean(auth) && !isEmbeddedDesignPreview());
-      }
     }
 
     function isSessionExpiredBySevenDayPolicy(firebaseUser) {
@@ -1120,6 +1110,9 @@
 
     async function initFirebaseCloud() {
       try {
+        if (isEmbeddedDesignPreview() && !state.authUser) {
+          signInPreviewSuperAdmin();
+        }
         if (!isFirebaseConfigured) {
           updateAuthGateVisibility();
           return;
@@ -1160,7 +1153,7 @@
             }
             document.getElementById('login-gate-error')?.classList.add('hidden');
             state.authUser = user;
-          } else {
+          } else if (!isEmbeddedDesignPreview()) {
             state.authUser = null;
           }
           renderAll();
@@ -1222,7 +1215,7 @@
 
     window.signInWithGoogleAccount = async function () {
       if (!auth) {
-        signInPreviewSuperAdmin();
+        showToast('Google Sign-In requires Firebase configuration.');
         return;
       }
       try {
@@ -1252,10 +1245,6 @@
         renderAll();
         showToast(`Signed in as ${registeredUser.name} (${signedInEmail})`);
       } catch (err) {
-        if (!isFirebaseConfigured || isEmbeddedDesignPreview()) {
-          signInPreviewSuperAdmin();
-          return;
-        }
         showToast('Google Sign-In cancelled or blocked by browser popup settings.');
       }
     };
