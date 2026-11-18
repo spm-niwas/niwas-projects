@@ -482,13 +482,67 @@
 
         <!-- VIEW 3B: TASKLETS TABLE -->
         <section id="view-tasklets" class="hidden space-y-4">
+          <!-- Tasklet Dashboarding & Reporting Cards -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div class="bg-white rounded-2xl border border-slate-200 p-4 sm:p-5">
+              <div class="flex items-center justify-between">
+                <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Active Tasklets</span>
+                <span class="p-2 rounded-xl bg-indigo-50 text-indigo-600">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h10M4 18h7"/></svg>
+                </span>
+              </div>
+              <button type="button" id="kpi-tasklets-active" onclick="applyTaskletAgeFilter('all')" title="Show all active tasklets" class="text-2xl sm:text-3xl font-extrabold text-slate-900 hover:text-indigo-600 transition-colors mt-2.5 text-left focus:outline-none">0</button>
+              <div class="text-xs text-slate-500 mt-1">Click to view all active</div>
+            </div>
+
+            <div class="bg-white rounded-2xl border border-slate-200 p-4 sm:p-5">
+              <div class="flex items-center justify-between">
+                <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Oldest Active Tasklet</span>
+                <span class="p-2 rounded-xl bg-amber-50 text-amber-600">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                </span>
+              </div>
+              <button type="button" id="kpi-tasklets-oldest" onclick="applyTaskletAgeFilter('oldest')" title="Filter to oldest active tasklet" class="text-2xl sm:text-3xl font-extrabold text-slate-900 hover:text-amber-600 transition-colors mt-2.5 text-left focus:outline-none">—</button>
+              <div id="kpi-tasklets-oldest-sub" class="text-xs text-slate-500 mt-1 truncate">No active tasklets</div>
+            </div>
+
+            <div class="bg-white rounded-2xl border border-slate-200 p-4 sm:p-5">
+              <div class="flex items-center justify-between">
+                <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Older Than 7 Days</span>
+                <span class="p-2 rounded-xl bg-orange-50 text-orange-600">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                </span>
+              </div>
+              <button type="button" id="kpi-tasklets-gt7" onclick="applyTaskletAgeFilter('gt7')" title="Filter active tasklets older than 7 days" class="text-2xl sm:text-3xl font-extrabold text-slate-900 hover:text-orange-600 transition-colors mt-2.5 text-left focus:outline-none">0</button>
+              <div class="text-xs text-slate-500 mt-1">Click to filter &gt; 7 days</div>
+            </div>
+
+            <div class="bg-white rounded-2xl border border-slate-200 p-4 sm:p-5">
+              <div class="flex items-center justify-between">
+                <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Older Than 30 Days</span>
+                <span class="p-2 rounded-xl bg-rose-50 text-rose-600">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                </span>
+              </div>
+              <button type="button" id="kpi-tasklets-gt30" onclick="applyTaskletAgeFilter('gt30')" title="Filter active tasklets older than 30 days" class="text-2xl sm:text-3xl font-extrabold text-slate-900 hover:text-rose-600 transition-colors mt-2.5 text-left focus:outline-none">0</button>
+              <div class="text-xs text-slate-500 mt-1">Click to filter &gt; 30 days</div>
+            </div>
+          </div>
+
+          <div id="tasklets-age-filter-banner" class="hidden bg-indigo-50 border border-indigo-200 rounded-2xl px-4 py-2.5 flex flex-wrap items-center justify-between gap-2 text-xs">
+            <span id="tasklets-age-filter-label" class="font-semibold text-indigo-900">Filtered view</span>
+            <button type="button" onclick="applyTaskletAgeFilter('all')" class="px-3 py-1 rounded-lg bg-white border border-indigo-200 hover:bg-indigo-100 text-indigo-900 font-bold transition-colors">
+              Clear Filter
+            </button>
+          </div>
+
           <div class="bg-white rounded-2xl border border-slate-200 p-4 flex flex-wrap items-center gap-3 w-full">
             <div class="relative flex-1 min-w-[220px]">
               <svg class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
               <input type="text" id="tasklets-search" oninput="resetPageAndRender('tasklets')" placeholder="Search tasklets..." class="w-full pl-9 pr-3.5 py-2 text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500" />
             </div>
 
-            <select id="tasklets-status-filter" onchange="resetPageAndRender('tasklets')" class="text-xs sm:text-sm font-medium bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 flex-shrink-0">
+            <select id="tasklets-status-filter" onchange="state.taskletAgeFilter='all'; state.taskletOldestId=null; resetPageAndRender('tasklets')" class="text-xs sm:text-sm font-medium bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 flex-shrink-0">
               <option value="Active" selected>Active</option>
               <option value="Completed">Completed</option>
               <option value="Abandoned">Abandoned</option>
@@ -496,7 +550,18 @@
           </div>
 
           <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden">
-            <div id="tasklets-cards-grid" class="p-4 sm:p-5 flex flex-col gap-3 w-full"></div>
+            <div class="overflow-x-auto">
+              <div class="min-w-[680px]">
+                <div class="grid grid-cols-12 gap-3 px-4 py-3 bg-slate-50 border-b border-slate-200 text-[11px] font-bold uppercase tracking-wider text-slate-500 select-none">
+                  <div class="col-span-1">#</div>
+                  <div class="col-span-3">Name</div>
+                  <div class="col-span-3">Description</div>
+                  <div class="col-span-3">Latest Update</div>
+                  <div class="col-span-2 text-right">Status</div>
+                </div>
+                <div id="tasklets-cards-grid" class="p-3 flex flex-col gap-2 w-full"></div>
+              </div>
+            </div>
             <div id="pagination-tasklets" class="hidden border-t border-slate-200 bg-slate-50/80 px-4 py-3 flex flex-wrap items-center justify-between gap-2 text-xs text-slate-600"></div>
           </div>
         </section>
@@ -1256,6 +1321,8 @@
       usersSubTab: 'all',
       selectedItemId: null,
       tasksReadyOnly: false,
+      taskletAgeFilter: 'all',
+      taskletOldestId: null,
       authUser: null,
       nodals: JSON.parse(JSON.stringify(INITIAL_NODALS)),
       deletedNodals: [],
@@ -2041,10 +2108,90 @@
       return Boolean(item && item.type === 'Tasklet' && (item.status === 'Completed' || item.status === 'Abandoned'));
     }
 
+    function getTaskletAgeDays(item) {
+      if (!item) return 0;
+      let startMs = 0;
+      const idMatch = String(item.id || '').match(/^tkl-(\d{10,})$/);
+      if (idMatch) {
+        startMs = Number(idMatch[1]);
+      } else if (Array.isArray(item.history) && item.history.length > 0 && item.history[0].timestamp) {
+        const dStr = String(item.history[0].timestamp).split(' ')[0];
+        const parsed = new Date(`${dStr}T00:00:00`).getTime();
+        if (!isNaN(parsed)) startMs = parsed;
+      } else if (item.dueDate) {
+        const parsed = new Date(`${item.dueDate}T00:00:00`).getTime();
+        if (!isNaN(parsed)) startMs = parsed;
+      }
+      if (!startMs) return 0;
+      return Math.max(0, Math.floor((Date.now() - startMs) / (1000 * 60 * 60 * 24)));
+    }
+
+    function updateTaskletsDashboardCards() {
+      const activeEl = document.getElementById('kpi-tasklets-active');
+      const oldestEl = document.getElementById('kpi-tasklets-oldest');
+      const oldestSubEl = document.getElementById('kpi-tasklets-oldest-sub');
+      const gt7El = document.getElementById('kpi-tasklets-gt7');
+      const gt30El = document.getElementById('kpi-tasklets-gt30');
+      if (!activeEl) return;
+
+      const activeTasklets = state.items.filter(i => i.type === 'Tasklet' && i.status !== 'Completed' && i.status !== 'Abandoned' && i.status !== 'Archived');
+      activeEl.textContent = activeTasklets.length;
+
+      let oldestItem = null;
+      let maxAge = -1;
+      let countGt7 = 0;
+      let countGt30 = 0;
+
+      activeTasklets.forEach(t => {
+        const age = getTaskletAgeDays(t);
+        if (age > 7) countGt7 += 1;
+        if (age > 30) countGt30 += 1;
+        if (age > maxAge) {
+          maxAge = age;
+          oldestItem = t;
+        }
+      });
+
+      state.taskletOldestId = oldestItem ? oldestItem.id : null;
+      if (oldestEl) {
+        oldestEl.textContent = oldestItem ? `${maxAge} ${maxAge === 1 ? 'Day' : 'Days'}` : '—';
+      }
+      if (oldestSubEl) {
+        oldestSubEl.textContent = oldestItem ? oldestItem.title : 'No active tasklets';
+      }
+      if (gt7El) gt7El.textContent = countGt7;
+      if (gt30El) gt30El.textContent = countGt30;
+    }
+
+    window.applyTaskletAgeFilter = function (mode) {
+      state.taskletAgeFilter = mode || 'all';
+      const statusSel = document.getElementById('tasklets-status-filter');
+      if (statusSel) statusSel.value = 'Active';
+      state.pages.tasklets = 1;
+      renderAll();
+    };
+
     function renderItemsTable(sectionKey, fixedType) {
       const tbody = document.getElementById(`${sectionKey}-table-body`);
       const cardsGrid = sectionKey === 'tasklets' ? document.getElementById('tasklets-cards-grid') : null;
       if (!tbody && !cardsGrid) return;
+
+      if (sectionKey === 'tasklets') {
+        updateTaskletsDashboardCards();
+        const ageBanner = document.getElementById('tasklets-age-filter-banner');
+        const ageLabel = document.getElementById('tasklets-age-filter-label');
+        if (ageBanner && ageLabel) {
+          const isAgeFiltered = state.taskletAgeFilter && state.taskletAgeFilter !== 'all';
+          ageBanner.classList.toggle('hidden', !isAgeFiltered);
+          if (state.taskletAgeFilter === 'oldest') {
+            ageLabel.textContent = 'Showing: Oldest Active Tasklet';
+          } else if (state.taskletAgeFilter === 'gt7') {
+            ageLabel.textContent = 'Showing: Active Tasklets older than 7 days';
+          } else if (state.taskletAgeFilter === 'gt30') {
+            ageLabel.textContent = 'Showing: Active Tasklets older than 30 days';
+          }
+        }
+      }
 
       const searchVal = (document.getElementById(`${sectionKey}-search`)?.value || '').trim().toLowerCase();
       const statusVal = document.getElementById(`${sectionKey}-status-filter`)?.value || 'All';
@@ -2071,6 +2218,12 @@
           } else if (item.status !== statusVal) {
             return false;
           }
+        }
+        if (sectionKey === 'tasklets' && state.taskletAgeFilter && state.taskletAgeFilter !== 'all') {
+          const ageDays = getTaskletAgeDays(item);
+          if (state.taskletAgeFilter === 'oldest' && item.id !== state.taskletOldestId) return false;
+          if (state.taskletAgeFilter === 'gt7' && ageDays <= 7) return false;
+          if (state.taskletAgeFilter === 'gt30' && ageDays <= 30) return false;
         }
         if (sectionKey === 'tasks' && state.tasksReadyOnly && !isTaskReadyForProject(item)) return false;
         if (searchVal) {
@@ -2119,24 +2272,35 @@
 
         cardsGrid.innerHTML = pageItems.map(item => {
           const seqNumber = taskletNumberById.get(item.id) || 1;
+          const updatesArr = Array.isArray(item.updates) ? item.updates : [];
+          const latestUpdate = updatesArr.length > 0 ? updatesArr[updatesArr.length - 1] : null;
+          const latestUpdateText = latestUpdate ? String(latestUpdate.text || '').trim() : '';
+
           return `
-            <div role="button" tabindex="0" onclick="openItemDetails('${item.id}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openItemDetails('${item.id}');}" class="group w-full rounded-2xl border border-slate-200 bg-slate-50/70 hover:bg-indigo-50/50 hover:border-indigo-300 hover:shadow-md transition-all cursor-pointer p-4 sm:p-5 flex flex-col gap-2">
-              <div class="flex items-start justify-between gap-3">
-                <div class="flex items-center gap-2.5 min-w-0">
-                  <span class="inline-flex items-center justify-center px-2.5 py-0.5 rounded-lg text-xs font-extrabold bg-indigo-100 text-indigo-800 flex-shrink-0">
-                    #${seqNumber}
-                  </span>
-                  <h3 class="text-sm sm:text-base font-bold text-slate-900 group-hover:text-indigo-700 transition-colors truncate">
-                    ${escapeHtml(item.title)}
-                  </h3>
-                </div>
-                <div class="flex-shrink-0">
-                  ${getStatusBadgeHtml(item.status)}
+            <div role="button" tabindex="0" onclick="openItemDetails('${item.id}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openItemDetails('${item.id}');}" class="group w-full grid grid-cols-12 items-center gap-3 px-3.5 py-3 rounded-xl border border-slate-200/90 bg-white hover:bg-indigo-50/80 hover:border-indigo-300 hover:shadow-xs transition-all cursor-pointer">
+              <div class="col-span-1">
+                <span class="inline-flex items-center justify-center px-2 py-0.5 rounded-md text-xs font-extrabold bg-indigo-100 text-indigo-800">
+                  #${seqNumber}
+                </span>
+              </div>
+              <div class="col-span-3 min-w-0">
+                <div class="text-xs sm:text-sm font-bold text-slate-900 group-hover:text-indigo-700 transition-colors truncate">
+                  ${escapeHtml(item.title)}
                 </div>
               </div>
-              <p class="text-xs sm:text-sm text-slate-600 leading-relaxed line-clamp-2 pl-0 sm:pl-1">
-                ${item.description ? escapeHtml(item.description) : '<span class="italic text-slate-400">No description provided.</span>'}
-              </p>
+              <div class="col-span-3 min-w-0">
+                <div class="text-xs text-slate-600 truncate">
+                  ${item.description ? escapeHtml(item.description) : '<span class="italic text-slate-400">No description</span>'}
+                </div>
+              </div>
+              <div class="col-span-3 min-w-0">
+                <div class="text-xs text-slate-600 truncate">
+                  ${latestUpdateText ? escapeHtml(latestUpdateText) : '<span class="italic text-slate-400">No updates yet</span>'}
+                </div>
+              </div>
+              <div class="col-span-2 flex justify-end">
+                ${getStatusBadgeHtml(item.status)}
+              </div>
             </div>
           `;
         }).join('');
