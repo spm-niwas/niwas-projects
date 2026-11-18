@@ -302,6 +302,7 @@
               <option value="In Progress">In Progress</option>
               <option value="On Hold">On Hold</option>
               <option value="Completed">Completed</option>
+              <option value="Abandoned">Abandoned</option>
               <option value="Pending Approval">Pending Approval</option>
             </select>
 
@@ -492,6 +493,7 @@
               <option value="In Progress">In Progress</option>
               <option value="On Hold">On Hold</option>
               <option value="Completed">Completed</option>
+              <option value="Abandoned">Abandoned</option>
               <option value="Pending Approval">Pending Approval</option>
             </select>
 
@@ -543,7 +545,7 @@
             </div>
 
             <div class="flex items-center gap-2">
-              <button type="button" onclick="switchTab('overview')" class="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold">
+              <button type="button" id="details-back-btn" onclick="switchTab('overview')" class="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold">
                 ← Back
               </button>
               <div class="relative">
@@ -813,6 +815,7 @@
               <option value="In Progress">In Progress</option>
               <option value="On Hold">On Hold</option>
               <option value="Completed">Completed</option>
+              <option value="Abandoned">Abandoned</option>
               <option value="Pending Approval">Pending Approval</option>
               <option value="Archived">Archived</option>
             </select>
@@ -827,7 +830,7 @@
           <div class="flex flex-wrap items-center justify-between gap-2">
             <div>
               <span class="text-xs font-bold uppercase tracking-wider text-slate-600">Supporting Documents &amp; Links</span>
-              <p class="text-[11px] text-slate-400">Uploaded files are stored in Firestore (max 700 KB/file). Google Drive &amp; web URLs are linked only.</p>
+              <p class="text-[11px] text-slate-400">Uploaded files are saved in Firebase Cloud Storage (max 25 MB/file). Google Drive &amp; web URLs are linked only.</p>
             </div>
             <label class="cursor-pointer px-3 py-1.5 rounded-xl bg-white border border-slate-300 hover:bg-slate-100 text-xs font-semibold text-slate-700">
               + Upload File
@@ -884,7 +887,7 @@
           <div class="flex items-center justify-between gap-2">
             <div>
               <span class="text-xs font-bold uppercase tracking-wider text-slate-600">File Upload</span>
-              <p class="text-[11px] text-slate-400">Max 1 file allowed at creation time (Firestore max 700 KB).</p>
+              <p class="text-[11px] text-slate-400">Max 1 file allowed at creation time (Cloud Storage max 25 MB).</p>
             </div>
             <label id="tasklet-file-upload-label" class="cursor-pointer px-3 py-1.5 rounded-xl bg-white border border-slate-300 hover:bg-slate-100 text-xs font-semibold text-slate-700">
               + Upload File
@@ -907,7 +910,7 @@
     <div class="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-7 shadow-2xl border border-slate-200 space-y-4">
       <div class="flex items-center justify-between border-b border-slate-100 pb-3">
         <div>
-          <h3 class="text-lg font-extrabold text-slate-900">Send Welcome Email</h3>
+          <h3 id="welcome-modal-title" class="text-lg font-extrabold text-slate-900">Send Welcome Email</h3>
           <p id="welcome-modal-recipient" class="text-xs text-slate-500 mt-0.5"></p>
         </div>
         <button type="button" onclick="closeWelcomeEmailModal()" class="p-2 rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-100">
@@ -1114,10 +1117,13 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
     import { getAuth, setPersistence, browserLocalPersistence, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
     import { getFirestore, doc, getDoc, setDoc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+    import { getStorage, ref as storageRef, uploadBytes, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-storage.js";
 
     const SESSION_MAX_AGE_MS = 7 * 24 * 60 * 60 * 1000;
     const SESSION_TIMESTAMP_KEY = 'niwas_google_auth_login_ts';
-    const FIRESTORE_MAX_FILE_BYTES = 700 * 1024;
+    const LOCAL_WORKSPACE_STATE_KEY = 'niwas_workspace_state_v1';
+    const CLOUD_STORAGE_MAX_FILE_BYTES = 25 * 1024 * 1024;
+    const TASKLET_MAX_DOCS = 5;
     const localStoredFileBlobs = new Map();
 
     const ROLE_PERMISSIONS = {
@@ -1142,6 +1148,13 @@
         name: 'Welcome Email',
         subject: 'Welcome to SPM-NIWAS Task & Project Management Portal',
         body: 'Dear {{name}},\n\nYou have been added to the SPM-NIWAS Task & Project Management Portal with "{{role}}" access.\n\nLogin URL: {{loginUrl}}\n\nPlease sign in at the link above using your Google account ({{email}}) to review your assigned tasks and projects.\n\nRegards,\nSPM-NIWAS Coordination Desk',
+        isSystem: true
+      },
+      {
+        id: 'tpl-tasklet-access',
+        name: 'Tasklet Feature Access Granted',
+        subject: 'Tasklet Feature Access Enabled — SPM-NIWAS Portal',
+        body: 'Dear {{name}},\n\nYou have been granted access to the Tasklet feature on the SPM-NIWAS Task & Project Management Portal.\n\nYou can now create and manage lightweight Tasklets directly from your dashboard:\n{{loginUrl}}\n\nPlease sign in using your Google account ({{email}}) to get started.\n\nRegards,\nSPM-NIWAS Coordination Desk',
         isSystem: true
       },
       {
@@ -1244,6 +1257,7 @@
       modalDocuments: [],
       taskletModalDocument: null,
       welcomeTargetUser: null,
+      activeEmailTemplateId: 'tpl-welcome',
       reassignTargetUserId: null,
       pendingDeleteUserId: null,
       pendingUserEdit: null,
@@ -1274,10 +1288,44 @@
       selectedTemplateId: 'tpl-welcome'
     };
 
+    function loadCachedLocalWorkspaceState() {
+      try {
+        const raw = window.localStorage?.getItem(LOCAL_WORKSPACE_STATE_KEY);
+        if (!raw) return;
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed.items)) state.items = parsed.items;
+        if (Array.isArray(parsed.nodals) && parsed.nodals.length > 0) state.nodals = parsed.nodals;
+        if (Array.isArray(parsed.deletedNodals)) state.deletedNodals = parsed.deletedNodals;
+        if (Array.isArray(parsed.connectedInboxes)) state.connectedInboxes = parsed.connectedInboxes;
+        if (Array.isArray(parsed.emailProposals)) state.emailProposals = parsed.emailProposals;
+        if (Array.isArray(parsed.emailTemplates) && parsed.emailTemplates.length > 0) {
+          state.emailTemplates = parsed.emailTemplates;
+        }
+      } catch (_) {}
+    }
+
+    function saveCachedLocalWorkspaceState() {
+      try {
+        window.localStorage?.setItem(LOCAL_WORKSPACE_STATE_KEY, JSON.stringify({
+          items: state.items,
+          nodals: state.nodals,
+          deletedNodals: state.deletedNodals,
+          connectedInboxes: state.connectedInboxes,
+          emailProposals: state.emailProposals,
+          emailTemplates: state.emailTemplates
+        }));
+      } catch (_) {}
+    }
+
+    loadCachedLocalWorkspaceState();
+
     let db = null;
     let auth = null;
+    let storage = null;
     let isCloudReady = false;
     let isFirebaseAuthListenerAttached = false;
+    let hasPendingLocalWrite = false;
+    let hasDirtyUnsyncedLocalChanges = false;
     const appId = typeof __app_id !== 'undefined' ? __app_id : 'niwas-pm';
 
     const DEFAULT_FIREBASE_CONFIG = {
@@ -1505,7 +1553,12 @@
     }
 
     async function persistWorkspaceState() {
-      if (!db || !isCloudReady) return;
+      saveCachedLocalWorkspaceState();
+      if (!db || !isCloudReady) {
+        hasDirtyUnsyncedLocalChanges = true;
+        return;
+      }
+      hasPendingLocalWrite = true;
       try {
         const ref = doc(db, 'artifacts', appId, 'public', 'data', 'niwas_workspace', 'state');
         await setDoc(ref, {
@@ -1517,8 +1570,15 @@
           emailTemplates: state.emailTemplates,
           updatedAt: new Date().toISOString()
         });
+        hasDirtyUnsyncedLocalChanges = false;
       } catch (err) {
-        console.warn('Cloud sync skipped:', err);
+        hasDirtyUnsyncedLocalChanges = true;
+        console.warn('Cloud sync failed (saved locally):', err);
+        showToast('Saved locally — cloud sync permission/network warning.');
+      } finally {
+        setTimeout(() => {
+          hasPendingLocalWrite = false;
+        }, 400);
       }
     }
 
@@ -1536,6 +1596,7 @@
           const app = initializeApp(firebaseConfig);
           auth = getAuth(app);
           db = getFirestore(app);
+          storage = getStorage(app);
         }
 
         try {
@@ -1582,26 +1643,42 @@
           onSnapshot(
             stateRef,
             async (snap) => {
+              const wasFirstCloudSync = !isCloudReady;
               isCloudReady = true;
               if (snap.exists()) {
+                if (hasPendingLocalWrite || snap.metadata?.hasPendingWrites) {
+                  return;
+                }
                 const data = snap.data();
-                if (Array.isArray(data.items)) state.items = data.items;
+                if (Array.isArray(data.items)) {
+                  const cloudIds = new Set(data.items.map(i => i.id));
+                  const localOnlyItems = state.items.filter(i => !cloudIds.has(i.id));
+                  if (localOnlyItems.length > 0) {
+                    state.items = [...localOnlyItems, ...data.items];
+                    hasDirtyUnsyncedLocalChanges = true;
+                  } else {
+                    state.items = data.items;
+                  }
+                }
                 if (Array.isArray(data.nodals) && data.nodals.length > 0) state.nodals = data.nodals;
                 if (Array.isArray(data.deletedNodals)) state.deletedNodals = data.deletedNodals;
                 if (Array.isArray(data.connectedInboxes)) state.connectedInboxes = data.connectedInboxes;
                 if (Array.isArray(data.emailProposals)) state.emailProposals = data.emailProposals;
-                if (Array.isArray(data.emailTemplates) && data.emailTemplates.length > 0) state.emailTemplates = data.emailTemplates;
-
-                if (state.authUser && !findRegisteredWorkspaceUser(state.authUser.email)) {
-                  state.authUser = null;
-                  clearSevenDaySessionTimestamp();
-                  try {
-                    await signOut(auth);
-                  } catch (_) {}
-                  document.getElementById('login-gate-error')?.classList.remove('hidden');
-                  showUnauthorizedLoginModal();
+                if (Array.isArray(data.emailTemplates) && data.emailTemplates.length > 0) {
+                  state.emailTemplates = data.emailTemplates;
+                  if (!state.emailTemplates.some(t => t.id === 'tpl-tasklet-access')) {
+                    const defaultTaskletTpl = INITIAL_EMAIL_TEMPLATES.find(t => t.id === 'tpl-tasklet-access');
+                    if (defaultTaskletTpl) state.emailTemplates.splice(1, 0, JSON.parse(JSON.stringify(defaultTaskletTpl)));
+                  }
                 }
+                saveCachedLocalWorkspaceState();
                 renderAll();
+                if (state.activeTab === 'details') {
+                  renderItemDetailsView();
+                }
+                if (wasFirstCloudSync && hasDirtyUnsyncedLocalChanges) {
+                  persistWorkspaceState();
+                }
               } else {
                 persistWorkspaceState();
               }
@@ -1883,6 +1960,7 @@
         'In Progress': 'bg-indigo-50 text-indigo-700 border-indigo-200',
         'On Hold': 'bg-amber-50 text-amber-700 border-amber-200',
         'Completed': 'bg-emerald-50 text-emerald-700 border-emerald-200',
+        'Abandoned': 'bg-rose-50 text-rose-700 border-rose-200',
         'Pending Approval': 'bg-purple-50 text-purple-700 border-purple-200',
         'Archived': 'bg-slate-200/70 text-slate-500 border-slate-300'
       };
@@ -2019,20 +2097,9 @@
                 📎 ${docsCount} ${docsCount === 1 ? 'file' : 'files'}
               </span>
             </td>
-            <td class="px-4 py-3.5 text-right whitespace-nowrap">
-              <div class="inline-flex items-center justify-end gap-1">
-                <button type="button" onclick="openItemDetails('${item.id}')" title="View Details" class="p-1.5 rounded-lg text-slate-500 hover:text-indigo-600 hover:bg-indigo-50 transition-colors">
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
-                </button>
-                <button type="button" onclick="openEditItemModal('${item.id}')" title="Edit" class="p-1.5 rounded-lg text-slate-500 hover:text-indigo-600 hover:bg-indigo-50 transition-colors">
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
-                </button>
-                ${caps.canDelete ? `
-                  <button type="button" onclick="deleteItemRecord('${item.id}')" title="Delete" class="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
-                  </button>
-                ` : ''}
-              </div>
+            <td class="px-4 py-3.5 text-right whitespace-nowrap space-x-1">
+              <button type="button" onclick="openEditItemModal('${item.id}')" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold">Edit</button>
+              ${caps.canDelete ? `<button type="button" onclick="deleteItemRecord('${item.id}')" class="px-2.5 py-1 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-semibold">Delete</button>` : ''}
             </td>
           </tr>
         `;
@@ -2044,119 +2111,130 @@
     window.openItemDetails = function (itemId) {
       const item = state.items.find(i => i.id === itemId);
       if (!item) return;
+      if (item.type === 'Tasklet' && !getRoleCapabilities().canAccessTasklets) {
+        showToast('You do not have access to the Tasklet feature.');
+        return;
+      }
       state.selectedItemId = itemId;
       switchTab('details');
       renderItemDetailsView();
     };
 
     function renderItemDetailsView() {
-      const card = document.getElementById('details-content-card');
       const item = state.items.find(i => i.id === state.selectedItemId);
-      if (!card || !item) return;
-
-      const parentBtn = document.getElementById('details-breadcrumb-parent');
-      const currentSpan = document.getElementById('details-breadcrumb-current');
-      if (parentBtn) {
-        const targetTab = item.type === 'Project' ? 'projects' : (item.type === 'Tasklet' ? 'tasklets' : 'tasks');
-        parentBtn.textContent = item.type === 'Project' ? 'Projects' : (item.type === 'Tasklet' ? 'Tasklets' : 'Tasks');
-        parentBtn.onclick = () => switchTab(targetTab);
-      }
-      if (currentSpan) currentSpan.textContent = item.title;
+      const card = document.getElementById('details-content-card');
+      if (!item || !card) return;
 
       const nodal = getNodalById(item.nodalId);
+      const parentTab = item.type === 'Project' ? 'projects' : (item.type === 'Tasklet' ? 'tasklets' : 'tasks');
+      const parentLabel = item.type === 'Project' ? 'Projects' : (item.type === 'Tasklet' ? 'Tasklets' : 'Tasks');
+
+      const bcParent = document.getElementById('details-breadcrumb-parent');
+      const bcCurrent = document.getElementById('details-breadcrumb-current');
+      const backBtn = document.getElementById('details-back-btn');
+      if (bcParent) {
+        bcParent.textContent = parentLabel;
+        bcParent.onclick = () => switchTab(parentTab);
+      }
+      if (bcCurrent) bcCurrent.textContent = item.title;
+      if (backBtn) backBtn.onclick = () => switchTab(parentTab);
+
+      if (item.type === 'Tasklet') {
+        renderTaskletDetailsView(card, item);
+        return;
+      }
+
+      card.className = 'bg-white rounded-2xl border border-slate-200 p-6 space-y-6';
       const caps = getRoleCapabilities();
       const canRemoveDocs = canUserDeleteItemDocuments(item);
-      const docs = Array.isArray(item.documents) ? item.documents : [];
-      const history = Array.isArray(item.history) ? item.history : [];
+      const docsHtml = (item.documents || []).length === 0
+        ? `<div class="text-xs text-slate-400 italic py-2">No documents or links attached yet.</div>`
+        : (item.documents || []).map((d, idx) => renderDocumentRowHtml(d, idx, item.id, canRemoveDocs)).join('');
+
+      const historyHtml = (item.history || []).slice().reverse().map(h => `
+        <div class="flex items-start justify-between gap-3 py-2 border-b border-slate-100 last:border-b-0 text-xs">
+          <div>
+            <span class="font-bold text-slate-800">${escapeHtml(h.action)}</span>
+            <span class="text-slate-500"> by ${escapeHtml(h.by || 'System')}</span>
+          </div>
+          <span class="text-[11px] text-slate-400 whitespace-nowrap">${escapeHtml(h.timestamp)}</span>
+        </div>
+      `).join('');
 
       card.innerHTML = `
         <div class="flex flex-wrap items-start justify-between gap-4 border-b border-slate-100 pb-5">
-          <div class="space-y-2 max-w-3xl">
+          <div class="space-y-2 max-w-2xl">
             <div class="flex flex-wrap items-center gap-2">
               ${getTypeBadgeHtml(item.type)}
               ${getStatusBadgeHtml(item.status)}
-              ${isTaskReadyForProject(item) ? `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-100 text-amber-800">⚡ Eligible for Project Conversion</span>` : ''}
+              ${isTaskReadyForProject(item) ? `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-100 text-amber-800">⚡ Eligible for Project</span>` : ''}
             </div>
             <h2 class="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight">${escapeHtml(item.title)}</h2>
             <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">${escapeHtml(item.description)}</p>
           </div>
 
           <div class="flex flex-wrap items-center gap-2">
-            ${item.status === 'Pending Approval' && caps.canApprove ? `
-              <button type="button" onclick="approvePendingItem('${item.id}')" class="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition-colors">
-                ✓ Approve ${escapeHtml(item.type)}
+            ${caps.canApprove && item.status === 'Pending Approval' ? `
+              <button type="button" onclick="approvePendingItem('${item.id}')" class="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold">
+                Approve &amp; Activate
               </button>
             ` : ''}
-            ${item.type === 'Task' && caps.canApprove ? `
-              <button type="button" onclick="convertTaskToProject('${item.id}')" class="px-3.5 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold transition-colors">
-                ⚡ Convert to Project
+            ${caps.canApprove && item.type === 'Task' ? `
+              <button type="button" onclick="convertTaskToProject('${item.id}')" class="px-3.5 py-2 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 text-xs font-semibold">
+                Convert to Project
               </button>
             ` : ''}
-            <button type="button" onclick="openEditItemModal('${item.id}')" class="px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold transition-colors">
+            <button type="button" onclick="openEditItemModal('${item.id}')" class="px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold">
               Edit ${escapeHtml(item.type)}
             </button>
+            ${caps.canDelete ? `
+              <button type="button" onclick="deleteItemRecord('${item.id}'); switchTab('${parentTab}');" class="px-3.5 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-semibold">
+                Delete
+              </button>
+            ` : ''}
           </div>
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 bg-slate-50 rounded-2xl p-4 border border-slate-200/80 text-xs">
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 bg-slate-50 rounded-2xl p-4 border border-slate-200/70 text-xs">
           <div>
-            <div class="font-bold uppercase tracking-wider text-slate-400">Assigned Nodal Officer</div>
-            <div class="text-sm font-bold text-slate-900 mt-1">${escapeHtml(nodal.name)}</div>
+            <div class="font-bold uppercase tracking-wider text-slate-400 text-[10px]">Nodal Officer</div>
+            <div class="font-bold text-slate-900 mt-1">${escapeHtml(nodal.name)}</div>
             <div class="text-slate-500">${escapeHtml(nodal.email)}</div>
           </div>
           <div>
-            <div class="font-bold uppercase tracking-wider text-slate-400">Target Completion Date</div>
-            <div class="text-sm font-bold text-slate-900 mt-1">${escapeHtml(item.dueDate || 'Not set')}</div>
+            <div class="font-bold uppercase tracking-wider text-slate-400 text-[10px]">Target Date</div>
+            <div class="font-bold text-slate-900 mt-1">${escapeHtml(item.dueDate || 'Not set')}</div>
           </div>
           <div>
-            <div class="font-bold uppercase tracking-wider text-slate-400">Last Updated</div>
-            <div class="text-sm font-bold text-slate-900 mt-1">${escapeHtml(item.lastChanged || '—')}</div>
+            <div class="font-bold uppercase tracking-wider text-slate-400 text-[10px]">Last Updated</div>
+            <div class="font-bold text-slate-900 mt-1">${escapeHtml(item.lastChanged || '—')}</div>
           </div>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <div class="space-y-3">
-            <div class="flex flex-wrap items-center justify-between gap-2">
-              <div>
-                <h3 class="text-sm font-extrabold text-slate-900">Supporting Documents &amp; Links (${docs.length})</h3>
-                <p class="text-[11px] text-slate-400">Uploads stored in Firestore (max 700 KB) • Google Drive &amp; web URLs linked only</p>
-              </div>
-              <label class="cursor-pointer px-3 py-1.5 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs font-bold transition-colors">
-                + Upload File
-                <input type="file" multiple onchange="handleDetailsFileUpload(event, '${item.id}')" class="hidden" />
-              </label>
+        <div class="space-y-3">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <div>
+              <h3 class="text-sm font-extrabold text-slate-900">Supporting Documents &amp; Links (${(item.documents || []).length})</h3>
+              <p class="text-[11px] text-slate-400">Uploaded files are saved in Firebase Cloud Storage (max 25 MB/file). Google Drive &amp; web URLs are linked only.</p>
             </div>
-
-            <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
-              <input type="url" id="details-doc-link-input" placeholder="Paste Google Drive or open-access web URL (https://...)" class="flex-1 px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500" />
-              <button type="button" onclick="handleDetailsAddExternalLink('${item.id}')" class="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-900 text-white text-xs font-bold whitespace-nowrap transition-colors">
-                + Link URL
-              </button>
-            </div>
-
-            ${docs.length === 0 ? `
-              <div class="rounded-2xl border border-dashed border-slate-200 p-6 text-center text-xs text-slate-400">
-                No documents or links attached yet.
-              </div>
-            ` : `
-              <div class="space-y-2">
-                ${docs.map((docItem, idx) => renderDocumentRowHtml(docItem, idx, item.id, canRemoveDocs)).join('')}
-              </div>
-            `}
+            <label class="cursor-pointer px-3 py-1.5 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs font-bold">
+              + Upload File
+              <input type="file" multiple onchange="handleDetailsFileUpload(event, '${item.id}')" class="hidden" />
+            </label>
           </div>
+          <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+            <input type="url" id="details-doc-link-input" placeholder="Paste Google Drive or open-access web URL (https://...)" class="flex-1 px-3.5 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+            <button type="button" onclick="handleDetailsAddExternalLink('${item.id}')" class="px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold whitespace-nowrap transition-colors">
+              + Attach Link
+            </button>
+          </div>
+          <div class="space-y-2">${docsHtml}</div>
+        </div>
 
-          <div class="space-y-3">
-            <h3 class="text-sm font-extrabold text-slate-900">Activity &amp; Audit Trail</h3>
-            <div class="space-y-2 max-h-64 overflow-y-auto custom-scrollbar pr-1">
-              ${history.length === 0 ? `
-                <div class="text-xs text-slate-400">No history logged yet.</div>
-              ` : history.slice().reverse().map(entry => `
-                <div class="px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200/70 text-xs">
-                  <div class="font-bold text-slate-800">${escapeHtml(entry.action)}</div>
-                  <div class="text-[11px] text-slate-400 mt-0.5">${escapeHtml(entry.timestamp)} • by ${escapeHtml(entry.by)}</div>
-                </div>
-              `).join('')}
-            </div>
+        <div class="space-y-2 pt-2 border-t border-slate-100">
+          <h3 class="text-sm font-extrabold text-slate-900">Activity Audit Trail</h3>
+          <div class="bg-slate-50 rounded-2xl p-4 border border-slate-200/70">
+            ${historyHtml || '<div class="text-xs text-slate-400">No activity recorded yet.</div>'}
           </div>
         </div>
       `;
@@ -2169,11 +2247,332 @@
       item.status = 'In Progress';
       item.lastChanged = formatNowTimestamp();
       item.history = item.history || [];
-      item.history.push({ timestamp: item.lastChanged, action: `${item.type} Approved`, by: getCurrentUser().name });
+      item.history.push({ timestamp: item.lastChanged, action: 'Approved by Admin', by: getCurrentUser().name });
       persistWorkspaceState();
       renderAll();
       if (state.activeTab === 'details') renderItemDetailsView();
-      showToast(`${item.type} approved and moved to In Progress.`);
+      showToast(`Approved "${item.title}".`);
+    };
+
+    function getDocumentFileTypeLabel(docItem) {
+      if (!docItem) return 'FILE';
+      if (docItem.storageType === 'gdrive') return 'GOOGLE DRIVE';
+      if (docItem.storageType === 'web') return 'WEB LINK';
+      const name = String(docItem.name || '').trim();
+      const extMatch = name.match(/\.([a-zA-Z0-9]{1,8})$/);
+      if (extMatch && extMatch[1]) {
+        return extMatch[1].toUpperCase();
+      }
+      const mime = String(docItem.mimeType || '');
+      if (mime.includes('/')) {
+        return mime.split('/')[1].toUpperCase().slice(0, 10);
+      }
+      return 'FILE';
+    }
+
+    function renderTaskletDetailsView(card, item) {
+      card.className = 'grid grid-cols-1 lg:grid-cols-12 gap-6 items-start';
+      const docs = Array.isArray(item.documents) ? item.documents : [];
+      const canRemoveDocs = canUserDeleteItemDocuments(item);
+      const canAddMoreDocs = docs.length < TASKLET_MAX_DOCS;
+
+      const fileCardsHtml = docs.length === 0
+        ? `
+          <div class="rounded-2xl border border-dashed border-slate-200 bg-slate-50/70 p-6 text-center text-xs text-slate-400">
+            No files attached to this tasklet yet (max ${TASKLET_MAX_DOCS}).
+          </div>
+        `
+        : `
+          <div class="flex flex-col gap-2.5 w-full">
+            ${docs.map((docItem, idx) => {
+              const icon = docItem.storageType === 'gdrive' ? '🔗' : (docItem.storageType === 'web' ? '🌐' : '📄');
+              const fileTypeLabel = getDocumentFileTypeLabel(docItem);
+              const sizeText = docItem.size ? formatBytesLabel(docItem.size) : (docItem.source || 'Attached file');
+
+              return `
+                <div onclick="previewTaskletDocumentInRightPane('${item.id}', ${idx})" class="group relative w-full rounded-2xl border border-slate-200 bg-slate-50/80 hover:bg-indigo-50/70 hover:border-indigo-300 transition-all cursor-pointer p-3.5 sm:p-4">
+                  <div class="flex items-start gap-3 w-full">
+                    <div class="w-10 h-10 rounded-xl bg-white border border-slate-200 group-hover:border-indigo-200 flex items-center justify-center text-lg flex-shrink-0">
+                      ${icon}
+                    </div>
+                    <div class="min-w-0 flex-1 pr-3">
+                      <div class="text-xs sm:text-sm font-bold text-slate-900 group-hover:text-indigo-700 break-words leading-snug transition-colors">
+                        ${escapeHtml(docItem.name)}
+                      </div>
+                      <div class="flex flex-wrap items-center gap-2 text-[11px] text-slate-400 mt-1.5">
+                        <span class="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-extrabold uppercase tracking-wider bg-slate-200/80 text-slate-700 group-hover:bg-indigo-100 group-hover:text-indigo-800 transition-colors flex-shrink-0">
+                          ${escapeHtml(fileTypeLabel)}
+                        </span>
+                        <span>• ${escapeHtml(sizeText)} • Added ${escapeHtml(docItem.addedAt || 'Recently')}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  ${canRemoveDocs ? `
+                    <button type="button" title="Delete file" aria-label="Delete file" onclick="event.stopPropagation(); removeItemDocument('${item.id}', ${idx})" class="opacity-0 group-hover:opacity-100 focus:opacity-100 transition-opacity absolute top-2 right-2 w-6 h-6 rounded-full bg-white hover:bg-rose-600 text-slate-500 hover:text-white border border-slate-200 hover:border-rose-600 shadow-xs flex items-center justify-center text-xs font-bold">
+                      ✕
+                    </button>
+                  ` : ''}
+                </div>
+              `;
+            }).join('')}
+          </div>
+        `;
+
+      card.innerHTML = `
+        <!-- LEFT PANEL: Name, Description, Attached Files, and Status Actions -->
+        <div class="lg:col-span-6 bg-white rounded-2xl border border-slate-200 p-6 space-y-6">
+          <div class="space-y-1.5 border-b border-slate-100 pb-4">
+            <div class="flex items-center justify-between gap-2">
+              <div class="flex items-center gap-2">
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-md text-[10px] font-extrabold uppercase tracking-wider bg-emerald-100 text-emerald-800">Tasklet</span>
+                ${getStatusBadgeHtml(item.status)}
+              </div>
+              <span class="text-xs font-medium text-slate-400">${escapeHtml(item.dueDate || '')}</span>
+            </div>
+            <h2 class="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight pt-1">${escapeHtml(item.title)}</h2>
+          </div>
+
+          <div class="space-y-1.5">
+            <div class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Description</div>
+            <p class="text-xs sm:text-sm text-slate-600 leading-relaxed whitespace-pre-line">${item.description ? escapeHtml(item.description) : '<span class="italic text-slate-400">No description provided.</span>'}</p>
+          </div>
+
+          <div class="space-y-3 pt-2 border-t border-slate-100">
+            <div class="flex items-center justify-between gap-2">
+              <div class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Files (${docs.length} / ${TASKLET_MAX_DOCS} max)</div>
+              ${canAddMoreDocs ? `
+                <label class="cursor-pointer px-3 py-1.5 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs font-bold transition-colors">
+                  + Upload File
+                  <input type="file" multiple onchange="handleDetailsFileUpload(event, '${item.id}')" class="hidden" />
+                </label>
+              ` : `
+                <span class="px-2.5 py-1 rounded-xl bg-slate-100 text-slate-500 text-[11px] font-semibold">Max ${TASKLET_MAX_DOCS} files reached</span>
+              `}
+            </div>
+            ${fileCardsHtml}
+          </div>
+
+          <!-- Bottom Status Buttons: Completed & Abandoned -->
+          <div class="pt-4 border-t border-slate-100 flex flex-wrap items-center justify-end gap-2.5">
+            <button type="button" onclick="setTaskletOutcomeStatus('${item.id}', 'Abandoned')" class="px-4 py-2 rounded-xl border text-xs sm:text-sm font-bold transition-colors ${item.status === 'Abandoned' ? 'bg-rose-600 border-rose-600 text-white' : 'bg-rose-50 hover:bg-rose-100 border-rose-200 text-rose-700'}">
+              Abandoned
+            </button>
+            <button type="button" onclick="setTaskletOutcomeStatus('${item.id}', 'Completed')" class="px-4 py-2 rounded-xl border text-xs sm:text-sm font-bold transition-colors ${item.status === 'Completed' ? 'bg-emerald-600 border-emerald-600 text-white' : 'bg-emerald-50 hover:bg-emerald-100 border-emerald-200 text-emerald-700'}">
+              Completed
+            </button>
+          </div>
+        </div>
+
+        <!-- RIGHT PANEL: File Preview Pane -->
+        <div id="tasklet-details-right-panel" class="group relative lg:col-span-6 bg-white rounded-2xl border border-slate-200 p-6 min-h-[420px] flex flex-col"></div>
+      `;
+    }
+
+    window.setTaskletOutcomeStatus = function (itemId, nextStatus) {
+      const item = state.items.find(i => i.id === itemId);
+      if (!item || item.type !== 'Tasklet') return;
+      if (item.status === nextStatus) {
+        showToast(`Tasklet is already marked as ${nextStatus}.`);
+        return;
+      }
+      item.status = nextStatus;
+      item.lastChanged = formatNowTimestamp();
+      item.history = item.history || [];
+      item.history.push({ timestamp: item.lastChanged, action: `Marked as ${nextStatus}`, by: getCurrentUser().name });
+      persistWorkspaceState();
+      renderAll();
+      renderItemDetailsView();
+      showToast(`Tasklet marked as ${nextStatus}.`);
+    };
+
+    let activeTaskletPreviewBlobUrl = null;
+
+    window.resetTaskletRightPane = function () {
+      const rightPanel = document.getElementById('tasklet-details-right-panel');
+      if (activeTaskletPreviewBlobUrl) {
+        try {
+          URL.revokeObjectURL(activeTaskletPreviewBlobUrl);
+        } catch (_) {}
+        activeTaskletPreviewBlobUrl = null;
+      }
+      if (!rightPanel) return;
+      rightPanel.className = 'group relative lg:col-span-6 bg-white rounded-2xl border border-slate-200 p-6 min-h-[420px] flex flex-col';
+      rightPanel.innerHTML = '';
+    };
+
+    window.previewTaskletDocumentInRightPane = async function (itemId, docIndex) {
+      const item = state.items.find(i => i.id === itemId);
+      const rightPanel = document.getElementById('tasklet-details-right-panel');
+      if (!item || !rightPanel) return;
+      const docItem = (item.documents || [])[docIndex];
+      if (!docItem) return;
+
+      if (activeTaskletPreviewBlobUrl) {
+        try {
+          URL.revokeObjectURL(activeTaskletPreviewBlobUrl);
+        } catch (_) {}
+        activeTaskletPreviewBlobUrl = null;
+      }
+
+      const fileTypeLabel = getDocumentFileTypeLabel(docItem);
+      const sizeText = docItem.size ? formatBytesLabel(docItem.size) : (docItem.source || 'Attached file');
+      const closeOverlayBtnHtml = `
+        <button type="button" title="Close preview" aria-label="Close preview" onclick="resetTaskletRightPane()" class="opacity-0 group-hover:opacity-100 focus:opacity-100 transition-opacity absolute top-2 right-2 z-20 w-6 h-6 rounded-full bg-white/95 hover:bg-rose-600 text-slate-600 hover:text-white border border-slate-200 hover:border-rose-600 shadow-sm flex items-center justify-center text-[11px] font-bold">
+          ✕
+        </button>
+      `;
+
+      rightPanel.className = 'group relative lg:col-span-6 bg-white rounded-2xl border border-slate-200 p-3 sm:p-4 h-[78vh] min-h-[540px] flex flex-col overflow-hidden';
+
+      if ((docItem.storageType === 'gdrive' || docItem.storageType === 'web') && docItem.url) {
+        let embedUrl = docItem.url;
+        if (docItem.storageType === 'gdrive') {
+          embedUrl = docItem.url.replace(/\/view(\?.*)?$/, '/preview').replace(/\/edit(\?.*)?$/, '/preview');
+        }
+        rightPanel.innerHTML = `
+          ${closeOverlayBtnHtml}
+          <div class="flex items-center justify-between gap-2 border-b border-slate-100 pb-2 mb-2 pr-7 flex-shrink-0">
+            <div class="min-w-0 flex-1 flex items-center gap-2">
+              <span class="text-xs font-bold text-slate-900 truncate">${escapeHtml(docItem.name)}</span>
+              <span class="text-[10px] text-slate-400 whitespace-nowrap flex-shrink-0">• ${escapeHtml(fileTypeLabel)}</span>
+            </div>
+            <a href="${escapeHtml(docItem.url)}" target="_blank" rel="noopener noreferrer" class="px-2 py-1 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-[11px] font-bold flex-shrink-0">
+              Open ↗
+            </a>
+          </div>
+          <div class="flex-1 min-h-0 overflow-auto rounded-xl border border-slate-200 bg-slate-50">
+            <iframe src="${escapeHtml(embedUrl)}" class="w-full h-full min-h-[520px] border-0" title="${escapeHtml(docItem.name)}"></iframe>
+          </div>
+        `;
+        return;
+      }
+
+      if (docItem.storageType === 'cloud_storage' && docItem.url) {
+        const mime = String(docItem.mimeType || '').toLowerCase();
+        const isImage = mime.startsWith('image/');
+        const isPdf = mime.includes('pdf') || String(docItem.name || '').toLowerCase().endsWith('.pdf');
+        const isText = mime.startsWith('text/');
+
+        const previewBodyHtml = isImage
+          ? `<div class="flex-1 min-h-0 overflow-auto custom-scrollbar bg-slate-50 rounded-xl border border-slate-200 p-3 flex items-start justify-center"><img src="${escapeHtml(docItem.url)}" alt="${escapeHtml(docItem.name)}" class="max-w-full h-auto rounded-lg object-contain" /></div>`
+          : isPdf
+            ? `<div class="flex-1 min-h-0 overflow-auto custom-scrollbar rounded-xl border border-slate-200 bg-slate-100"><iframe src="${escapeHtml(docItem.url)}#toolbar=1&navpanes=0&scrollbar=1&view=FitH" class="w-full h-full min-h-[540px] border-0 block" title="${escapeHtml(docItem.name)}"></iframe></div>`
+            : isText
+              ? `<div class="flex-1 min-h-0 overflow-auto custom-scrollbar rounded-xl border border-slate-200 bg-white"><iframe src="${escapeHtml(docItem.url)}" class="w-full h-full min-h-[540px] border-0 block" title="${escapeHtml(docItem.name)}"></iframe></div>`
+              : `
+                <div class="flex-1 min-h-0 overflow-auto flex flex-col items-center justify-center bg-slate-50 rounded-xl border border-slate-200 p-6 text-center space-y-3">
+                  <div class="text-3xl">📄</div>
+                  <div class="text-sm font-bold text-slate-800 break-words max-w-md">${escapeHtml(docItem.name)}</div>
+                  <div class="text-xs text-slate-500">Inline preview is not supported for ${escapeHtml(fileTypeLabel)} files.</div>
+                  <a href="${escapeHtml(docItem.url)}" target="_blank" rel="noopener noreferrer" class="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold">
+                    Open / Download File ↗
+                  </a>
+                </div>
+              `;
+
+        rightPanel.innerHTML = `
+          ${closeOverlayBtnHtml}
+          <div class="flex items-center justify-between gap-2 border-b border-slate-100 pb-2 mb-2 pr-7 flex-shrink-0">
+            <div class="min-w-0 flex-1 flex items-center gap-2">
+              <span class="text-xs font-bold text-slate-900 truncate">${escapeHtml(docItem.name)}</span>
+              <span class="text-[10px] text-slate-400 whitespace-nowrap flex-shrink-0">• ${escapeHtml(fileTypeLabel)} • ${escapeHtml(sizeText)}</span>
+            </div>
+            <a href="${escapeHtml(docItem.url)}" target="_blank" rel="noopener noreferrer" class="px-2 py-1 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-[11px] font-bold flex-shrink-0">
+              Open ↗
+            </a>
+          </div>
+          ${previewBodyHtml}
+        `;
+        return;
+      }
+
+      if (docItem.storageType === 'firestore' && docItem.firestoreDocId) {
+        rightPanel.innerHTML = `
+          ${closeOverlayBtnHtml}
+          <div class="flex-1 flex items-center justify-center text-xs text-slate-400">
+            Loading preview...
+          </div>
+        `;
+        try {
+          let record = localStoredFileBlobs.get(docItem.firestoreDocId);
+          if (!record && db && isCloudReady) {
+            const fileRef = doc(db, 'artifacts', appId, 'public', 'data', 'niwas_documents', docItem.firestoreDocId);
+            const snap = await getDoc(fileRef);
+            if (snap.exists()) {
+              record = snap.data();
+              localStoredFileBlobs.set(docItem.firestoreDocId, record);
+            }
+          }
+          if (!record || !record.dataUrl) {
+            rightPanel.innerHTML = `
+              ${closeOverlayBtnHtml}
+              <div class="flex-1 flex flex-col items-center justify-center text-center p-6 space-y-2">
+                <div class="text-sm font-bold text-slate-700">${escapeHtml(docItem.name)}</div>
+                <div class="text-xs text-slate-400">File binary payload is not available for inline preview.</div>
+              </div>
+            `;
+            return;
+          }
+
+          const res = await fetch(record.dataUrl);
+          const blob = await res.blob();
+          const blobUrl = URL.createObjectURL(blob);
+          activeTaskletPreviewBlobUrl = blobUrl;
+          const mime = String(record.mimeType || docItem.mimeType || '').toLowerCase();
+          const isImage = mime.startsWith('image/');
+          const isPdf = mime.includes('pdf') || String(docItem.name || '').toLowerCase().endsWith('.pdf');
+          const isText = mime.startsWith('text/');
+
+          const previewBodyHtml = isImage
+            ? `<div class="flex-1 min-h-0 overflow-auto custom-scrollbar bg-slate-50 rounded-xl border border-slate-200 p-3 flex items-start justify-center"><img src="${blobUrl}" alt="${escapeHtml(docItem.name)}" class="max-w-full h-auto rounded-lg object-contain" /></div>`
+            : isPdf
+              ? `<div class="flex-1 min-h-0 overflow-auto custom-scrollbar rounded-xl border border-slate-200 bg-slate-100"><iframe src="${blobUrl}#toolbar=1&navpanes=0&scrollbar=1&view=FitH" class="w-full h-full min-h-[540px] border-0 block" title="${escapeHtml(docItem.name)}"></iframe></div>`
+              : isText
+                ? `<div class="flex-1 min-h-0 overflow-auto custom-scrollbar rounded-xl border border-slate-200 bg-white"><iframe src="${blobUrl}" class="w-full h-full min-h-[540px] border-0 block" title="${escapeHtml(docItem.name)}"></iframe></div>`
+                : `
+                  <div class="flex-1 min-h-0 overflow-auto flex flex-col items-center justify-center bg-slate-50 rounded-xl border border-slate-200 p-6 text-center space-y-3">
+                    <div class="text-3xl">📄</div>
+                    <div class="text-sm font-bold text-slate-800 break-words max-w-md">${escapeHtml(docItem.name)}</div>
+                    <div class="text-xs text-slate-500">Inline preview is not supported for ${escapeHtml(fileTypeLabel)} files.</div>
+                    <a href="${blobUrl}" download="${escapeHtml(docItem.name)}" class="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold">
+                      Download File
+                    </a>
+                  </div>
+                `;
+
+          rightPanel.innerHTML = `
+            ${closeOverlayBtnHtml}
+            <div class="flex items-center justify-between gap-2 border-b border-slate-100 pb-2 mb-2 pr-7 flex-shrink-0">
+              <div class="min-w-0 flex-1 flex items-center gap-2">
+                <span class="text-xs font-bold text-slate-900 truncate">${escapeHtml(docItem.name)}</span>
+                <span class="text-[10px] text-slate-400 whitespace-nowrap flex-shrink-0">• ${escapeHtml(fileTypeLabel)} • ${escapeHtml(sizeText)}</span>
+              </div>
+              <a href="${blobUrl}" download="${escapeHtml(docItem.name)}" class="px-2 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-bold flex-shrink-0">
+                Download
+              </a>
+            </div>
+            ${previewBodyHtml}
+          `;
+        } catch (_) {
+          rightPanel.innerHTML = `
+            ${closeOverlayBtnHtml}
+            <div class="flex-1 flex items-center justify-center text-xs text-rose-500">
+              Unable to load document preview.
+            </div>
+          `;
+        }
+        return;
+      }
+
+      rightPanel.innerHTML = `
+        ${closeOverlayBtnHtml}
+        <div class="flex-1 flex flex-col items-center justify-center text-center p-6 space-y-2">
+          <div class="text-2xl">📄</div>
+          <div class="text-sm font-bold text-slate-800 break-words max-w-md">${escapeHtml(docItem.name)}</div>
+          <div class="text-xs text-slate-400">${escapeHtml(fileTypeLabel)} • ${escapeHtml(sizeText)}</div>
+        </div>
+      `;
     };
 
     window.convertTaskToProject = function (itemId) {
@@ -2199,7 +2598,7 @@
       if (idx === -1) return;
       const removed = state.items.splice(idx, 1)[0];
       (removed.documents || []).forEach(d => {
-        if (d && d.firestoreDocId) deleteFirestoreFileBlob(d.firestoreDocId);
+        deleteDocumentPayload(d);
       });
       persistWorkspaceState();
       renderAll();
@@ -2214,61 +2613,69 @@
       return `${(n / (1024 * 1024)).toFixed(2)} MB`;
     }
 
-    function readFileAsDataUrl(file) {
-      return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => resolve(String(reader.result || ''));
-        reader.onerror = () => reject(new Error('Failed to read file.'));
-        reader.readAsDataURL(file);
-      });
-    }
-
-    async function saveUploadedFileToFirestore(file) {
-      if (file.size > FIRESTORE_MAX_FILE_BYTES) {
-        throw new Error(`"${file.name}" exceeds the 700 KB Firestore limit (${formatBytesLabel(file.size)}). Share it via Google Drive link instead.`);
+    async function saveUploadedFileToCloudStorage(file, folderHint = 'general') {
+      if (file.size > CLOUD_STORAGE_MAX_FILE_BYTES) {
+        throw new Error(`"${file.name}" exceeds the 25 MB Cloud Storage limit (${formatBytesLabel(file.size)}). Share it via Google Drive link instead.`);
       }
-      const dataUrl = await readFileAsDataUrl(file);
-      const docId = `fdoc-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+      if (!storage) {
+        await initFirebaseCloud();
+      }
+      if (!storage) {
+        throw new Error('Firebase Cloud Storage is not initialized. Please refresh and try again.');
+      }
+
       const today = formatNowTimestamp().split(' ')[0];
-      localStoredFileBlobs.set(docId, {
-        name: file.name,
-        mimeType: file.type || 'application/octet-stream',
-        size: file.size,
-        dataUrl
-      });
+      const safeName = String(file.name || 'file').replace(/[^a-zA-Z0-9._-]/g, '_');
+      const uniqueId = `sdoc-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+      const objectPath = `artifacts/${appId}/documents/${folderHint}/${uniqueId}_${safeName}`;
+      const fileRef = storageRef(storage, objectPath);
 
-      if (db && isCloudReady) {
-        const fileRef = doc(db, 'artifacts', appId, 'public', 'data', 'niwas_documents', docId);
-        await setDoc(fileRef, {
-          name: file.name,
-          mimeType: file.type || 'application/octet-stream',
-          size: file.size,
-          dataUrl,
-          uploadedBy: getCurrentUser().email || 'unknown',
-          uploadedAt: new Date().toISOString()
+      try {
+        await uploadBytes(fileRef, file, {
+          contentType: file.type || 'application/octet-stream',
+          customMetadata: {
+            uploadedBy: getCurrentUser().email || 'unknown',
+            originalName: file.name || safeName
+          }
         });
+        const downloadUrl = await getDownloadURL(fileRef);
+        return {
+          name: file.name,
+          addedAt: today,
+          source: 'Cloud Storage',
+          storageType: 'cloud_storage',
+          storagePath: objectPath,
+          url: downloadUrl,
+          mimeType: file.type || 'application/octet-stream',
+          size: file.size
+        };
+      } catch (err) {
+        const code = err?.code || '';
+        if (code === 'storage/unauthorized') {
+          throw new Error('Firebase Storage permission denied. Enable read/write rules for authenticated users on /artifacts/niwas-pm/documents/.');
+        }
+        throw new Error(`Cloud Storage upload failed for "${file.name}": ${err?.message || 'Network/bucket error'}`);
       }
-
-      return {
-        name: file.name,
-        addedAt: today,
-        source: 'Firestore Upload',
-        storageType: 'firestore',
-        firestoreDocId: docId,
-        mimeType: file.type || 'application/octet-stream',
-        size: file.size
-      };
     }
 
-    async function deleteFirestoreFileBlob(docId) {
-      if (!docId) return;
-      localStoredFileBlobs.delete(docId);
-      if (db && isCloudReady) {
+    async function deleteDocumentPayload(docItem) {
+      if (!docItem) return;
+      if (docItem.storageType === 'cloud_storage' && docItem.storagePath && storage) {
         try {
-          const fileRef = doc(db, 'artifacts', appId, 'public', 'data', 'niwas_documents', docId);
-          await deleteDoc(fileRef);
+          await deleteObject(storageRef(storage, docItem.storagePath));
         } catch (err) {
-          console.warn('Firestore file cleanup skipped:', err);
+          console.warn('Cloud Storage cleanup skipped:', err);
+        }
+      }
+      if (docItem.firestoreDocId) {
+        localStoredFileBlobs.delete(docItem.firestoreDocId);
+        if (db && isCloudReady) {
+          try {
+            const fileRef = doc(db, 'artifacts', appId, 'public', 'data', 'niwas_documents', docItem.firestoreDocId);
+            await deleteDoc(fileRef);
+          } catch (err) {
+            console.warn('Legacy Firestore file cleanup skipped:', err);
+          }
         }
       }
     }
@@ -2404,15 +2811,18 @@
 
     function renderDocumentRowHtml(docItem, idx, itemId, canRemoveDocs) {
       const isFirestore = docItem.storageType === 'firestore' && docItem.firestoreDocId;
+      const isCloudFile = docItem.storageType === 'cloud_storage' && docItem.url;
       const isExternalLink = (docItem.storageType === 'gdrive' || docItem.storageType === 'web') && docItem.url;
       const icon = docItem.storageType === 'gdrive' ? '🔗' : (docItem.storageType === 'web' ? '🌐' : '📄');
       const sizeText = docItem.size ? ` • ${formatBytesLabel(docItem.size)}` : '';
 
       const openActionHtml = isFirestore
         ? `<button type="button" onclick="openStoredFirestoreDocument('${escapeHtml(docItem.firestoreDocId)}', '${escapeHtml(docItem.name)}')" class="px-2.5 py-1 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-bold flex-shrink-0">Open</button>`
-        : isExternalLink
-          ? `<a href="${escapeHtml(docItem.url)}" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-bold flex-shrink-0">Open Link ↗</a>`
-          : '';
+        : isCloudFile
+          ? `<a href="${escapeHtml(docItem.url)}" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-bold flex-shrink-0">Open ↗</a>`
+          : isExternalLink
+            ? `<a href="${escapeHtml(docItem.url)}" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-bold flex-shrink-0">Open Link ↗</a>`
+            : '';
 
       return `
         <div class="flex items-center justify-between gap-3 px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200/80 text-xs">
@@ -2462,10 +2872,23 @@
       if (!item) return;
 
       item.documents = item.documents || [];
+      let filesToProcess = files;
+      if (item.type === 'Tasklet') {
+        const remainingSlots = TASKLET_MAX_DOCS - item.documents.length;
+        if (remainingSlots <= 0) {
+          showToast(`Maximum ${TASKLET_MAX_DOCS} documents can be added to a Tasklet.`);
+          return;
+        }
+        if (files.length > remainingSlots) {
+          showToast(`Only ${remainingSlots} more file(s) allowed (max ${TASKLET_MAX_DOCS} per Tasklet).`);
+          filesToProcess = files.slice(0, remainingSlots);
+        }
+      }
+
       let uploadedCount = 0;
-      for (const f of files) {
+      for (const f of filesToProcess) {
         try {
-          const savedDoc = await saveUploadedFileToFirestore(f);
+          const savedDoc = await saveUploadedFileToCloudStorage(f, item.id);
           item.documents.push(savedDoc);
           uploadedCount += 1;
         } catch (err) {
@@ -2476,11 +2899,11 @@
       if (uploadedCount > 0) {
         item.lastChanged = formatNowTimestamp();
         item.history = item.history || [];
-        item.history.push({ timestamp: item.lastChanged, action: `Uploaded ${uploadedCount} file(s) to Firestore`, by: getCurrentUser().name });
+        item.history.push({ timestamp: item.lastChanged, action: `Uploaded ${uploadedCount} file(s) to Cloud Storage`, by: getCurrentUser().name });
         persistWorkspaceState();
         renderAll();
         renderItemDetailsView();
-        showToast(`Stored ${uploadedCount} file(s) in Firestore.`);
+        showToast(`Uploaded ${uploadedCount} file(s) to Cloud Storage.`);
       }
     };
 
@@ -2491,8 +2914,8 @@
         return;
       }
       const removed = item.documents.splice(docIndex, 1)[0];
-      if (removed && removed.firestoreDocId) {
-        deleteFirestoreFileBlob(removed.firestoreDocId);
+      if (removed) {
+        deleteDocumentPayload(removed);
       }
       item.lastChanged = formatNowTimestamp();
       item.history = item.history || [];
@@ -2520,9 +2943,11 @@
       }
       listEl.innerHTML = state.modalDocuments.map((docObj, idx) => {
         const icon = docObj.storageType === 'gdrive' ? '🔗' : (docObj.storageType === 'web' ? '🌐' : '📄');
-        const badge = docObj.storageType === 'firestore'
-          ? `Firestore${docObj.size ? ` (${formatBytesLabel(docObj.size)})` : ''}`
-          : (docObj.storageType === 'gdrive' ? 'Google Drive Link' : (docObj.storageType === 'web' ? 'Web URL' : (docObj.source || 'Upload')));
+        const badge = docObj.storageType === 'cloud_storage'
+          ? `Cloud Storage${docObj.size ? ` (${formatBytesLabel(docObj.size)})` : ''}`
+          : docObj.storageType === 'firestore'
+            ? `Firestore${docObj.size ? ` (${formatBytesLabel(docObj.size)})` : ''}`
+            : (docObj.storageType === 'gdrive' ? 'Google Drive Link' : (docObj.storageType === 'web' ? 'Web URL' : (docObj.source || 'Upload')));
         const openBtn = docObj.storageType === 'firestore' && docObj.firestoreDocId
           ? `<button type="button" onclick="openStoredFirestoreDocument('${escapeHtml(docObj.firestoreDocId)}', '${escapeHtml(docObj.name)}')" class="text-indigo-600 hover:text-indigo-800 font-bold text-[11px]">Open</button>`
           : docObj.url
@@ -2533,7 +2958,7 @@
           <div class="flex items-center justify-between gap-2 bg-white px-3 py-1.5 rounded-xl border border-slate-200">
             <div class="min-w-0 flex-1">
               <div class="truncate font-medium text-slate-700">${icon} ${escapeHtml(docObj.name)}</div>
-              <div class="text-[10px] text-slate-400 truncate">${escapeHtml(badge)}${docObj.url ? ` • ${escapeHtml(docObj.url)}` : ''}</div>
+              <div class="text-[10px] text-slate-400 truncate">${escapeHtml(badge)}${docObj.url && docObj.storageType !== 'cloud_storage' ? ` • ${escapeHtml(docObj.url)}` : ''}</div>
             </div>
             <div class="flex items-center gap-2 flex-shrink-0">
               ${openBtn}
@@ -2566,21 +2991,35 @@
       const files = Array.from(event.target.files || []);
       event.target.value = '';
       if (!files.length) return;
+      const modalType = document.getElementById('item-type')?.value || '';
+      let filesToProcess = files;
+      if (modalType === 'Tasklet') {
+        const remainingSlots = TASKLET_MAX_DOCS - state.modalDocuments.length;
+        if (remainingSlots <= 0) {
+          showToast(`Maximum ${TASKLET_MAX_DOCS} documents can be added to a Tasklet.`);
+          return;
+        }
+        if (files.length > remainingSlots) {
+          showToast(`Only ${remainingSlots} more file(s) allowed (max ${TASKLET_MAX_DOCS} per Tasklet).`);
+          filesToProcess = files.slice(0, remainingSlots);
+        }
+      }
+
       let addedCount = 0;
-      for (const f of files) {
+      const existingId = document.getElementById('item-id')?.value || 'draft';
+      for (const f of filesToProcess) {
         try {
-          const savedDoc = await saveUploadedFileToFirestore(f);
+          const savedDoc = await saveUploadedFileToCloudStorage(f, existingId);
           state.modalDocuments.push(savedDoc);
           addedCount += 1;
         } catch (err) {
           showToast(err.message || `Failed to upload ${f.name}`);
         }
       }
-      const existingId = document.getElementById('item-id')?.value;
-      const existingItem = existingId ? state.items.find(i => i.id === existingId) : null;
+      const existingItem = existingId !== 'draft' ? state.items.find(i => i.id === existingId) : null;
       renderModalDocumentsList(existingItem ? canUserDeleteItemDocuments(existingItem) : true);
       if (addedCount > 0) {
-        showToast(`Uploaded ${addedCount} file(s) to Firestore.`);
+        showToast(`Uploaded ${addedCount} file(s) to Cloud Storage.`);
       }
     };
 
@@ -2592,8 +3031,14 @@
         return;
       }
       const removed = state.modalDocuments.splice(idx, 1)[0];
-      if (removed && removed.firestoreDocId && (!existingItem || !(existingItem.documents || []).some(d => d.firestoreDocId === removed.firestoreDocId))) {
-        deleteFirestoreFileBlob(removed.firestoreDocId);
+      if (removed) {
+        const isStillReferencedOnSavedItem = existingItem && (existingItem.documents || []).some(d =>
+          (removed.storagePath && d.storagePath === removed.storagePath) ||
+          (removed.firestoreDocId && d.firestoreDocId === removed.firestoreDocId)
+        );
+        if (!isStillReferencedOnSavedItem) {
+          deleteDocumentPayload(removed);
+        }
       }
       renderModalDocumentsList(existingItem ? canUserDeleteItemDocuments(existingItem) : true);
     };
@@ -2679,7 +3124,7 @@
       previewEl.innerHTML = `
         <div class="min-w-0 flex-1">
           <div class="truncate font-semibold text-slate-800">📄 ${escapeHtml(docObj.name)}</div>
-          <div class="text-[10px] text-slate-400">Firestore${docObj.size ? ` (${formatBytesLabel(docObj.size)})` : ''} • Max 1 file attached</div>
+          <div class="text-[10px] text-slate-400">Cloud Storage${docObj.size ? ` (${formatBytesLabel(docObj.size)})` : ''} • Max 1 file attached</div>
         </div>
         <button type="button" onclick="removeTaskletModalFile()" class="text-rose-600 hover:text-rose-800 font-bold text-[11px] flex-shrink-0">Remove</button>
       `;
@@ -2708,8 +3153,8 @@
     };
 
     window.closeTaskletModal = function () {
-      if (state.taskletModalDocument?.firestoreDocId) {
-        deleteFirestoreFileBlob(state.taskletModalDocument.firestoreDocId);
+      if (state.taskletModalDocument) {
+        deleteDocumentPayload(state.taskletModalDocument);
       }
       state.taskletModalDocument = null;
       document.getElementById('tasklet-modal')?.classList.add('hidden');
@@ -2727,18 +3172,18 @@
         showToast('Only the first file was selected (max 1 file allowed).');
       }
       try {
-        const savedDoc = await saveUploadedFileToFirestore(files[0]);
+        const savedDoc = await saveUploadedFileToCloudStorage(files[0], 'tasklets');
         state.taskletModalDocument = savedDoc;
         renderTaskletModalFilePreview();
-        showToast(`Attached "${savedDoc.name}".`);
+        showToast(`Uploaded "${savedDoc.name}" to Cloud Storage.`);
       } catch (err) {
         showToast(err.message || 'Failed to upload file.');
       }
     };
 
     window.removeTaskletModalFile = function () {
-      if (state.taskletModalDocument?.firestoreDocId) {
-        deleteFirestoreFileBlob(state.taskletModalDocument.firestoreDocId);
+      if (state.taskletModalDocument) {
+        deleteDocumentPayload(state.taskletModalDocument);
       }
       state.taskletModalDocument = null;
       renderTaskletModalFilePreview();
@@ -2822,6 +3267,10 @@
       if (existingId) {
         const item = state.items.find(i => i.id === existingId);
         if (!item) return;
+        if (item.type === 'Tasklet' && state.modalDocuments.length > TASKLET_MAX_DOCS) {
+          showToast(`Maximum ${TASKLET_MAX_DOCS} documents can be added to a Tasklet.`);
+          return;
+        }
         item.title = title;
         item.description = description;
         if (caps.canManageUsers && requestedNodalId) {
@@ -3172,29 +3621,47 @@
     };
 
     function getPortalLoginUrl() {
-      return window.location.href.split('#')[0];
+      try {
+        if (window.location?.origin && window.location.origin !== 'null' && !window.location.protocol.startsWith('blob')) {
+          return `${window.location.origin}${window.location.pathname || ''}`;
+        }
+      } catch (_) {}
+      return 'https://niwas-pm.web.app';
     }
 
-    function applyTemplatePlaceholders(text, vars) {
-      return String(text || '')
-        .replace(/\{\{name\}\}/g, vars.name || '')
-        .replace(/\{\{email\}\}/g, vars.email || '')
-        .replace(/\{\{role\}\}/g, vars.role || '')
-        .replace(/\{\{loginUrl\}\}/g, vars.loginUrl || getPortalLoginUrl())
-        .replace(/\{\{title\}\}/g, vars.title || '');
+    function applyTemplatePlaceholders(templateStr, vars) {
+      return String(templateStr || '')
+        .replace(/\{\{\s*name\s*\}\}/gi, vars.name || '')
+        .replace(/\{\{\s*email\s*\}\}/gi, vars.email || '')
+        .replace(/\{\{\s*role\s*\}\}/gi, vars.role || '')
+        .replace(/\{\{\s*loginUrl\s*\}\}/gi, vars.loginUrl || getPortalLoginUrl())
+        .replace(/\{\{\s*title\s*\}\}/gi, vars.title || '');
     }
 
-    window.openWelcomeEmailModal = function (userId) {
+    window.openWelcomeEmailModal = function (userId, templateId = 'tpl-welcome') {
       const user = state.nodals.find(u => u.id === userId);
       if (!user) return;
       state.welcomeTargetUser = user;
-      const welcomeTpl = state.emailTemplates.find(t => t.id === 'tpl-welcome') || state.emailTemplates[0];
-      const renderedBody = applyTemplatePlaceholders(welcomeTpl?.body || '', {
+      state.activeEmailTemplateId = templateId;
+      const targetTpl = state.emailTemplates.find(t => t.id === templateId)
+        || INITIAL_EMAIL_TEMPLATES.find(t => t.id === templateId)
+        || state.emailTemplates[0];
+      const renderedBody = applyTemplatePlaceholders(targetTpl?.body || '', {
         name: user.name,
         email: user.email,
         role: user.permission,
         loginUrl: getPortalLoginUrl()
       });
+
+      const titleEl = document.getElementById('welcome-modal-title');
+      const bannerEl = document.getElementById('welcome-email-status-banner');
+      const isTaskletInvite = templateId === 'tpl-tasklet-access';
+      if (titleEl) titleEl.textContent = isTaskletInvite ? 'Send Tasklet Access Notification' : 'Send Welcome Email';
+      if (bannerEl) {
+        bannerEl.textContent = isTaskletInvite
+          ? 'Click below to open Gmail with the Tasklet access notification pre-filled for this user.'
+          : 'Click below to open Gmail with the welcome message pre-filled for your new user.';
+      }
 
       document.getElementById('welcome-modal-recipient').textContent = `Recipient: ${user.name} <${user.email}>`;
       document.getElementById('welcome-email-preview').value = renderedBody;
@@ -3203,6 +3670,7 @@
 
     window.closeWelcomeEmailModal = function () {
       state.welcomeTargetUser = null;
+      state.activeEmailTemplateId = 'tpl-welcome';
       document.getElementById('welcome-email-modal')?.classList.add('hidden');
     };
 
@@ -3212,7 +3680,7 @@
       ta.select();
       try {
         document.execCommand('copy');
-        showToast('Welcome email copied to clipboard.');
+        showToast('Email text copied to clipboard.');
       } catch (_) {
         showToast('Unable to copy text.');
       }
@@ -3220,8 +3688,11 @@
 
     window.launchOneClickGmailWelcome = function () {
       if (!state.welcomeTargetUser) return;
-      const welcomeTpl = state.emailTemplates.find(t => t.id === 'tpl-welcome') || state.emailTemplates[0];
-      const subject = applyTemplatePlaceholders(welcomeTpl?.subject || 'Welcome to SPM-NIWAS', {
+      const tplId = state.activeEmailTemplateId || 'tpl-welcome';
+      const targetTpl = state.emailTemplates.find(t => t.id === tplId)
+        || INITIAL_EMAIL_TEMPLATES.find(t => t.id === tplId)
+        || state.emailTemplates[0];
+      const subject = applyTemplatePlaceholders(targetTpl?.subject || 'Welcome to SPM-NIWAS', {
         name: state.welcomeTargetUser.name,
         email: state.welcomeTargetUser.email,
         role: state.welcomeTargetUser.permission,
@@ -3492,10 +3963,17 @@
                 : `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-slate-100 text-slate-500">No Access</span>`}
             </td>
             <td class="px-4 py-3.5 text-right">
-              <label class="inline-flex items-center gap-2 cursor-pointer select-none">
-                <input type="checkbox" ${hasAccess ? 'checked' : ''} onchange="toggleUserTaskletAccess('${escapeHtml(u.id)}', this.checked)" class="w-4 h-4 rounded text-indigo-600 focus:ring-indigo-500" />
-                <span class="text-xs font-semibold text-slate-700">${hasAccess ? 'Enabled' : 'Disabled'}</span>
-              </label>
+              <div class="inline-flex items-center justify-end gap-3">
+                ${hasAccess ? `
+                  <button type="button" onclick="openWelcomeEmailModal('${escapeHtml(u.id)}', 'tpl-tasklet-access')" class="px-2.5 py-1 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs font-semibold transition-colors">
+                    Notify Email
+                  </button>
+                ` : ''}
+                <label class="inline-flex items-center gap-2 cursor-pointer select-none">
+                  <input type="checkbox" ${hasAccess ? 'checked' : ''} onchange="toggleUserTaskletAccess('${escapeHtml(u.id)}', this.checked)" class="w-4 h-4 rounded text-indigo-600 focus:ring-indigo-500" />
+                  <span class="text-xs font-semibold text-slate-700">${hasAccess ? 'Enabled' : 'Disabled'}</span>
+                </label>
+              </div>
             </td>
           </tr>
         `;
@@ -3510,6 +3988,9 @@
       persistWorkspaceState();
       renderAll();
       showToast(`${targetUser.name} ${isEnabled ? 'granted' : 'removed from'} Tasklet access.`);
+      if (isEnabled) {
+        openWelcomeEmailModal(targetUser.id, 'tpl-tasklet-access');
+      }
     };
 
     window.startColumnResize = function (event, tableKey, colIndex) {
