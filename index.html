@@ -188,13 +188,13 @@
         </div>
 
         <div class="flex items-center gap-2.5">
-          <!-- Add Task Button (Only on Dashboard) -->
+          <!-- Add Task Button (Dashboard & Tasks Page) -->
           <button type="button" id="btn-header-add-task" onclick="openItemModal('Task')" class="px-3.5 py-2.5 rounded-xl bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 text-xs sm:text-sm font-semibold flex items-center gap-1.5 transition-all">
             <svg class="w-4 h-4 text-indigo-600" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
             Add Task
           </button>
 
-          <!-- Add Project Button (Only on Dashboard) -->
+          <!-- Add Project Button (Dashboard & Projects Page) -->
           <button type="button" id="btn-header-add-project" onclick="openItemModal('Project')" class="px-3.5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs sm:text-sm font-semibold flex items-center gap-1.5 transition-all">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
             Add Project
@@ -1606,8 +1606,8 @@
 
       const isDashboard = tabName === 'overview';
       kpiSection?.classList.toggle('hidden', !isDashboard);
-      addTaskBtn?.classList.toggle('hidden', !isDashboard);
-      addProjectBtn?.classList.toggle('hidden', !isDashboard);
+      addTaskBtn?.classList.toggle('hidden', !(isDashboard || tabName === 'tasks'));
+      addProjectBtn?.classList.toggle('hidden', !(isDashboard || tabName === 'projects'));
 
       const titles = {
         'overview': ['Dashboard', 'Unified overview of all active SPM-NIWAS projects and tasks.'],
