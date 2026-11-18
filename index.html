@@ -146,7 +146,7 @@
           </button>
 
           <!-- Settings Sub-Menu Below Tasks -->
-          <div class="pt-3 mt-1.5 border-t border-slate-800/90 flex lg:flex-col gap-1.5">
+          <div id="sidebar-settings-group" class="hidden pt-3 mt-1.5 border-t border-slate-800/90 flex lg:flex-col gap-1.5">
             <div class="hidden lg:flex items-center gap-2 px-3.5 py-1 text-[11px] font-bold uppercase tracking-wider text-slate-400">
               <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
               Settings
@@ -1567,6 +1567,11 @@
     document.addEventListener('click', closeSettingsMenu);
 
     window.switchTab = function (tabName) {
+      const settingsTabs = ['nodals', 'email-settings', 'email-templates'];
+      if (settingsTabs.includes(tabName) && !getRoleCapabilities().canManageUsers) {
+        tabName = 'overview';
+      }
+
       state.activeTab = tabName;
       if (tabName !== 'tasks') {
         state.tasksReadyOnly = false;
@@ -2983,6 +2988,16 @@
     function renderAll() {
       updateAuthGateVisibility();
       if (!state.authUser) return;
+
+      const caps = getRoleCapabilities();
+      const settingsGroup = document.getElementById('sidebar-settings-group');
+      if (settingsGroup) {
+        settingsGroup.classList.toggle('hidden', !caps.canManageUsers);
+      }
+      if (!caps.canManageUsers && ['nodals', 'email-settings', 'email-templates'].includes(state.activeTab)) {
+        switchTab('overview');
+        return;
+      }
 
       const visibleItems = state.items.filter(i => i.status !== 'Archived');
       const projects = visibleItems.filter(i => i.type === 'Project');
