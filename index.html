@@ -298,6 +298,7 @@
 
             <select id="overview-status-filter" onchange="resetPageAndRender('overview')" class="text-xs sm:text-sm font-medium bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 flex-shrink-0">
               <option value="All">All Statuses</option>
+              <option value="Ongoing">Ongoing</option>
               <option value="Not Started">Not Started</option>
               <option value="In Progress">In Progress</option>
               <option value="On Hold">On Hold</option>
@@ -488,19 +489,10 @@
             </div>
 
             <select id="tasklets-status-filter" onchange="resetPageAndRender('tasklets')" class="text-xs sm:text-sm font-medium bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 flex-shrink-0">
-              <option value="All">All Statuses</option>
-              <option value="Not Started">Not Started</option>
-              <option value="In Progress">In Progress</option>
-              <option value="On Hold">On Hold</option>
+              <option value="Active" selected>Active</option>
               <option value="Completed">Completed</option>
               <option value="Abandoned">Abandoned</option>
-              <option value="Pending Approval">Pending Approval</option>
             </select>
-
-            <label class="inline-flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs sm:text-sm font-medium text-slate-700 cursor-pointer select-none hover:bg-slate-100/70 transition-colors flex-shrink-0">
-              <input type="checkbox" id="tasklets-show-archived" onchange="resetPageAndRender('tasklets')" class="rounded text-indigo-600 focus:ring-indigo-500" />
-              <span>Show Archived</span>
-            </label>
           </div>
 
           <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden">
@@ -811,6 +803,7 @@
           <div>
             <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">Status</label>
             <select id="item-status" class="w-full px-3 py-2.5 text-xs sm:text-sm font-medium bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500">
+              <option value="Ongoing">Ongoing</option>
               <option value="Not Started">Not Started</option>
               <option value="In Progress">In Progress</option>
               <option value="On Hold">On Hold</option>
@@ -886,15 +879,21 @@
         <div class="bg-slate-50 border border-slate-200 rounded-2xl p-4 space-y-2.5">
           <div class="flex items-center justify-between gap-2">
             <div>
-              <span class="text-xs font-bold uppercase tracking-wider text-slate-600">File Upload</span>
-              <p class="text-[11px] text-slate-400">Max 1 file allowed at creation time (Firestore max 700 KB).</p>
+              <span class="text-xs font-bold uppercase tracking-wider text-slate-600">Document Upload or URL</span>
+              <p class="text-[11px] text-slate-400">Attach 1 file (max 700 KB) or 1 Google Drive / open-access URL at creation.</p>
             </div>
-            <label id="tasklet-file-upload-label" class="cursor-pointer px-3 py-1.5 rounded-xl bg-white border border-slate-300 hover:bg-slate-100 text-xs font-semibold text-slate-700">
+            <label id="tasklet-file-upload-label" class="cursor-pointer px-3 py-1.5 rounded-xl bg-white border border-slate-300 hover:bg-slate-100 text-xs font-semibold text-slate-700 whitespace-nowrap">
               + Upload File
               <input type="file" id="tasklet-file-input" onchange="handleTaskletFileUpload(event)" class="hidden" />
             </label>
           </div>
-          <div id="tasklet-file-preview" class="text-xs text-slate-500 italic">No file selected.</div>
+          <div id="tasklet-url-input-row" class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+            <input type="url" id="tasklet-doc-link-input" placeholder="Or paste Google Drive / open-access web URL (https://...)" class="flex-1 px-3 py-1.5 text-xs bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+            <button type="button" id="tasklet-add-link-btn" onclick="handleTaskletModalAddLink()" class="px-3 py-1.5 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs font-bold whitespace-nowrap transition-colors">
+              + Add URL
+            </button>
+          </div>
+          <div id="tasklet-file-preview" class="text-xs text-slate-500 italic">No file or URL attached.</div>
         </div>
 
         <div class="flex items-center justify-end gap-2.5 pt-3 border-t border-slate-100">
@@ -1095,6 +1094,35 @@
     <span id="toast-message"></span>
   </div>
 
+  <!-- MODAL 8: TASKLET LIFECYCLE ACTION (COMPLETE WARNING / ABANDON REASON / REOPEN REASON) -->
+  <div id="tasklet-lifecycle-modal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-md w-full p-6 sm:p-7 shadow-2xl border border-slate-200 space-y-4">
+      <div class="flex items-start gap-3">
+        <div id="tasklet-lifecycle-icon" class="w-10 h-10 rounded-2xl bg-amber-100 text-amber-700 flex items-center justify-center flex-shrink-0">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+        </div>
+        <div class="min-w-0 flex-1">
+          <h3 id="tasklet-lifecycle-title" class="text-base font-extrabold text-slate-900">Confirm Action</h3>
+          <p id="tasklet-lifecycle-message" class="text-xs text-slate-600 mt-1 leading-relaxed"></p>
+        </div>
+      </div>
+
+      <div id="tasklet-lifecycle-reason-wrap" class="hidden space-y-1.5">
+        <label id="tasklet-lifecycle-reason-label" for="tasklet-lifecycle-reason-input" class="block text-xs font-bold text-slate-700">Reason</label>
+        <div class="relative">
+          <textarea id="tasklet-lifecycle-reason-input" rows="3" oninput="handleTaskletLifecycleReasonInput(this)" placeholder="Enter reason..." class="w-full px-3.5 pt-2.5 pb-6 text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-none"></textarea>
+          <span id="tasklet-lifecycle-word-countdown" class="hidden pointer-events-none absolute bottom-2 right-3 text-[11px] font-semibold text-slate-400">20 words left</span>
+        </div>
+        <p id="tasklet-lifecycle-error" class="hidden text-xs font-semibold text-rose-600"></p>
+      </div>
+
+      <div class="flex items-center justify-end gap-2.5 pt-2 border-t border-slate-100">
+        <button type="button" onclick="closeTaskletLifecycleModal()" class="px-4 py-2 rounded-xl border border-slate-200 text-slate-700 hover:bg-slate-50 text-xs sm:text-sm font-semibold">Cancel</button>
+        <button type="button" id="tasklet-lifecycle-confirm-btn" onclick="submitTaskletLifecycleModal()" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs sm:text-sm font-semibold">Confirm</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Unauthorized Sign-In Gate / Notice Modal -->
   <div id="unauthorized-login-modal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
     <div class="bg-white rounded-3xl max-w-md w-full p-6 sm:p-7 shadow-2xl border border-rose-200 space-y-4">
@@ -1123,6 +1151,9 @@
     const LOCAL_WORKSPACE_STATE_KEY = 'niwas_workspace_state_v1';
     const FIRESTORE_MAX_FILE_BYTES = 700 * 1024;
     const TASKLET_MAX_DOCS = 5;
+    const TASKLET_MAX_UPDATES = 10;
+    const TASKLET_UPDATE_MAX_WORDS = 100;
+    const TASKLET_ABANDON_MAX_WORDS = 20;
     const localStoredFileBlobs = new Map();
 
     const ROLE_PERMISSIONS = {
@@ -1255,6 +1286,7 @@
       items: JSON.parse(JSON.stringify(INITIAL_ITEMS)),
       modalDocuments: [],
       taskletModalDocument: null,
+      taskletLifecycleAction: null,
       welcomeTargetUser: null,
       activeEmailTemplateId: 'tpl-welcome',
       reassignTargetUserId: null,
@@ -1953,6 +1985,7 @@
 
     function getStatusBadgeHtml(status) {
       const styles = {
+        'Ongoing': 'bg-indigo-50 text-indigo-700 border-indigo-200',
         'Not Started': 'bg-slate-100 text-slate-700 border-slate-200',
         'In Progress': 'bg-indigo-50 text-indigo-700 border-indigo-200',
         'On Hold': 'bg-amber-50 text-amber-700 border-amber-200',
@@ -2004,6 +2037,10 @@
       `;
     }
 
+    function isTaskletLockedStatus(item) {
+      return Boolean(item && item.type === 'Tasklet' && (item.status === 'Completed' || item.status === 'Abandoned'));
+    }
+
     function renderItemsTable(sectionKey, fixedType) {
       const tbody = document.getElementById(`${sectionKey}-table-body`);
       if (!tbody) return;
@@ -2027,7 +2064,13 @@
         if (!getRoleCapabilities().canAccessTasklets && item.type === 'Tasklet') return false;
         if (!showArchived && item.status === 'Archived') return false;
         if (selectedType !== 'All' && item.type !== selectedType) return false;
-        if (statusVal !== 'All' && item.status !== statusVal) return false;
+        if (statusVal !== 'All') {
+          if (statusVal === 'Active') {
+            if (item.status === 'Completed' || item.status === 'Abandoned' || item.status === 'Archived') return false;
+          } else if (item.status !== statusVal) {
+            return false;
+          }
+        }
         if (sectionKey === 'tasks' && state.tasksReadyOnly && !isTaskReadyForProject(item)) return false;
         if (searchVal) {
           const nodal = getNodalById(item.nodalId);
@@ -2036,6 +2079,14 @@
         }
         return true;
       });
+
+      if (sectionKey === 'tasklets') {
+        filtered.sort((a, b) => {
+          const timeDiff = String(b.lastChanged || '').localeCompare(String(a.lastChanged || ''));
+          if (timeDiff !== 0) return timeDiff;
+          return String(b.id || '').localeCompare(String(a.id || ''));
+        });
+      }
 
       const totalPages = Math.max(1, Math.ceil(filtered.length / state.pageSize));
       const currentPage = Math.min(state.pages[sectionKey] || 1, totalPages);
@@ -2095,7 +2146,9 @@
               </span>
             </td>
             <td class="px-4 py-3.5 text-right whitespace-nowrap space-x-1">
-              <button type="button" onclick="openEditItemModal('${item.id}')" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold">Edit</button>
+              ${isTaskletLockedStatus(item)
+                ? `<button type="button" onclick="openItemDetails('${item.id}')" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold">View</button>`
+                : `<button type="button" onclick="openEditItemModal('${item.id}')" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold">Edit</button>`}
               ${caps.canDelete ? `<button type="button" onclick="deleteItemRecord('${item.id}')" class="px-2.5 py-1 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-semibold">Delete</button>` : ''}
             </td>
           </tr>
@@ -2270,8 +2323,11 @@
     function renderTaskletDetailsView(card, item) {
       card.className = 'grid grid-cols-1 lg:grid-cols-12 gap-6 items-start';
       const docs = Array.isArray(item.documents) ? item.documents : [];
-      const canRemoveDocs = canUserDeleteItemDocuments(item);
-      const canAddMoreDocs = docs.length < TASKLET_MAX_DOCS;
+      const isCompletedLocked = item.status === 'Completed';
+      const isAbandonedLocked = item.status === 'Abandoned';
+      const isTaskletLocked = isCompletedLocked || isAbandonedLocked;
+      const canRemoveDocs = !isTaskletLocked && canUserDeleteItemDocuments(item);
+      const canAddMoreDocs = !isTaskletLocked && docs.length < TASKLET_MAX_DOCS;
 
       const fileCardsHtml = docs.length === 0
         ? `
@@ -2320,15 +2376,33 @@
         <!-- LEFT PANEL: Name, Description, Attached Files, and Status Actions -->
         <div class="lg:col-span-6 bg-white rounded-2xl border border-slate-200 p-6 space-y-6">
           <div class="space-y-1.5 border-b border-slate-100 pb-4">
-            <div class="flex items-center justify-between gap-2">
+            <div class="flex flex-wrap items-center justify-between gap-2">
               <div class="flex items-center gap-2">
                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-md text-[10px] font-extrabold uppercase tracking-wider bg-emerald-100 text-emerald-800">Tasklet</span>
                 ${getStatusBadgeHtml(item.status)}
               </div>
-              <span class="text-xs font-medium text-slate-400">${escapeHtml(item.dueDate || '')}</span>
+              <div class="flex items-center gap-2.5">
+                <span class="text-xs font-medium text-slate-400">${escapeHtml(item.dueDate || '')}</span>
+                ${isCompletedLocked ? `
+                  <button type="button" onclick="openTaskletLifecycleModal('${item.id}', 'reopen')" class="px-3 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold shadow-xs transition-colors">
+                    Open Tasklet
+                  </button>
+                ` : ''}
+              </div>
             </div>
             <h2 class="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight pt-1">${escapeHtml(item.title)}</h2>
           </div>
+
+          ${isCompletedLocked ? `
+            <div class="rounded-2xl bg-emerald-50/80 border border-emerald-200 px-4 py-3 text-xs text-emerald-900 flex items-center justify-between gap-2">
+              <span>🔒 This Tasklet is marked as <strong>Completed</strong> and is locked for editing. Click <strong>Open Tasklet</strong> above to reopen it.</span>
+            </div>
+          ` : isAbandonedLocked ? `
+            <div class="rounded-2xl bg-rose-50/90 border border-rose-200 px-4 py-3 text-xs text-rose-900 space-y-1">
+              <div>🔒 This Tasklet is marked as <strong>Abandoned</strong> and is permanently locked against editing.</div>
+              ${item.abandonReason ? `<div class="text-[11px] text-rose-700"><strong>Reason:</strong> ${escapeHtml(item.abandonReason)}</div>` : ''}
+            </div>
+          ` : ''}
 
           <div class="space-y-1.5">
             <div class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Description</div>
@@ -2337,50 +2411,380 @@
 
           <div class="space-y-3 pt-2 border-t border-slate-100">
             <div class="flex items-center justify-between gap-2">
-              <div class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Files (${docs.length} / ${TASKLET_MAX_DOCS} max)</div>
-              ${canAddMoreDocs ? `
+              <div class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Files &amp; Links (${docs.length} / ${TASKLET_MAX_DOCS} max)</div>
+              ${isTaskletLocked ? `
+                <span class="px-2.5 py-1 rounded-xl bg-slate-100 text-slate-500 text-[11px] font-semibold">Locked (${escapeHtml(item.status)})</span>
+              ` : canAddMoreDocs ? `
                 <label class="cursor-pointer px-3 py-1.5 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs font-bold transition-colors">
                   + Upload File
                   <input type="file" multiple onchange="handleDetailsFileUpload(event, '${item.id}')" class="hidden" />
                 </label>
               ` : `
-                <span class="px-2.5 py-1 rounded-xl bg-slate-100 text-slate-500 text-[11px] font-semibold">Max ${TASKLET_MAX_DOCS} files reached</span>
+                <span class="px-2.5 py-1 rounded-xl bg-slate-100 text-slate-500 text-[11px] font-semibold">Max ${TASKLET_MAX_DOCS} items reached</span>
               `}
             </div>
+            ${canAddMoreDocs ? `
+              <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+                <input type="url" id="details-doc-link-input" placeholder="Or paste Google Drive / open-access web URL (https://...)" class="flex-1 px-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+                <button type="button" onclick="handleDetailsAddExternalLink('${item.id}')" class="px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold whitespace-nowrap transition-colors">
+                  + Add URL
+                </button>
+              </div>
+            ` : ''}
             ${fileCardsHtml}
           </div>
 
           <!-- Bottom Status Buttons: Completed & Abandoned -->
-          <div class="pt-4 border-t border-slate-100 flex flex-wrap items-center justify-end gap-2.5">
-            <button type="button" onclick="setTaskletOutcomeStatus('${item.id}', 'Abandoned')" class="px-4 py-2 rounded-xl border text-xs sm:text-sm font-bold transition-colors ${item.status === 'Abandoned' ? 'bg-rose-600 border-rose-600 text-white' : 'bg-rose-50 hover:bg-rose-100 border-rose-200 text-rose-700'}">
-              Abandoned
-            </button>
-            <button type="button" onclick="setTaskletOutcomeStatus('${item.id}', 'Completed')" class="px-4 py-2 rounded-xl border text-xs sm:text-sm font-bold transition-colors ${item.status === 'Completed' ? 'bg-emerald-600 border-emerald-600 text-white' : 'bg-emerald-50 hover:bg-emerald-100 border-emerald-200 text-emerald-700'}">
-              Completed
-            </button>
-          </div>
+          ${!isTaskletLocked ? `
+            <div class="pt-4 border-t border-slate-100 flex flex-wrap items-center justify-end gap-2.5">
+              <button type="button" onclick="openTaskletLifecycleModal('${item.id}', 'abandon')" class="px-4 py-2 rounded-xl border text-xs sm:text-sm font-bold transition-colors bg-rose-50 hover:bg-rose-100 border-rose-200 text-rose-700">
+                Abandoned
+              </button>
+              <button type="button" onclick="openTaskletLifecycleModal('${item.id}', 'complete')" class="px-4 py-2 rounded-xl border text-xs sm:text-sm font-bold transition-colors bg-emerald-50 hover:bg-emerald-100 border-emerald-200 text-emerald-700">
+                Completed
+              </button>
+            </div>
+          ` : ''}
         </div>
 
-        <!-- RIGHT PANEL: File Preview Pane -->
-        <div id="tasklet-details-right-panel" class="group relative lg:col-span-6 bg-white rounded-2xl border border-slate-200 p-6 min-h-[420px] flex flex-col"></div>
+        <!-- RIGHT PANEL: Tasklet Updates Feed & Document Preview -->
+        <div id="tasklet-details-right-panel" class="group relative lg:col-span-6 bg-white rounded-2xl border border-slate-200 p-5 sm:p-6 min-h-[420px] flex flex-col"></div>
+      `;
+
+      renderTaskletUpdatesDefaultPane(item);
+    }
+
+    function renderTaskletUpdatesDefaultPane(item) {
+      const rightPanel = document.getElementById('tasklet-details-right-panel');
+      if (!rightPanel || !item) return;
+
+      const updates = Array.isArray(item.updates) ? item.updates : [];
+      const totalUpdates = updates.length;
+      const isCompletedLocked = item.status === 'Completed';
+      const isAbandonedLocked = item.status === 'Abandoned';
+      const isTaskletLocked = isCompletedLocked || isAbandonedLocked;
+      const canAddMore = !isTaskletLocked && totalUpdates < TASKLET_MAX_UPDATES;
+
+      // Oldest is at index 0 (numbered #1), newest is at index totalUpdates - 1 (numbered #totalUpdates)
+      const updatesCardsHtml = totalUpdates === 0
+        ? `
+          <div class="rounded-2xl border border-dashed border-slate-200 bg-slate-50/70 p-6 text-center text-xs text-slate-400">
+            No updates posted yet.${isTaskletLocked ? '' : ' Add your first update above.'}
+          </div>
+        `
+        : updates.map((upd, idx) => ({ upd, number: idx + 1 }))
+            .reverse()
+            .map(({ upd, number }) => `
+              <div class="w-full rounded-2xl border border-slate-200 bg-slate-50/80 p-3.5 sm:p-4 space-y-1.5">
+                <div class="flex items-center justify-between gap-2 text-[11px]">
+                  <span class="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-extrabold bg-indigo-100 text-indigo-800">
+                    #${number}
+                  </span>
+                  <span class="font-medium text-slate-400">${escapeHtml(upd.timestamp || '')}${upd.by ? ` • ${escapeHtml(upd.by)}` : ''}</span>
+                </div>
+                <p class="text-xs sm:text-sm text-slate-800 whitespace-pre-line leading-relaxed">${escapeHtml(upd.text || '')}</p>
+              </div>
+            `).join('');
+
+      rightPanel.className = 'group relative lg:col-span-6 bg-white rounded-2xl border border-slate-200 p-5 sm:p-6 min-h-[420px] flex flex-col space-y-4';
+      rightPanel.innerHTML = `
+        <div class="space-y-2 border-b border-slate-100 pb-4">
+          <div class="flex items-center justify-between gap-2">
+            <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Progress Updates (${totalUpdates} / ${TASKLET_MAX_UPDATES} max)</span>
+            ${canAddMore ? `
+              <button type="button" onclick="addTaskletUpdate('${item.id}')" class="px-3.5 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold transition-colors">
+                Update
+              </button>
+            ` : ''}
+          </div>
+          ${isCompletedLocked ? `
+            <div class="rounded-xl bg-slate-100 border border-slate-200 px-3.5 py-2.5 text-xs font-semibold text-slate-600">
+              Tasklet is completed. Click <strong>Open Tasklet</strong> to post new updates.
+            </div>
+          ` : isAbandonedLocked ? `
+            <div class="rounded-xl bg-rose-50 border border-rose-200 px-3.5 py-2.5 text-xs font-semibold text-rose-700">
+              Tasklet is abandoned and locked. No further updates can be added.
+            </div>
+          ` : canAddMore ? `
+            <div class="relative">
+              <textarea id="tasklet-new-update-input" rows="3" oninput="handleTaskletUpdateWordLimit(this)" placeholder="Write a quick update (max ${TASKLET_UPDATE_MAX_WORDS} words)..." class="w-full px-3.5 pt-2 pb-6 text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-y"></textarea>
+              <span id="tasklet-update-word-countdown" class="pointer-events-none absolute bottom-2 right-3 text-[11px] font-semibold text-slate-400">${TASKLET_UPDATE_MAX_WORDS} words left</span>
+            </div>
+          ` : `
+            <div class="rounded-xl bg-amber-50 border border-amber-200 px-3.5 py-2.5 text-xs font-semibold text-amber-800">
+              Maximum ${TASKLET_MAX_UPDATES} updates reached for this Tasklet.
+            </div>
+          `}
+        </div>
+
+        <div class="flex flex-col gap-2.5 w-full">
+          ${updatesCardsHtml}
+        </div>
       `;
     }
 
-    window.setTaskletOutcomeStatus = function (itemId, nextStatus) {
+    function countWordsInText(str) {
+      const trimmed = String(str || '').trim();
+      if (!trimmed) return 0;
+      return trimmed.split(/\s+/).length;
+    }
+
+    function truncateToMaxWords(str, maxWords) {
+      const text = String(str || '');
+      const matches = Array.from(text.matchAll(/\S+/g));
+      if (matches.length <= maxWords) return text;
+      const cutoffIndex = matches[maxWords].index;
+      return text.slice(0, cutoffIndex).trimEnd();
+    }
+
+    window.handleTaskletUpdateWordLimit = function (textarea) {
+      if (!textarea) return;
+      const currentWords = countWordsInText(textarea.value);
+      if (currentWords > TASKLET_UPDATE_MAX_WORDS) {
+        textarea.value = truncateToMaxWords(textarea.value, TASKLET_UPDATE_MAX_WORDS);
+      }
+      const finalWords = countWordsInText(textarea.value);
+      const remaining = Math.max(0, TASKLET_UPDATE_MAX_WORDS - finalWords);
+      const counterEl = document.getElementById('tasklet-update-word-countdown');
+      if (counterEl) {
+        counterEl.textContent = `${remaining} ${remaining === 1 ? 'word' : 'words'} left`;
+        counterEl.classList.toggle('text-rose-600', remaining === 0);
+        counterEl.classList.toggle('text-amber-600', remaining > 0 && remaining <= 15);
+        counterEl.classList.toggle('text-slate-400', remaining > 15);
+      }
+    };
+
+    window.addTaskletUpdate = function (itemId) {
       const item = state.items.find(i => i.id === itemId);
       if (!item || item.type !== 'Tasklet') return;
-      if (item.status === nextStatus) {
-        showToast(`Tasklet is already marked as ${nextStatus}.`);
+      if (isTaskletLockedStatus(item)) {
+        showToast(`${item.status} Tasklets are locked and cannot be edited.`);
         return;
       }
-      item.status = nextStatus;
-      item.lastChanged = formatNowTimestamp();
+
+      item.updates = Array.isArray(item.updates) ? item.updates : [];
+      if (item.updates.length >= TASKLET_MAX_UPDATES) {
+        showToast(`Maximum ${TASKLET_MAX_UPDATES} updates allowed per Tasklet.`);
+        return;
+      }
+
+      const input = document.getElementById('tasklet-new-update-input');
+      const rawText = (input?.value || '').trim();
+      if (!rawText) {
+        showToast('Please enter an update before clicking Update.');
+        input?.focus();
+        return;
+      }
+
+      const text = truncateToMaxWords(rawText, TASKLET_UPDATE_MAX_WORDS);
+
+      const nowStr = formatNowTimestamp();
+      const userName = getCurrentUser().name;
+      item.updates.push({
+        id: `upd-${Date.now()}`,
+        text,
+        timestamp: nowStr,
+        by: userName
+      });
+      item.lastChanged = nowStr;
       item.history = item.history || [];
-      item.history.push({ timestamp: item.lastChanged, action: `Marked as ${nextStatus}`, by: getCurrentUser().name });
+      item.history.push({
+        timestamp: nowStr,
+        action: `Added update #${item.updates.length}`,
+        by: userName
+      });
+
       persistWorkspaceState();
       renderAll();
-      renderItemDetailsView();
-      showToast(`Tasklet marked as ${nextStatus}.`);
+      renderTaskletUpdatesDefaultPane(item);
+      showToast(`Update #${item.updates.length} added.`);
+    };
+
+    window.openTaskletLifecycleModal = function (itemId, mode) {
+      const item = state.items.find(i => i.id === itemId);
+      if (!item || item.type !== 'Tasklet') return;
+
+      if (item.status === 'Abandoned') {
+        showToast('Abandoned Tasklets are locked and cannot be modified.');
+        return;
+      }
+      if (mode === 'complete' && item.status === 'Completed') {
+        showToast('Tasklet is already marked as Completed.');
+        return;
+      }
+
+      state.taskletLifecycleAction = { itemId, mode };
+      const modal = document.getElementById('tasklet-lifecycle-modal');
+      const iconEl = document.getElementById('tasklet-lifecycle-icon');
+      const titleEl = document.getElementById('tasklet-lifecycle-title');
+      const msgEl = document.getElementById('tasklet-lifecycle-message');
+      const reasonWrap = document.getElementById('tasklet-lifecycle-reason-wrap');
+      const reasonLabel = document.getElementById('tasklet-lifecycle-reason-label');
+      const reasonInput = document.getElementById('tasklet-lifecycle-reason-input');
+      const countdownEl = document.getElementById('tasklet-lifecycle-word-countdown');
+      const errorEl = document.getElementById('tasklet-lifecycle-error');
+      const confirmBtn = document.getElementById('tasklet-lifecycle-confirm-btn');
+
+      if (errorEl) errorEl.classList.add('hidden');
+      if (reasonInput) reasonInput.value = '';
+
+      if (mode === 'complete') {
+        if (iconEl) {
+          iconEl.className = 'w-10 h-10 rounded-2xl bg-amber-100 text-amber-700 flex items-center justify-center flex-shrink-0';
+        }
+        if (titleEl) titleEl.textContent = 'Mark Tasklet as Completed?';
+        if (msgEl) msgEl.textContent = 'Warning: Once marked as Completed, this Tasklet will be locked and cannot be edited unless you reopen it using "Open Tasklet".';
+        if (reasonWrap) reasonWrap.classList.add('hidden');
+        if (countdownEl) countdownEl.classList.add('hidden');
+        if (confirmBtn) {
+          confirmBtn.textContent = 'Yes, Complete Tasklet';
+          confirmBtn.className = 'px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs sm:text-sm font-semibold';
+        }
+      } else if (mode === 'reopen') {
+        if (iconEl) {
+          iconEl.className = 'w-10 h-10 rounded-2xl bg-indigo-100 text-indigo-700 flex items-center justify-center flex-shrink-0';
+        }
+        if (titleEl) titleEl.textContent = 'Open Tasklet';
+        if (msgEl) msgEl.textContent = 'Reopening this completed Tasklet will allow edits, uploads, and new progress updates again.';
+        if (reasonWrap) reasonWrap.classList.remove('hidden');
+        if (reasonLabel) reasonLabel.textContent = 'Why do you want to open this Tasklet?';
+        if (reasonInput) reasonInput.placeholder = 'Explain why you want to reopen this Tasklet...';
+        if (countdownEl) countdownEl.classList.add('hidden');
+        if (confirmBtn) {
+          confirmBtn.textContent = 'Open Tasklet';
+          confirmBtn.className = 'px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs sm:text-sm font-semibold';
+        }
+      } else if (mode === 'abandon') {
+        if (iconEl) {
+          iconEl.className = 'w-10 h-10 rounded-2xl bg-rose-100 text-rose-700 flex items-center justify-center flex-shrink-0';
+        }
+        if (titleEl) titleEl.textContent = 'Abandon Tasklet';
+        if (msgEl) msgEl.textContent = 'Please provide a brief reason for abandoning this Tasklet (maximum 20 words).';
+        if (reasonWrap) reasonWrap.classList.remove('hidden');
+        if (reasonLabel) reasonLabel.textContent = 'Reason for Abandoning (max 20 words)';
+        if (reasonInput) reasonInput.placeholder = 'Enter reason (max 20 words)...';
+        if (countdownEl) {
+          countdownEl.textContent = `${TASKLET_ABANDON_MAX_WORDS} words left`;
+          countdownEl.className = 'pointer-events-none absolute bottom-2 right-3 text-[11px] font-semibold text-slate-400';
+          countdownEl.classList.remove('hidden');
+        }
+        if (confirmBtn) {
+          confirmBtn.textContent = 'Confirm Abandon';
+          confirmBtn.className = 'px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs sm:text-sm font-semibold';
+        }
+      }
+
+      modal?.classList.remove('hidden');
+      if (mode !== 'complete') {
+        setTimeout(() => reasonInput?.focus(), 30);
+      }
+    };
+
+    window.closeTaskletLifecycleModal = function () {
+      state.taskletLifecycleAction = null;
+      document.getElementById('tasklet-lifecycle-modal')?.classList.add('hidden');
+    };
+
+    window.handleTaskletLifecycleReasonInput = function (textarea) {
+      if (!textarea || !state.taskletLifecycleAction) return;
+      if (state.taskletLifecycleAction.mode === 'abandon') {
+        if (countWordsInText(textarea.value) > TASKLET_ABANDON_MAX_WORDS) {
+          textarea.value = truncateToMaxWords(textarea.value, TASKLET_ABANDON_MAX_WORDS);
+        }
+        const remaining = Math.max(0, TASKLET_ABANDON_MAX_WORDS - countWordsInText(textarea.value));
+        const countdownEl = document.getElementById('tasklet-lifecycle-word-countdown');
+        if (countdownEl) {
+          countdownEl.textContent = `${remaining} ${remaining === 1 ? 'word' : 'words'} left`;
+          countdownEl.classList.toggle('text-rose-600', remaining === 0);
+          countdownEl.classList.toggle('text-amber-600', remaining > 0 && remaining <= 5);
+          countdownEl.classList.toggle('text-slate-400', remaining > 5);
+        }
+      }
+    };
+
+    window.submitTaskletLifecycleModal = function () {
+      const action = state.taskletLifecycleAction;
+      if (!action) return;
+      const item = state.items.find(i => i.id === action.itemId);
+      if (!item || item.type !== 'Tasklet') {
+        closeTaskletLifecycleModal();
+        return;
+      }
+
+      const reasonInput = document.getElementById('tasklet-lifecycle-reason-input');
+      const errorEl = document.getElementById('tasklet-lifecycle-error');
+      const rawReason = (reasonInput?.value || '').trim();
+      const nowStr = formatNowTimestamp();
+      const userName = getCurrentUser().name;
+
+      if (action.mode === 'complete') {
+        item.status = 'Completed';
+        item.lastChanged = nowStr;
+        item.history = item.history || [];
+        item.history.push({ timestamp: nowStr, action: 'Marked as Completed (Locked)', by: userName });
+        persistWorkspaceState();
+        closeTaskletLifecycleModal();
+        renderAll();
+        renderItemDetailsView();
+        showToast('Tasklet marked as Completed and locked.');
+        return;
+      }
+
+      if (!rawReason) {
+        if (errorEl) {
+          errorEl.textContent = action.mode === 'reopen'
+            ? 'Please enter why you want to open this Tasklet.'
+            : 'Please enter a reason for abandoning this Tasklet.';
+          errorEl.classList.remove('hidden');
+        }
+        reasonInput?.focus();
+        return;
+      }
+
+      if (action.mode === 'reopen') {
+        item.status = 'Ongoing';
+        item.lastChanged = nowStr;
+        item.updates = Array.isArray(item.updates) ? item.updates : [];
+        if (item.updates.length < TASKLET_MAX_UPDATES) {
+          item.updates.push({
+            id: `upd-${Date.now()}`,
+            text: `Reopened Tasklet: ${rawReason}`,
+            timestamp: nowStr,
+            by: userName
+          });
+        }
+        item.history = item.history || [];
+        item.history.push({ timestamp: nowStr, action: `Reopened Tasklet (${rawReason})`, by: userName });
+        persistWorkspaceState();
+        closeTaskletLifecycleModal();
+        renderAll();
+        renderItemDetailsView();
+        showToast('Tasklet reopened for editing.');
+        return;
+      }
+
+      if (action.mode === 'abandon') {
+        const cleanReason = truncateToMaxWords(rawReason, TASKLET_ABANDON_MAX_WORDS);
+        item.status = 'Abandoned';
+        item.abandonReason = cleanReason;
+        item.lastChanged = nowStr;
+        item.updates = Array.isArray(item.updates) ? item.updates : [];
+        if (item.updates.length < TASKLET_MAX_UPDATES) {
+          item.updates.push({
+            id: `upd-${Date.now()}`,
+            text: `Abandoned: ${cleanReason}`,
+            timestamp: nowStr,
+            by: userName
+          });
+        }
+        item.history = item.history || [];
+        item.history.push({ timestamp: nowStr, action: `Marked as Abandoned (${cleanReason})`, by: userName });
+        persistWorkspaceState();
+        closeTaskletLifecycleModal();
+        renderAll();
+        renderItemDetailsView();
+        showToast('Tasklet marked as Abandoned.');
+      }
     };
 
     let activeTaskletPreviewBlobUrl = null;
@@ -2394,6 +2798,11 @@
         activeTaskletPreviewBlobUrl = null;
       }
       if (!rightPanel) return;
+      const item = state.items.find(i => i.id === state.selectedItemId);
+      if (item && item.type === 'Tasklet') {
+        renderTaskletUpdatesDefaultPane(item);
+        return;
+      }
       rightPanel.className = 'group relative lg:col-span-6 bg-white rounded-2xl border border-slate-200 p-6 min-h-[420px] flex flex-col';
       rightPanel.innerHTML = '';
     };
@@ -2794,9 +3203,17 @@
       const input = document.getElementById('details-doc-link-input');
       const item = state.items.find(i => i.id === itemId);
       if (!input || !item) return;
+      if (isTaskletLockedStatus(item)) {
+        showToast(`${item.status} Tasklets are locked and cannot be edited.`);
+        return;
+      }
+      item.documents = item.documents || [];
+      if (item.type === 'Tasklet' && item.documents.length >= TASKLET_MAX_DOCS) {
+        showToast(`Maximum ${TASKLET_MAX_DOCS} documents or links can be added to a Tasklet.`);
+        return;
+      }
       try {
         const linkedDoc = await validateExternalDocumentLink(input.value);
-        item.documents = item.documents || [];
         item.documents.push(linkedDoc);
         item.lastChanged = formatNowTimestamp();
         item.history = item.history || [];
@@ -2817,6 +3234,10 @@
       if (!files.length) return;
       const item = state.items.find(i => i.id === itemId);
       if (!item) return;
+      if (isTaskletLockedStatus(item)) {
+        showToast(`${item.status} Tasklets are locked and cannot be edited.`);
+        return;
+      }
 
       item.documents = item.documents || [];
       let filesToProcess = files;
@@ -2856,6 +3277,10 @@
 
     window.removeItemDocument = function (itemId, docIndex) {
       const item = state.items.find(i => i.id === itemId);
+      if (isTaskletLockedStatus(item)) {
+        showToast(`${item.status} Tasklets are locked and cannot be edited.`);
+        return;
+      }
       if (!item || !canUserDeleteItemDocuments(item)) {
         showToast('Only Admins or the assigned Nodal Officer can remove documents.');
         return;
@@ -3020,6 +3445,12 @@
     window.openEditItemModal = function (itemId) {
       const item = state.items.find(i => i.id === itemId);
       if (!item) return;
+      if (isTaskletLockedStatus(item)) {
+        showToast(item.status === 'Completed'
+          ? 'Completed Tasklets cannot be edited. Open the Tasklet and click "Open Tasklet" first.'
+          : 'Abandoned Tasklets are locked and cannot be edited.');
+        return;
+      }
       const caps = getRoleCapabilities();
       document.getElementById('item-id').value = item.id;
       document.getElementById('item-type').value = item.type;
@@ -3049,25 +3480,34 @@
     function renderTaskletModalFilePreview() {
       const previewEl = document.getElementById('tasklet-file-preview');
       const uploadLabel = document.getElementById('tasklet-file-upload-label');
+      const urlRow = document.getElementById('tasklet-url-input-row');
       if (!previewEl) return;
 
       if (!state.taskletModalDocument) {
         previewEl.className = 'text-xs text-slate-500 italic';
-        previewEl.innerHTML = 'No file selected.';
+        previewEl.innerHTML = 'No file or URL attached.';
         if (uploadLabel) uploadLabel.classList.remove('opacity-50', 'pointer-events-none');
+        if (urlRow) urlRow.classList.remove('hidden');
         return;
       }
 
       const docObj = state.taskletModalDocument;
+      const isLink = docObj.storageType === 'gdrive' || docObj.storageType === 'web';
+      const icon = docObj.storageType === 'gdrive' ? '🔗' : (docObj.storageType === 'web' ? '🌐' : '📄');
+      const metaText = isLink
+        ? `${escapeHtml(docObj.source || 'External Link')}${docObj.url ? ` • ${escapeHtml(docObj.url)}` : ''}`
+        : `Firestore${docObj.size ? ` (${formatBytesLabel(docObj.size)})` : ''} • Max 1 item attached`;
+
       previewEl.className = 'flex items-center justify-between gap-2 bg-white px-3 py-2 rounded-xl border border-slate-200 text-xs not-italic';
       previewEl.innerHTML = `
         <div class="min-w-0 flex-1">
-          <div class="truncate font-semibold text-slate-800">📄 ${escapeHtml(docObj.name)}</div>
-          <div class="text-[10px] text-slate-400">Firestore${docObj.size ? ` (${formatBytesLabel(docObj.size)})` : ''} • Max 1 file attached</div>
+          <div class="truncate font-semibold text-slate-800">${icon} ${escapeHtml(docObj.name)}</div>
+          <div class="text-[10px] text-slate-400 truncate">${metaText}</div>
         </div>
         <button type="button" onclick="removeTaskletModalFile()" class="text-rose-600 hover:text-rose-800 font-bold text-[11px] flex-shrink-0">Remove</button>
       `;
       if (uploadLabel) uploadLabel.classList.add('opacity-50', 'pointer-events-none');
+      if (urlRow) urlRow.classList.add('hidden');
     }
 
     window.openTaskletModal = function () {
@@ -3080,11 +3520,13 @@
       const descInput = document.getElementById('tasklet-description');
       const dateInput = document.getElementById('tasklet-date');
       const fileInput = document.getElementById('tasklet-file-input');
+      const linkInput = document.getElementById('tasklet-doc-link-input');
 
       if (nameInput) nameInput.value = '';
       if (descInput) descInput.value = '';
       if (dateInput) dateInput.value = formatNowTimestamp().split(' ')[0];
       if (fileInput) fileInput.value = '';
+      if (linkInput) linkInput.value = '';
       state.taskletModalDocument = null;
       renderTaskletModalFilePreview();
       document.getElementById('tasklet-modal')?.classList.remove('hidden');
@@ -3097,6 +3539,24 @@
       }
       state.taskletModalDocument = null;
       document.getElementById('tasklet-modal')?.classList.add('hidden');
+    };
+
+    window.handleTaskletModalAddLink = async function () {
+      if (state.taskletModalDocument) {
+        showToast('Maximum 1 file or URL allowed at Tasklet creation time.');
+        return;
+      }
+      const input = document.getElementById('tasklet-doc-link-input');
+      if (!input) return;
+      try {
+        const linkedDoc = await validateExternalDocumentLink(input.value);
+        state.taskletModalDocument = linkedDoc;
+        input.value = '';
+        renderTaskletModalFilePreview();
+        showToast(`${linkedDoc.source} attached.`);
+      } catch (err) {
+        showToast(err.message || 'Unable to verify URL.');
+      }
     };
 
     window.handleTaskletFileUpload = async function (event) {
@@ -3152,7 +3612,7 @@
         title,
         description,
         nodalId: defaultNodal,
-        status: 'Not Started',
+        status: 'Ongoing',
         dueDate,
         lastChanged: nowStr,
         documents: docs,
@@ -3206,6 +3666,10 @@
       if (existingId) {
         const item = state.items.find(i => i.id === existingId);
         if (!item) return;
+        if (isTaskletLockedStatus(item)) {
+          showToast(`${item.status} Tasklets are locked and cannot be edited.`);
+          return;
+        }
         if (item.type === 'Tasklet' && state.modalDocuments.length > TASKLET_MAX_DOCS) {
           showToast(`Maximum ${TASKLET_MAX_DOCS} documents can be added to a Tasklet.`);
           return;
