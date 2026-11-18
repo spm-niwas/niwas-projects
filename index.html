@@ -70,7 +70,7 @@
           </div>
           <div class="min-w-0">
             <div class="text-sm font-extrabold tracking-tight text-white leading-tight">NIWAS Projects</div>
-            <div class="text-[11px] font-medium text-slate-400 truncate">SPM-NIWAS Governance</div>
+            <div class="text-[11px] font-medium text-slate-400 truncate">Manage Tasks and Projects</div>
           </div>
         </div>
 
@@ -110,14 +110,14 @@
             <button type="button" id="nav-nodals" onclick="switchTab('nodals')" class="nav-btn flex items-center justify-between px-3.5 py-2.5 lg:pl-6 rounded-xl text-sm font-semibold transition-all text-slate-300 hover:bg-slate-800 whitespace-nowrap">
               <span class="flex items-center gap-2.5">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-                Users and Permissions
+                Users &amp; Permissions
               </span>
             </button>
 
             <button type="button" id="nav-email-settings" onclick="switchTab('email-settings')" class="nav-btn flex items-center justify-between px-3.5 py-2.5 lg:pl-6 rounded-xl text-sm font-semibold transition-all text-slate-300 hover:bg-slate-800 whitespace-nowrap">
               <span class="flex items-center gap-2.5">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
-                Email and AI Inbox
+                Email &amp; AI Inbox
               </span>
               <span id="sidebar-badge-email-proposals" class="hidden ml-2 px-2 py-0.5 text-xs font-bold rounded-full bg-amber-500 text-slate-950">0</span>
             </button>
@@ -161,7 +161,7 @@
       <!-- Main Content Container -->
       <div id="workspace-body" class="p-4 sm:p-8 space-y-6 flex-1">
         <!-- KPI Cards (Dashboard Only) -->
-        <section id="kpi-cards-section" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+        <section id="kpi-cards-section" class="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div class="bg-white rounded-2xl border border-slate-200 p-5">
             <div class="flex items-center justify-between">
               <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Total Projects</span>
@@ -186,71 +186,54 @@
 
           <div class="bg-white rounded-2xl border border-slate-200 p-5">
             <div class="flex items-center justify-between">
-              <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Ready to Convert</span>
+              <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Convert Tasks to Projects</span>
               <span class="p-2 rounded-xl bg-amber-50 text-amber-600">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
               </span>
             </div>
-            <div id="kpi-ready-convert" class="text-3xl font-extrabold text-slate-900 mt-3">0</div>
+            <button type="button" id="kpi-ready-convert" onclick="openReadyToConvertLanding()" title="View tasks ready to convert to projects" class="text-3xl font-extrabold text-slate-900 hover:text-amber-600 transition-colors mt-3 text-left focus:outline-none">0</button>
             <div class="text-xs text-slate-500 mt-1">Tasks eligible for Project</div>
-          </div>
-
-          <div class="bg-white rounded-2xl border border-slate-200 p-5">
-            <div class="flex items-center justify-between">
-              <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Registered Users</span>
-              <span class="p-2 rounded-xl bg-slate-100 text-slate-600">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-              </span>
-            </div>
-            <div id="kpi-total-users" class="text-3xl font-extrabold text-slate-900 mt-3">0</div>
-            <div class="text-xs text-slate-500 mt-1">Available for Nodal tagging</div>
           </div>
         </section>
 
-        <!-- Smart Project Conversion Recommendation Banner (Dashboard & Tasks Only) -->
-        <div id="global-nudge-banner" class="hidden bg-amber-50 border border-amber-200 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <div class="flex items-start gap-3">
-            <div class="p-2 rounded-xl bg-amber-100 text-amber-700 mt-0.5">
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
-            </div>
-            <div>
-              <div class="text-sm font-bold text-amber-900">Project Conversion Recommendation</div>
-              <p id="nudge-banner-text" class="text-xs text-amber-800 mt-0.5"></p>
-            </div>
-          </div>
-          <button type="button" id="nudge-banner-action" class="px-3.5 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold whitespace-nowrap transition-colors">
-            Convert to Project
-          </button>
-        </div>
-
         <!-- VIEW 1: DASHBOARD (UNIFIED TABLE) -->
         <section id="view-overview" class="space-y-4">
-          <div class="bg-white rounded-2xl border border-slate-200 p-4 flex flex-wrap items-center justify-between gap-3">
-            <div class="flex flex-wrap items-center gap-2.5 flex-1 min-w-[240px]">
-              <div class="relative flex-1 min-w-[200px] max-w-sm">
-                <svg class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-                <input type="text" id="overview-search" oninput="resetPageAndRender('overview')" placeholder="Search projects, tasks, or descriptions..." class="w-full pl-9 pr-3.5 py-2 text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500" />
-              </div>
-
-              <select id="overview-type-filter" onchange="resetPageAndRender('overview')" class="text-xs sm:text-sm font-medium bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                <option value="All">All Types</option>
-                <option value="Project">Projects Only</option>
-                <option value="Task">Tasks Only</option>
-              </select>
-
-              <select id="overview-status-filter" onchange="resetPageAndRender('overview')" class="text-xs sm:text-sm font-medium bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                <option value="All">All Statuses</option>
-                <option value="Not Started">Not Started</option>
-                <option value="In Progress">In Progress</option>
-                <option value="On Hold">On Hold</option>
-                <option value="Completed">Completed</option>
-                <option value="Pending Approval">Pending Approval</option>
-              </select>
-
-              <select id="overview-nodal-filter" onchange="resetPageAndRender('overview')" class="text-xs sm:text-sm font-medium bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                <option value="All">All Nodals</option>
-              </select>
+          <div class="bg-white rounded-2xl border border-slate-200 p-4 flex flex-wrap items-center gap-3 w-full">
+            <div class="relative flex-1 min-w-[220px]">
+              <svg class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+              <input type="text" id="overview-search" oninput="resetPageAndRender('overview')" placeholder="Search projects, tasks, or descriptions..." class="w-full pl-9 pr-3.5 py-2 text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500" />
             </div>
+
+            <!-- Radio Group for All / Projects / Tasks -->
+            <div class="inline-flex items-center gap-3 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs sm:text-sm font-medium text-slate-700 flex-shrink-0" role="radiogroup" aria-label="Filter by item type">
+              <label class="inline-flex items-center gap-1.5 cursor-pointer select-none">
+                <input type="radio" name="overview-type-radio" value="All" checked onchange="resetPageAndRender('overview')" class="text-indigo-600 focus:ring-indigo-500" />
+                <span>All</span>
+              </label>
+              <label class="inline-flex items-center gap-1.5 cursor-pointer select-none">
+                <input type="radio" name="overview-type-radio" value="Project" onchange="resetPageAndRender('overview')" class="text-indigo-600 focus:ring-indigo-500" />
+                <span>Projects</span>
+              </label>
+              <label class="inline-flex items-center gap-1.5 cursor-pointer select-none">
+                <input type="radio" name="overview-type-radio" value="Task" onchange="resetPageAndRender('overview')" class="text-indigo-600 focus:ring-indigo-500" />
+                <span>Tasks</span>
+              </label>
+            </div>
+
+            <select id="overview-status-filter" onchange="resetPageAndRender('overview')" class="text-xs sm:text-sm font-medium bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 flex-shrink-0">
+              <option value="All">All Statuses</option>
+              <option value="Not Started">Not Started</option>
+              <option value="In Progress">In Progress</option>
+              <option value="On Hold">On Hold</option>
+              <option value="Completed">Completed</option>
+              <option value="Pending Approval">Pending Approval</option>
+            </select>
+
+            <!-- Show Archived Checkbox -->
+            <label class="inline-flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs sm:text-sm font-medium text-slate-700 cursor-pointer select-none hover:bg-slate-100/70 transition-colors flex-shrink-0">
+              <input type="checkbox" id="overview-show-archived" onchange="resetPageAndRender('overview')" class="rounded text-indigo-600 focus:ring-indigo-500" />
+              <span>Show Archived</span>
+            </label>
           </div>
 
           <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden">
@@ -267,7 +250,7 @@
                 </colgroup>
                 <thead class="bg-slate-50 border-b border-slate-200 text-[11px] font-bold uppercase tracking-wider text-slate-500">
                   <tr>
-                    <th class="relative px-4 py-3.5 select-none">Type / Status<span class="col-resizer" onmousedown="startColumnResize(event, 'overview', 0)"></span></th>
+                    <th class="relative px-4 py-3.5 select-none">Status<span class="col-resizer" onmousedown="startColumnResize(event, 'overview', 0)"></span></th>
                     <th class="relative px-4 py-3.5 select-none">Name<span class="col-resizer" onmousedown="startColumnResize(event, 'overview', 1)"></span></th>
                     <th class="relative px-4 py-3.5 select-none">Description<span class="col-resizer" onmousedown="startColumnResize(event, 'overview', 2)"></span></th>
                     <th class="relative px-4 py-3.5 select-none">Nodal<span class="col-resizer" onmousedown="startColumnResize(event, 'overview', 3)"></span></th>
@@ -285,12 +268,25 @@
 
         <!-- VIEW 2: PROJECTS TABLE -->
         <section id="view-projects" class="hidden space-y-4">
-          <div class="bg-white rounded-2xl border border-slate-200 p-4 flex flex-wrap items-center gap-2.5">
-            <div class="relative flex-1 min-w-[200px] max-w-sm">
+          <div class="bg-white rounded-2xl border border-slate-200 p-4 flex flex-wrap items-center gap-3 w-full">
+            <div class="relative flex-1 min-w-[220px]">
               <svg class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
               <input type="text" id="projects-search" oninput="resetPageAndRender('projects')" placeholder="Search projects..." class="w-full pl-9 pr-3.5 py-2 text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500" />
             </div>
-            <select id="projects-status-filter" onchange="resetPageAndRender('projects')" class="text-xs sm:text-sm font-medium bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+
+            <!-- Radio Group for Projects / Tasks -->
+            <div class="inline-flex items-center gap-3 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs sm:text-sm font-medium text-slate-700 flex-shrink-0" role="radiogroup" aria-label="Switch between Projects and Tasks">
+              <label class="inline-flex items-center gap-1.5 cursor-pointer select-none">
+                <input type="radio" name="projects-type-radio" value="Project" checked onchange="handleSubViewTypeRadio('Project')" class="text-indigo-600 focus:ring-indigo-500" />
+                <span>Projects</span>
+              </label>
+              <label class="inline-flex items-center gap-1.5 cursor-pointer select-none">
+                <input type="radio" name="projects-type-radio" value="Task" onchange="handleSubViewTypeRadio('Task')" class="text-indigo-600 focus:ring-indigo-500" />
+                <span>Tasks</span>
+              </label>
+            </div>
+
+            <select id="projects-status-filter" onchange="resetPageAndRender('projects')" class="text-xs sm:text-sm font-medium bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 flex-shrink-0">
               <option value="All">All Statuses</option>
               <option value="Not Started">Not Started</option>
               <option value="In Progress">In Progress</option>
@@ -298,9 +294,12 @@
               <option value="Completed">Completed</option>
               <option value="Pending Approval">Pending Approval</option>
             </select>
-            <select id="projects-nodal-filter" onchange="resetPageAndRender('projects')" class="text-xs sm:text-sm font-medium bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-              <option value="All">All Nodals</option>
-            </select>
+
+            <!-- Show Archived Checkbox -->
+            <label class="inline-flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs sm:text-sm font-medium text-slate-700 cursor-pointer select-none hover:bg-slate-100/70 transition-colors flex-shrink-0">
+              <input type="checkbox" id="projects-show-archived" onchange="resetPageAndRender('projects')" class="rounded text-indigo-600 focus:ring-indigo-500" />
+              <span>Show Archived</span>
+            </label>
           </div>
 
           <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden">
@@ -318,7 +317,7 @@
                 <thead class="bg-slate-50 border-b border-slate-200 text-[11px] font-bold uppercase tracking-wider text-slate-500">
                   <tr>
                     <th class="relative px-4 py-3.5 select-none">Status<span class="col-resizer" onmousedown="startColumnResize(event, 'projects', 0)"></span></th>
-                    <th class="relative px-4 py-3.5 select-none">Project Name<span class="col-resizer" onmousedown="startColumnResize(event, 'projects', 1)"></span></th>
+                    <th class="relative px-4 py-3.5 select-none">Name<span class="col-resizer" onmousedown="startColumnResize(event, 'projects', 1)"></span></th>
                     <th class="relative px-4 py-3.5 select-none">Description<span class="col-resizer" onmousedown="startColumnResize(event, 'projects', 2)"></span></th>
                     <th class="relative px-4 py-3.5 select-none">Nodal<span class="col-resizer" onmousedown="startColumnResize(event, 'projects', 3)"></span></th>
                     <th class="relative px-4 py-3.5 select-none">Last Changed<span class="col-resizer" onmousedown="startColumnResize(event, 'projects', 4)"></span></th>
@@ -335,12 +334,25 @@
 
         <!-- VIEW 3: TASKS TABLE -->
         <section id="view-tasks" class="hidden space-y-4">
-          <div class="bg-white rounded-2xl border border-slate-200 p-4 flex flex-wrap items-center gap-2.5">
-            <div class="relative flex-1 min-w-[200px] max-w-sm">
+          <div class="bg-white rounded-2xl border border-slate-200 p-4 flex flex-wrap items-center gap-3 w-full">
+            <div class="relative flex-1 min-w-[220px]">
               <svg class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
               <input type="text" id="tasks-search" oninput="resetPageAndRender('tasks')" placeholder="Search tasks..." class="w-full pl-9 pr-3.5 py-2 text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500" />
             </div>
-            <select id="tasks-status-filter" onchange="resetPageAndRender('tasks')" class="text-xs sm:text-sm font-medium bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+
+            <!-- Radio Group for Projects / Tasks -->
+            <div class="inline-flex items-center gap-3 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs sm:text-sm font-medium text-slate-700 flex-shrink-0" role="radiogroup" aria-label="Switch between Projects and Tasks">
+              <label class="inline-flex items-center gap-1.5 cursor-pointer select-none">
+                <input type="radio" name="tasks-type-radio" value="Project" onchange="handleSubViewTypeRadio('Project')" class="text-indigo-600 focus:ring-indigo-500" />
+                <span>Projects</span>
+              </label>
+              <label class="inline-flex items-center gap-1.5 cursor-pointer select-none">
+                <input type="radio" name="tasks-type-radio" value="Task" checked onchange="handleSubViewTypeRadio('Task')" class="text-indigo-600 focus:ring-indigo-500" />
+                <span>Tasks</span>
+              </label>
+            </div>
+
+            <select id="tasks-status-filter" onchange="resetPageAndRender('tasks')" class="text-xs sm:text-sm font-medium bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 flex-shrink-0">
               <option value="All">All Statuses</option>
               <option value="Not Started">Not Started</option>
               <option value="In Progress">In Progress</option>
@@ -348,9 +360,21 @@
               <option value="Completed">Completed</option>
               <option value="Pending Approval">Pending Approval</option>
             </select>
-            <select id="tasks-nodal-filter" onchange="resetPageAndRender('tasks')" class="text-xs sm:text-sm font-medium bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-              <option value="All">All Nodals</option>
-            </select>
+
+            <!-- Show Archived Checkbox -->
+            <label class="inline-flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs sm:text-sm font-medium text-slate-700 cursor-pointer select-none hover:bg-slate-100/70 transition-colors flex-shrink-0">
+              <input type="checkbox" id="tasks-show-archived" onchange="resetPageAndRender('tasks')" class="rounded text-indigo-600 focus:ring-indigo-500" />
+              <span>Show Archived</span>
+            </label>
+          </div>
+
+          <div id="tasks-ready-filter-banner" class="hidden bg-amber-50 border border-amber-200 rounded-2xl px-4 py-3 flex flex-wrap items-center justify-between gap-2 text-xs">
+            <div class="flex items-center gap-2 font-semibold text-amber-900">
+              <span>⚡ Showing only Tasks eligible for conversion to Projects</span>
+            </div>
+            <button type="button" onclick="clearReadyToConvertFilter()" class="px-3 py-1 rounded-lg bg-white border border-amber-300 hover:bg-amber-100 text-amber-900 font-bold transition-colors">
+              Show All Tasks
+            </button>
           </div>
 
           <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden">
@@ -368,7 +392,7 @@
                 <thead class="bg-slate-50 border-b border-slate-200 text-[11px] font-bold uppercase tracking-wider text-slate-500">
                   <tr>
                     <th class="relative px-4 py-3.5 select-none">Status<span class="col-resizer" onmousedown="startColumnResize(event, 'tasks', 0)"></span></th>
-                    <th class="relative px-4 py-3.5 select-none">Task Name<span class="col-resizer" onmousedown="startColumnResize(event, 'tasks', 1)"></span></th>
+                    <th class="relative px-4 py-3.5 select-none">Name<span class="col-resizer" onmousedown="startColumnResize(event, 'tasks', 1)"></span></th>
                     <th class="relative px-4 py-3.5 select-none">Description<span class="col-resizer" onmousedown="startColumnResize(event, 'tasks', 2)"></span></th>
                     <th class="relative px-4 py-3.5 select-none">Nodal<span class="col-resizer" onmousedown="startColumnResize(event, 'tasks', 3)"></span></th>
                     <th class="relative px-4 py-3.5 select-none">Last Changed<span class="col-resizer" onmousedown="startColumnResize(event, 'tasks', 4)"></span></th>
@@ -383,71 +407,67 @@
           </div>
         </section>
 
-        <!-- VIEW 4: PROJECT / TASK DETAILS PAGE -->
-        <section id="view-details" class="hidden space-y-5">
-          <div class="flex items-center justify-between gap-3">
-            <nav aria-label="Breadcrumb" class="flex items-center gap-2 text-xs sm:text-sm font-semibold text-slate-500 flex-wrap">
-              <button type="button" onclick="switchTab('overview')" class="hover:text-indigo-600 transition-colors">Dashboard</button>
-              <span class="text-slate-300">/</span>
-              <button type="button" id="details-breadcrumb-parent" onclick="switchTab('projects')" class="hover:text-indigo-600 transition-colors">Projects</button>
-              <span class="text-slate-300">/</span>
-              <span id="details-breadcrumb-current" class="text-slate-900 font-bold truncate max-w-[220px] sm:max-w-md">Item Details</span>
-            </nav>
+        <!-- VIEW 4: ITEM DETAILS PAGE -->
+        <section id="view-details" class="hidden space-y-4">
+          <div class="bg-white rounded-2xl border border-slate-200 px-5 py-3.5 flex flex-wrap items-center justify-between gap-3">
+            <div class="flex items-center gap-2 text-xs sm:text-sm font-semibold text-slate-500">
+              <button type="button" onclick="switchTab('overview')" class="hover:text-indigo-600">Dashboard</button>
+              <span>/</span>
+              <button type="button" id="details-breadcrumb-parent" class="hover:text-indigo-600">Projects</button>
+              <span>/</span>
+              <span id="details-breadcrumb-current" class="text-slate-900 font-bold truncate max-w-xs sm:max-w-md">Details</span>
+            </div>
 
-            <div class="relative" id="details-settings-wrapper">
-              <button type="button" onclick="toggleDetailsSettingsMenu(event)" title="User Profile & Session" class="p-2.5 rounded-xl bg-white border border-slate-200 hover:bg-slate-100 text-slate-700 transition-colors">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+            <div class="flex items-center gap-2">
+              <button type="button" onclick="switchTab('overview')" class="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold">
+                ← Back
               </button>
-              <div id="details-settings-dropdown" onclick="event.stopPropagation()" class="hidden absolute right-0 mt-2 w-72 bg-white rounded-2xl shadow-xl border border-slate-200 p-4 z-50 space-y-3"></div>
+              <div class="relative">
+                <button type="button" onclick="toggleDetailsSettingsMenu(event)" title="User Profile & Session" class="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                </button>
+                <div id="details-settings-dropdown" onclick="event.stopPropagation()" class="hidden absolute right-0 mt-2 w-72 bg-white rounded-2xl shadow-xl border border-slate-200 p-4 z-50 space-y-3"></div>
+              </div>
             </div>
           </div>
 
-          <div id="details-content-card" class="bg-white rounded-2xl border border-slate-200 p-6 sm:p-8 space-y-6"></div>
+          <div id="details-content-card" class="bg-white rounded-2xl border border-slate-200 p-6 space-y-6"></div>
         </section>
 
-        <!-- VIEW 5: USER & PERMISSIONS -->
+        <!-- VIEW 5: USERS & PERMISSIONS -->
         <section id="view-nodals" class="hidden space-y-6">
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div class="bg-white rounded-2xl border border-indigo-200 p-4">
-              <div class="text-xs font-extrabold uppercase tracking-wider text-indigo-700">Admin</div>
-              <p class="text-xs text-slate-600 mt-1.5">Onboard and manage workspace users, approve submissions, create/edit all records, and manage deletions.</p>
+          <div id="add-user-card" class="bg-white rounded-2xl border border-slate-200 p-5 sm:p-6 space-y-4">
+            <div>
+              <h3 class="text-base font-extrabold text-slate-900">Onboard Workspace User</h3>
+              <p class="text-xs text-slate-500 mt-0.5">Register a team member's Google email and assign their Admin or User permission role.</p>
             </div>
-            <div class="bg-white rounded-2xl border border-emerald-200 p-4">
-              <div class="text-xs font-extrabold uppercase tracking-wider text-emerald-700">User</div>
-              <p class="text-xs text-slate-600 mt-1.5">View all projects and tasks, submit new records (subject to Admin approval), upload documents, and update assigned items.</p>
-            </div>
-          </div>
-
-          <div id="add-user-card" class="bg-white rounded-2xl border border-slate-200 p-5">
-            <h2 class="text-base font-bold text-slate-900">Onboard New Workspace User</h2>
-            <p class="text-xs text-slate-500 mt-0.5">Users added here can be tagged as Nodal owners on any Project or Task.</p>
-            <form onsubmit="handleAddNodalUser(event)" class="mt-4 grid grid-cols-1 sm:grid-cols-4 gap-3">
-              <input type="text" id="new-user-name" required placeholder="Full Name (e.g. Ananya Sen)" class="px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500" />
-              <input type="email" id="new-user-email" required placeholder="Google / Gmail Email Address" class="px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500" />
-              <select id="new-user-permission" class="px-3.5 py-2.5 text-sm font-medium bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                <option value="User" selected>User (Default)</option>
+            <div id="add-user-error" class="hidden bg-rose-50 border border-rose-200 text-rose-700 text-xs font-semibold px-3.5 py-2 rounded-xl"></div>
+            <form onsubmit="handleAddNodalUser(event)" class="grid grid-cols-1 sm:grid-cols-4 gap-3">
+              <input type="text" id="new-user-name" required placeholder="Full Name" class="px-3.5 py-2.5 text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-xl" />
+              <input type="email" id="new-user-email" required placeholder="Google Email (@gmail.com / @spmniwas.in)" class="px-3.5 py-2.5 text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-xl" />
+              <select id="new-user-permission" class="px-3.5 py-2.5 text-xs sm:text-sm font-medium bg-slate-50 border border-slate-200 rounded-xl">
+                <option value="User">User</option>
                 <option value="Admin">Admin</option>
               </select>
-              <button type="submit" class="px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold transition-colors">
-                Add User &amp; Send Welcome
+              <button type="submit" class="px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs sm:text-sm font-semibold">
+                Add User
               </button>
             </form>
-            <div id="add-user-error" class="hidden text-xs font-semibold text-rose-600 mt-2"></div>
           </div>
 
           <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden">
             <div class="p-4 border-b border-slate-200 flex flex-wrap items-center justify-between gap-3">
-              <div class="text-sm font-bold text-slate-900">Workspace Users &amp; Nodal Workload</div>
-              <input type="text" id="user-search-input" oninput="resetPageAndRender('nodals')" placeholder="Filter users by name or email..." class="px-3.5 py-2 text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 w-full sm:w-64" />
+              <h3 class="text-sm font-extrabold text-slate-900">All Users</h3>
+              <input type="text" id="user-search-input" oninput="resetPageAndRender('nodals')" placeholder="Search by name or email..." class="px-3.5 py-2 text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 w-full sm:w-64" />
             </div>
             <div class="overflow-x-auto">
               <table class="w-full text-left border-collapse">
                 <thead class="bg-slate-50 border-b border-slate-200 text-[11px] font-bold uppercase tracking-wider text-slate-500">
                   <tr>
-                    <th class="px-4 py-3.5">User</th>
+                    <th class="px-4 py-3.5">User Name</th>
                     <th class="px-4 py-3.5">Google Email</th>
-                    <th class="px-4 py-3.5">System Permission</th>
-                    <th class="px-4 py-3.5">Active Nodal Tags</th>
+                    <th class="px-4 py-3.5">Permission Role</th>
+                    <th class="px-4 py-3.5">Nodal Assignments</th>
                     <th class="px-4 py-3.5 text-right">Actions</th>
                   </tr>
                 </thead>
@@ -458,19 +478,19 @@
           </div>
         </section>
 
-        <!-- VIEW 6: EMAIL & AI INBOX SETTINGS -->
+        <!-- VIEW 6: EMAIL AND AI INBOX -->
         <section id="view-email-settings" class="hidden space-y-6">
-          <div class="bg-white rounded-2xl border border-slate-200 p-6 space-y-4">
+          <div class="bg-white rounded-2xl border border-slate-200 p-5 sm:p-6 space-y-4">
             <div class="flex flex-wrap items-center justify-between gap-3">
               <div>
-                <h2 class="text-base font-bold text-slate-900">Connected Gmail Inboxes (@spmniwas.in &amp; External @gmail.com)</h2>
-                <p class="text-xs text-slate-500 mt-0.5">Authorize read-only Gmail access so AI can scan relevant threads and propose updates (always asks before importing).</p>
+                <h3 class="text-base font-extrabold text-slate-900">Connected Gmail Accounts</h3>
+                <p class="text-xs text-slate-500 mt-0.5">Scan authorized inboxes to extract project/task updates and document attachments.</p>
               </div>
               <div class="flex items-center gap-2">
-                <button type="button" onclick="connectGmailInboxPrompt()" class="px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold transition-colors">
-                  + Connect Gmail Inbox
+                <button type="button" onclick="connectGmailInboxPrompt()" class="px-3.5 py-2 rounded-xl bg-white border border-slate-300 hover:bg-slate-50 text-xs font-semibold text-slate-700">
+                  + Connect Gmail
                 </button>
-                <button type="button" onclick="scanConnectedInboxes()" class="px-3.5 py-2 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs font-semibold transition-colors">
+                <button type="button" onclick="scanConnectedInboxes()" class="px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold">
                   Scan Inboxes Now
                 </button>
               </div>
@@ -478,30 +498,23 @@
             <div id="connected-inboxes-list" class="grid grid-cols-1 md:grid-cols-2 gap-3"></div>
           </div>
 
-          <div class="bg-white rounded-2xl border border-slate-200 p-6 space-y-4">
+          <div class="bg-white rounded-2xl border border-slate-200 p-5 sm:p-6 space-y-4">
             <div>
-              <h2 class="text-base font-bold text-slate-900">AI Email Thread Analyzer (Ask First)</h2>
-              <p class="text-xs text-slate-500 mt-0.5">Paste any incoming project/task email thread below. Gemini will extract updates &amp; documents and queue them for your approval.</p>
+              <h3 class="text-base font-extrabold text-slate-900">AI Email Intake Simulator</h3>
+              <p class="text-xs text-slate-500 mt-0.5">Paste an incoming email or circular to automatically extract tasks, match existing projects, and queue an import proposal.</p>
             </div>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <input type="text" id="intake-email-sender" placeholder="Sender (e.g. director@spmniwas.in)" class="px-3.5 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500" />
-              <input type="text" id="intake-email-subject" placeholder="Email Subject (e.g. NWC 2027 Agenda & Brochure)" class="px-3.5 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+              <input type="email" id="intake-email-sender" placeholder="Sender Email (e.g., nodal@spmniwas.in)" class="px-3.5 py-2.5 text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-xl" />
+              <input type="text" id="intake-email-subject" placeholder="Email Subject" class="px-3.5 py-2.5 text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-xl" />
             </div>
-            <textarea id="intake-email-body" rows="4" placeholder="Paste email content, action items, or attachment names here..." class="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500"></textarea>
-            <div class="flex justify-end">
-              <button type="button" id="btn-analyze-email" onclick="analyzeEmailWithAI()" class="px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs sm:text-sm font-semibold transition-colors">
-                Analyze Email &amp; Queue Proposal
-              </button>
-            </div>
+            <textarea id="intake-email-body" rows="3" placeholder="Paste email body or action summary..." class="w-full px-3.5 py-2.5 text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-xl"></textarea>
+            <button type="button" onclick="analyzeEmailWithAI()" class="px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs sm:text-sm font-semibold">
+              Extract Proposal with AI
+            </button>
           </div>
 
-          <div class="bg-white rounded-2xl border border-slate-200 p-6 space-y-4">
-            <div class="flex items-center justify-between">
-              <div>
-                <h2 class="text-base font-bold text-slate-900">Pending AI Import Proposals (Awaiting Confirmation)</h2>
-                <p class="text-xs text-slate-500 mt-0.5">Review and approve before any details or documents are added to a Project or Task.</p>
-              </div>
-            </div>
+          <div class="bg-white rounded-2xl border border-slate-200 p-5 sm:p-6 space-y-3">
+            <h3 class="text-base font-extrabold text-slate-900">Pending AI Import Proposals</h3>
             <div id="email-proposals-list" class="space-y-3"></div>
           </div>
         </section>
@@ -509,63 +522,63 @@
     </main>
   </div>
 
-  <!-- MODAL 1: ADD / EDIT PROJECT OR TASK -->
+  <!-- MODAL 1: CREATE / EDIT PROJECT OR TASK -->
   <div id="item-modal" class="hidden fixed inset-0 bg-slate-900/50 backdrop-blur-xs z-50 flex items-center justify-center p-4">
-    <div class="bg-white rounded-3xl max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6 sm:p-8 shadow-2xl border border-slate-200 space-y-5">
+    <div class="bg-white rounded-3xl max-w-2xl w-full max-h-[92vh] overflow-y-auto p-6 sm:p-7 shadow-2xl border border-slate-200">
       <div class="flex items-center justify-between border-b border-slate-100 pb-4">
         <div>
-          <h2 id="item-modal-title" class="text-lg font-extrabold text-slate-900">Add New Project</h2>
-          <p class="text-xs text-slate-500 mt-0.5">Assign an onboarded Nodal user, set timelines, and attach supporting documents.</p>
+          <h3 id="modal-heading" class="text-lg font-extrabold text-slate-900">Create New Record</h3>
+          <p class="text-xs text-slate-500 mt-0.5">Complete details below or attach files for AI-assisted drafting.</p>
         </div>
         <button type="button" onclick="closeItemModal()" class="p-2 rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-100">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
         </button>
       </div>
 
-      <form id="item-form" onsubmit="handleSaveItem(event)" class="space-y-4">
+      <form onsubmit="handleSaveItem(event)" class="mt-5 space-y-4">
         <input type="hidden" id="item-id" />
-        <input type="hidden" id="item-type" value="Project" />
+        <input type="hidden" id="item-type" />
 
         <div>
-          <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">Title *</label>
+          <div class="flex items-center justify-between mb-1.5">
+            <label class="block text-xs font-bold uppercase tracking-wider text-slate-500">Title</label>
+            <button type="button" onclick="proposeTitleAndDescriptionWithAI()" class="text-xs font-bold text-indigo-600 hover:text-indigo-800">
+              ✨ AI Draft from Title / Files
+            </button>
+          </div>
           <input type="text" id="item-title" required placeholder="Enter project or task title..." class="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500" />
         </div>
 
         <div>
-          <div class="flex items-center justify-between mb-1.5">
-            <label class="block text-xs font-bold uppercase tracking-wider text-slate-500">Description *</label>
-            <button type="button" id="btn-ai-autofill" onclick="proposeTitleAndDescriptionWithAI()" class="text-xs font-semibold text-indigo-600 hover:text-indigo-800 flex items-center gap-1">
-              <span>✨ AI Draft from Documents / Title</span>
-            </button>
-          </div>
-          <textarea id="item-description" required rows="3" placeholder="Describe scope, milestones, and deliverables..." class="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500"></textarea>
+          <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">Description &amp; Scope</label>
+          <textarea id="item-description" rows="3" required placeholder="Describe scope, milestones, or deliverables..." class="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500"></textarea>
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <div>
-            <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">Nodal Owner *</label>
-            <select id="item-nodal" required class="w-full px-3.5 py-2.5 text-sm font-medium bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500"></select>
+            <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">Nodal Officer</label>
+            <select id="item-nodal" class="w-full px-3 py-2.5 text-xs sm:text-sm font-medium bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500"></select>
           </div>
           <div>
             <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">Status</label>
-            <select id="item-status" class="w-full px-3.5 py-2.5 text-sm font-medium bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            <select id="item-status" class="w-full px-3 py-2.5 text-xs sm:text-sm font-medium bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500">
               <option value="Not Started">Not Started</option>
               <option value="In Progress">In Progress</option>
               <option value="On Hold">On Hold</option>
               <option value="Completed">Completed</option>
               <option value="Pending Approval">Pending Approval</option>
+              <option value="Archived">Archived</option>
             </select>
           </div>
           <div>
             <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">Target Date</label>
-            <input type="date" id="item-due-date" class="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+            <input type="date" id="item-due-date" class="w-full px-3 py-2.5 text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500" />
           </div>
         </div>
 
-        <!-- Documents Upload -->
-        <div class="bg-slate-50 border border-slate-200 rounded-2xl p-4 space-y-3">
+        <div class="bg-slate-50 border border-slate-200 rounded-2xl p-4 space-y-2.5">
           <div class="flex items-center justify-between">
-            <span class="text-xs font-bold uppercase tracking-wider text-slate-500">Attached Documents</span>
+            <span class="text-xs font-bold uppercase tracking-wider text-slate-600">Supporting Documents</span>
             <label class="cursor-pointer px-3 py-1.5 rounded-xl bg-white border border-slate-300 hover:bg-slate-100 text-xs font-semibold text-slate-700">
               + Upload Files
               <input type="file" multiple onchange="handleModalFileUpload(event)" class="hidden" />
@@ -631,6 +644,68 @@
       <div class="flex items-center justify-end gap-2.5 pt-3 border-t border-slate-100">
         <button type="button" onclick="closeReassignModal()" class="px-4 py-2 rounded-xl border border-slate-200 text-slate-700 hover:bg-slate-50 text-sm font-semibold">Cancel</button>
         <button type="button" onclick="confirmReassignAndDeleteUser()" class="px-5 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-sm font-semibold">Reassign &amp; Delete User</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 4: EDIT USER DETAILS -->
+  <div id="edit-user-modal" class="hidden fixed inset-0 bg-slate-900/50 backdrop-blur-xs z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-md w-full p-6 sm:p-7 shadow-2xl border border-slate-200 space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <div>
+          <h3 class="text-lg font-extrabold text-slate-900">Edit User Details</h3>
+          <p class="text-xs text-slate-500 mt-0.5">Update workspace member's name, Google email, or permission role.</p>
+        </div>
+        <button type="button" onclick="closeEditUserModal()" class="p-2 rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-100">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+
+      <div id="edit-user-error" class="hidden bg-rose-50 border border-rose-200 text-rose-700 text-xs font-semibold px-3.5 py-2 rounded-xl"></div>
+
+      <form onsubmit="handleSaveEditedUser(event)" class="space-y-4">
+        <input type="hidden" id="edit-user-id" />
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">Full Name</label>
+          <input type="text" id="edit-user-name" required class="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+        </div>
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">Google Email</label>
+          <input type="email" id="edit-user-email" required class="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+        </div>
+        <div id="edit-user-role-wrapper">
+          <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">Permission Role</label>
+          <select id="edit-user-permission" class="w-full px-3.5 py-2.5 text-sm font-medium bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            <option value="Admin">Admin</option>
+            <option value="User">User</option>
+          </select>
+        </div>
+        <div class="flex items-center justify-end gap-2.5 pt-3 border-t border-slate-100">
+          <button type="button" onclick="closeEditUserModal()" class="px-4 py-2 rounded-xl border border-slate-200 text-slate-700 hover:bg-slate-50 text-sm font-semibold">Cancel</button>
+          <button type="submit" class="px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold">Save Changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL 5: CONFIRM USER DETAILS CHANGE WARNING -->
+  <div id="confirm-user-edit-modal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-md w-full p-6 sm:p-7 shadow-2xl border border-amber-200 space-y-4">
+      <div class="flex items-start gap-3">
+        <div class="w-10 h-10 rounded-2xl bg-amber-100 text-amber-700 flex items-center justify-center flex-shrink-0">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+        </div>
+        <div>
+          <h3 class="text-base font-extrabold text-slate-900">Confirm User Detail Changes</h3>
+          <p id="confirm-user-edit-summary" class="text-xs text-slate-600 mt-1 leading-relaxed"></p>
+        </div>
+      </div>
+
+      <div id="confirm-user-edit-changes" class="bg-amber-50/70 border border-amber-200 rounded-2xl p-3.5 text-xs text-slate-800 space-y-1.5"></div>
+
+      <div class="flex items-center justify-end gap-2.5 pt-2 border-t border-slate-100">
+        <button type="button" onclick="closeConfirmUserEditModal()" class="px-4 py-2 rounded-xl border border-slate-200 text-slate-700 hover:bg-slate-50 text-xs sm:text-sm font-semibold">Go Back</button>
+        <button type="button" onclick="commitSavedUserEdit()" class="px-4 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs sm:text-sm font-semibold">Yes, Apply Changes</button>
       </div>
     </div>
   </div>
@@ -733,13 +808,16 @@
     const state = {
       activeTab: 'overview',
       selectedItemId: null,
+      tasksReadyOnly: false,
       authUser: null,
       roleOverride: null,
       nodals: JSON.parse(JSON.stringify(INITIAL_NODALS)),
+      deletedNodals: [],
       items: JSON.parse(JSON.stringify(INITIAL_ITEMS)),
       modalDocuments: [],
       welcomeTargetUser: null,
       reassignTargetUserId: null,
+      pendingUserEdit: null,
       pageSize: 25,
       pages: {
         overview: 1,
@@ -787,6 +865,27 @@
       return new Date().toISOString().slice(0, 10);
     }
 
+    function formatLastChangedDisplay(rawDateStr) {
+      if (!rawDateStr) {
+        return { relative: '—', formattedDate: '—' };
+      }
+      const datePart = String(rawDateStr).trim().split(' ')[0];
+      const parsed = new Date(`${datePart}T00:00:00`);
+      if (isNaN(parsed.getTime())) {
+        return { relative: '—', formattedDate: String(rawDateStr) };
+      }
+      const now = new Date();
+      const todayMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      const diffMs = todayMidnight.getTime() - parsed.getTime();
+      const diffDays = Math.max(0, Math.round(diffMs / (1000 * 60 * 60 * 24)));
+      const relative = diffDays === 1 ? '1 Day' : `${diffDays} Days`;
+
+      const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      const dayStr = String(parsed.getDate()).padStart(2, '0');
+      const formattedDate = `${dayStr} ${months[parsed.getMonth()]} ${parsed.getFullYear()}`;
+      return { relative, formattedDate };
+    }
+
     function showToast(msg) {
       const banner = document.getElementById('toast-banner');
       const text = document.getElementById('toast-message');
@@ -801,8 +900,13 @@
       return state.nodals.find(n => n.id === id) || { id: '', name: 'Unassigned', email: '', permission: 'User' };
     }
 
+    function isSuperAdminUser(userObj) {
+      return userObj && (userObj.permission === 'Super Admin' || userObj.isSuperAdmin === true);
+    }
+
     function normalizeRole(role) {
-      return role === 'Admin' || role === 'Super Admin' ? 'Admin' : 'User';
+      if (role === 'Super Admin') return 'Super Admin';
+      return role === 'Admin' ? 'Admin' : 'User';
     }
 
     function getCurrentUser() {
@@ -818,7 +922,8 @@
       const matched = state.nodals.find(
         n => n.email.toLowerCase() === (state.authUser.email || '').toLowerCase()
       );
-      const basePermission = matched ? normalizeRole(matched.permission) : 'User';
+      const rawRole = matched ? normalizeRole(matched.permission) : 'User';
+      const basePermission = rawRole === 'Super Admin' ? 'Admin' : rawRole;
       const effectivePermission = (basePermission === 'Admin' && state.roleOverride)
         ? state.roleOverride
         : basePermission;
@@ -839,7 +944,7 @@
     }
 
     function isTaskReadyForProject(item) {
-      if (item.type !== 'Task') return false;
+      if (item.type !== 'Task' || item.status === 'Archived') return false;
       const docCount = (item.documents || []).length;
       const textLen = ((item.title || '') + ' ' + (item.description || '')).length;
       return docCount >= 2 || textLen >= 130;
@@ -878,6 +983,9 @@
             if (Array.isArray(data.nodals) && data.nodals.length) {
               state.nodals = data.nodals.map(n => ({ ...n, permission: normalizeRole(n.permission) }));
             }
+            if (Array.isArray(data.deletedNodals)) {
+              state.deletedNodals = data.deletedNodals.map(n => ({ ...n, permission: normalizeRole(n.permission) }));
+            }
             if (Array.isArray(data.items)) state.items = data.items;
             if (Array.isArray(data.connectedInboxes)) state.connectedInboxes = data.connectedInboxes;
             if (Array.isArray(data.emailProposals)) state.emailProposals = data.emailProposals;
@@ -899,6 +1007,7 @@
         const ref = doc(db, 'artifacts', appId, 'public', 'data', 'niwas_pm_workspace');
         await setDoc(ref, {
           nodals: state.nodals,
+          deletedNodals: state.deletedNodals,
           items: state.items,
           connectedInboxes: state.connectedInboxes,
           emailProposals: state.emailProposals,
@@ -963,10 +1072,7 @@
       const el = document.getElementById('settings-dropdown');
       const wasHidden = el.classList.contains('hidden');
       closeAllGearMenus();
-      if (wasHidden) {
-        renderGearMenuDropdowns();
-        el.classList.remove('hidden');
-      }
+      if (wasHidden) el.classList.remove('hidden');
     };
 
     window.toggleDetailsSettingsMenu = function (e) {
@@ -974,26 +1080,23 @@
       const el = document.getElementById('details-settings-dropdown');
       const wasHidden = el.classList.contains('hidden');
       closeAllGearMenus();
-      if (wasHidden) {
-        renderGearMenuDropdowns();
-        el.classList.remove('hidden');
-      }
+      if (wasHidden) el.classList.remove('hidden');
     };
 
-    document.addEventListener('click', () => closeAllGearMenus());
+    document.addEventListener('click', closeAllGearMenus);
 
     function renderGearMenuDropdowns() {
       const user = getCurrentUser();
       const roles = ['Admin', 'User'];
       const canSwitchRoles = user.isSignedIn && user.basePermission === 'Admin';
       const html = `
-        <div class="border-b border-slate-100 pb-3 space-y-1">
-          <div class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Signed-in Profile</div>
-          <div class="text-sm font-extrabold text-slate-900 truncate">${escapeHtml(user.name)}</div>
-          <div class="text-xs text-slate-500 truncate">${escapeHtml(user.email)}</div>
+        <div class="space-y-1 border-b border-slate-100 pb-3">
+          <div class="text-xs font-extrabold text-slate-900 truncate">${escapeHtml(user.name)}</div>
+          <div class="text-[11px] text-slate-500 truncate">${escapeHtml(user.email)}</div>
           <div class="pt-1 flex items-center gap-1.5">
-            <span class="text-[11px] font-semibold text-slate-500">Current Role:</span>
-            <span class="px-2 py-0.5 rounded-full text-[11px] font-bold bg-indigo-50 text-indigo-700 border border-indigo-200">${escapeHtml(user.permission)}</span>
+            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-indigo-50 text-indigo-700 border border-indigo-200">
+              Role: ${escapeHtml(user.permission)}
+            </span>
           </div>
         </div>
 
@@ -1029,6 +1132,15 @@
       state.activeTab = tab;
       closeAllGearMenus();
 
+      if (tab === 'projects') {
+        state.tasksReadyOnly = false;
+        document.querySelectorAll('input[name="projects-type-radio"]').forEach(r => { r.checked = r.value === 'Project'; });
+      } else if (tab === 'tasks') {
+        document.querySelectorAll('input[name="tasks-type-radio"]').forEach(r => { r.checked = r.value === 'Task'; });
+      } else {
+        state.tasksReadyOnly = false;
+      }
+
       const views = ['overview', 'projects', 'tasks', 'details', 'nodals', 'email-settings'];
       views.forEach(v => {
         const el = document.getElementById(`view-${v}`);
@@ -1057,9 +1169,11 @@
       const titles = {
         'overview': ['Dashboard', 'Unified overview of all active SPM-NIWAS projects and tasks.'],
         'projects': ['Projects', 'Formal multi-milestone initiatives tracked across SPM-NIWAS.'],
-        'tasks': ['Tasks', 'Actionable operational deliverables and tasks eligible for project promotion.'],
-        'nodals': ['Users and Permissions', 'Manage registered workspace users, Google emails, and Admin/User roles.'],
-        'email-settings': ['Email and AI Inbox', 'Connect Gmail accounts and review AI-extracted task/project proposals.']
+        'tasks': state.tasksReadyOnly
+          ? ['Convert Tasks to Projects', 'Tasks meeting project readiness criteria and eligible for conversion into formal Projects.']
+          : ['Tasks', 'Actionable operational deliverables and tasks eligible for project promotion.'],
+        'nodals': ['Users & Permissions', 'Manage Users and their Permissions.'],
+        'email-settings': ['Email & AI Inbox', 'Connect Gmail accounts and review AI-extracted task/project proposals.']
       };
       if (titles[tab]) {
         document.getElementById('page-title').textContent = titles[tab][0];
@@ -1069,6 +1183,23 @@
       renderAll();
     };
 
+    window.openReadyToConvertLanding = function () {
+      state.tasksReadyOnly = true;
+      state.pages.tasks = 1;
+      switchTab('tasks');
+    };
+
+    window.clearReadyToConvertFilter = function () {
+      state.tasksReadyOnly = false;
+      state.pages.tasks = 1;
+      switchTab('tasks');
+    };
+
+    window.handleSubViewTypeRadio = function (targetType) {
+      state.tasksReadyOnly = false;
+      switchTab(targetType === 'Project' ? 'projects' : 'tasks');
+    };
+
     /* STATUS & TYPE BADGES */
     function getStatusBadgeHtml(status) {
       const map = {
@@ -1076,7 +1207,8 @@
         'In Progress': 'bg-sky-50 text-sky-700 border-sky-200',
         'On Hold': 'bg-amber-50 text-amber-700 border-amber-200',
         'Completed': 'bg-emerald-50 text-emerald-700 border-emerald-200',
-        'Pending Approval': 'bg-purple-50 text-purple-700 border-purple-200'
+        'Pending Approval': 'bg-purple-50 text-purple-700 border-purple-200',
+        'Archived': 'bg-slate-200 text-slate-600 border-slate-300'
       };
       const cls = map[status] || 'bg-slate-100 text-slate-700 border-slate-200';
       return `<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-bold border ${cls}">${escapeHtml(status)}</span>`;
@@ -1148,6 +1280,7 @@
       const perms = getCurrentPermissions();
       const readyConvert = isTaskReadyForProject(item);
       const docs = item.documents || [];
+      const lastChangedInfo = formatLastChangedDisplay(item.lastChanged || item.dueDate);
 
       return `
         <tr class="hover:bg-slate-50/90 transition-colors">
@@ -1168,10 +1301,10 @@
           </td>
           <td class="px-4 py-3.5 align-top">
             <div class="text-xs font-bold text-slate-800 truncate">${escapeHtml(nodal.name)}</div>
-            <div class="text-[11px] text-slate-400 truncate">${escapeHtml(nodal.email)}</div>
           </td>
-          <td class="px-4 py-3.5 align-top text-xs text-slate-500 whitespace-nowrap">
-            ${escapeHtml(item.lastChanged || item.dueDate || '—')}
+          <td class="px-4 py-3.5 align-top whitespace-nowrap">
+            <div class="text-xs sm:text-sm font-medium text-slate-800">${escapeHtml(lastChangedInfo.relative)}</div>
+            <div class="text-[11px] text-slate-400 mt-0.5">${escapeHtml(lastChangedInfo.formattedDate)}</div>
           </td>
           <td class="px-4 py-3.5 align-top">
             <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-slate-100 text-slate-700 text-xs font-semibold">
@@ -1198,14 +1331,14 @@
       const tbody = document.getElementById('overview-table-body');
       if (!tbody) return;
       const q = (document.getElementById('overview-search')?.value || '').toLowerCase().trim();
-      const typeF = document.getElementById('overview-type-filter')?.value || 'All';
+      const typeF = document.querySelector('input[name="overview-type-radio"]:checked')?.value || 'All';
       const statusF = document.getElementById('overview-status-filter')?.value || 'All';
-      const nodalF = document.getElementById('overview-nodal-filter')?.value || 'All';
+      const showArchived = Boolean(document.getElementById('overview-show-archived')?.checked);
 
       const rows = state.items.filter(item => {
+        if (!showArchived && item.status === 'Archived') return false;
         if (typeF !== 'All' && item.type !== typeF) return false;
         if (statusF !== 'All' && item.status !== statusF) return false;
-        if (nodalF !== 'All' && item.nodalId !== nodalF) return false;
         if (q) {
           const hay = `${item.title} ${item.description} ${getNodalById(item.nodalId).name}`.toLowerCase();
           if (!hay.includes(q)) return false;
@@ -1225,14 +1358,20 @@
       const tbody = document.getElementById(`${prefix}-table-body`);
       if (!tbody) return;
 
+      if (type === 'Task') {
+        const banner = document.getElementById('tasks-ready-filter-banner');
+        if (banner) banner.classList.toggle('hidden', !state.tasksReadyOnly);
+      }
+
       const q = (document.getElementById(`${prefix}-search`)?.value || '').toLowerCase().trim();
       const statusF = document.getElementById(`${prefix}-status-filter`)?.value || 'All';
-      const nodalF = document.getElementById(`${prefix}-nodal-filter`)?.value || 'All';
+      const showArchived = Boolean(document.getElementById(`${prefix}-show-archived`)?.checked);
 
       const rows = state.items.filter(item => {
         if (item.type !== type) return false;
+        if (type === 'Task' && state.tasksReadyOnly && !isTaskReadyForProject(item)) return false;
+        if (!showArchived && item.status === 'Archived') return false;
         if (statusF !== 'All' && item.status !== statusF) return false;
-        if (nodalF !== 'All' && item.nodalId !== nodalF) return false;
         if (q) {
           const hay = `${item.title} ${item.description} ${getNodalById(item.nodalId).name}`.toLowerCase();
           if (!hay.includes(q)) return false;
@@ -1244,7 +1383,7 @@
 
       tbody.innerHTML = pagedRows.length
         ? pagedRows.map(i => buildItemTableRow(i, false)).join('')
-        : `<tr><td colspan="7" class="px-4 py-10 text-center text-sm text-slate-400">No ${prefix} found.</td></tr>`;
+        : `<tr><td colspan="7" class="px-4 py-10 text-center text-sm text-slate-400">${type === 'Task' && state.tasksReadyOnly ? 'No tasks currently meet the project conversion criteria.' : `No ${prefix} found.`}</td></tr>`;
     };
 
     /* ITEM DETAILS PAGE */
@@ -1303,7 +1442,7 @@
 
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 bg-slate-50 rounded-2xl p-4 border border-slate-200/80">
           <div>
-            <div class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Assigned Nodal</div>
+            <div class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Nodal Officer</div>
             <div class="text-sm font-bold text-slate-900 mt-1">${escapeHtml(nodal.name)}</div>
             <div class="text-xs text-slate-500">${escapeHtml(nodal.email)}</div>
           </div>
@@ -1362,22 +1501,30 @@
         `<option value="${escapeHtml(n.id)}">${escapeHtml(n.name)} (${escapeHtml(n.email)})</option>`
       ).join('');
 
-      const existing = itemId ? state.items.find(i => i.id === itemId) : null;
-      document.getElementById('item-id').value = existing ? existing.id : '';
-      document.getElementById('item-type').value = existing ? existing.type : type;
-      document.getElementById('item-modal-title').textContent = existing
-        ? `Edit ${existing.type}`
-        : `Add New ${type}`;
+      if (itemId) {
+        const item = state.items.find(i => i.id === itemId);
+        if (!item) return;
+        document.getElementById('modal-heading').textContent = `Edit ${item.type}`;
+        document.getElementById('item-id').value = item.id;
+        document.getElementById('item-type').value = item.type;
+        document.getElementById('item-title').value = item.title;
+        document.getElementById('item-description').value = item.description;
+        document.getElementById('item-nodal').value = item.nodalId;
+        document.getElementById('item-status').value = item.status;
+        document.getElementById('item-due-date').value = item.dueDate || '';
+        state.modalDocuments = JSON.parse(JSON.stringify(item.documents || []));
+      } else {
+        const perms = getCurrentPermissions();
+        document.getElementById('modal-heading').textContent = `Create New ${type}`;
+        document.getElementById('item-id').value = '';
+        document.getElementById('item-type').value = type;
+        document.getElementById('item-title').value = '';
+        document.getElementById('item-description').value = '';
+        document.getElementById('item-status').value = perms.canDirectCreate ? 'Not Started' : 'Pending Approval';
+        document.getElementById('item-due-date').value = '';
+        state.modalDocuments = [];
+      }
 
-      document.getElementById('item-title').value = existing ? existing.title : '';
-      document.getElementById('item-description').value = existing ? existing.description : '';
-      document.getElementById('item-nodal').value = existing ? existing.nodalId : (state.nodals[0]?.id || '');
-      document.getElementById('item-status').value = existing
-        ? existing.status
-        : (getCurrentPermissions().canDirectCreate ? 'Not Started' : 'Pending Approval');
-      document.getElementById('item-due-date').value = existing ? (existing.dueDate || '') : '';
-
-      state.modalDocuments = existing ? JSON.parse(JSON.stringify(existing.documents || [])) : [];
       renderModalDocuments();
       modal.classList.remove('hidden');
     };
@@ -1528,39 +1675,200 @@
       const addCard = document.getElementById('add-user-card');
       if (addCard) addCard.classList.toggle('hidden', !perms.canManageUsers);
 
-      const filtered = state.nodals.filter(n =>
-        !q || n.name.toLowerCase().includes(q) || n.email.toLowerCase().includes(q)
-      );
+      const rolePriority = (u) => {
+        const r = normalizeRole(u.permission);
+        if (r === 'Super Admin') return 0;
+        if (r === 'Admin') return 1;
+        return 2;
+      };
+
+      const filtered = state.nodals
+        .filter(n => !q || n.name.toLowerCase().includes(q) || n.email.toLowerCase().includes(q))
+        .slice()
+        .sort((a, b) => {
+          const prioDiff = rolePriority(a) - rolePriority(b);
+          if (prioDiff !== 0) return prioDiff;
+          return (a.name || '').localeCompare(b.name || '', undefined, { sensitivity: 'base' });
+        });
 
       const pagedUsers = paginateRows(filtered, 'nodals');
 
-      tbody.innerHTML = pagedUsers.map(n => {
+      const activeRowsHtml = pagedUsers.map(n => {
         const assignedCount = state.items.filter(i => i.nodalId === n.id).length;
-        const roleVal = normalizeRole(n.permission);
+        const rawRole = normalizeRole(n.permission);
+        const isSuper = rawRole === 'Super Admin';
         return `
           <tr class="hover:bg-slate-50">
             <td class="px-4 py-3.5 font-bold text-slate-900">${escapeHtml(n.name)}</td>
             <td class="px-4 py-3.5 text-xs text-slate-600">${escapeHtml(n.email)}</td>
             <td class="px-4 py-3.5">
-              ${perms.canManageUsers
-                ? `<select onchange="updateUserPermission('${escapeHtml(n.id)}', this.value)" class="px-2.5 py-1 text-xs font-semibold bg-slate-50 border border-slate-200 rounded-lg">
-                    ${['Admin', 'User'].map(r => `<option value="${r}" ${roleVal === r ? 'selected' : ''}>${r}</option>`).join('')}
-                   </select>`
-                : `<span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-700">${escapeHtml(roleVal)}</span>`
+              ${isSuper
+                ? `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-indigo-50 text-indigo-700 border border-indigo-200">Super Admin</span>`
+                : `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold ${rawRole === 'Admin' ? 'bg-indigo-50 text-indigo-700 border border-indigo-200' : 'bg-slate-100 text-slate-700 border border-slate-200'}">${rawRole === 'Admin' ? 'Admin' : 'Users'}</span>`
               }
             </td>
             <td class="px-4 py-3.5 text-xs font-semibold text-slate-700">${assignedCount} assigned</td>
             <td class="px-4 py-3.5 text-right whitespace-nowrap">
-              <div class="inline-flex items-center gap-2">
-                <button type="button" onclick="openWelcomeEmailModal('${escapeHtml(n.id)}')" class="text-xs font-semibold text-indigo-600 hover:text-indigo-800">Welcome Email</button>
-                ${perms.canManageUsers ? `
+              <div class="inline-flex items-center gap-2.5">
+                <button type="button" onclick="openWelcomeEmailModal('${escapeHtml(n.id)}')" class="text-xs font-semibold text-indigo-600 hover:text-indigo-800">Resend Welcome Email</button>
+                ${perms.canManageUsers && !isSuper ? `
                   <button type="button" onclick="initiateDeleteUser('${escapeHtml(n.id)}')" class="text-xs font-semibold text-rose-600 hover:text-rose-800">Remove</button>
                 ` : ''}
+                <button type="button" onclick="openEditUserModal('${escapeHtml(n.id)}')" title="Edit user details" class="p-1.5 rounded-lg text-slate-600 hover:text-indigo-600 hover:bg-indigo-50 transition-colors" aria-label="Edit user details">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
+                </button>
               </div>
             </td>
           </tr>
         `;
       }).join('');
+
+      const filteredDeleted = (state.deletedNodals || [])
+        .filter(n => !q || n.name.toLowerCase().includes(q) || n.email.toLowerCase().includes(q))
+        .slice()
+        .sort((a, b) => (a.name || '').localeCompare(b.name || '', undefined, { sensitivity: 'base' }));
+
+      const deletedSectionHtml = filteredDeleted.length ? `
+        <tr class="bg-rose-50/80 border-t-2 border-rose-200">
+          <td colspan="5" class="px-4 py-2 text-[11px] font-extrabold uppercase tracking-wider text-rose-700">
+            Deleted
+          </td>
+        </tr>
+        ${filteredDeleted.map(d => {
+          const rawRole = normalizeRole(d.permission);
+          return `
+            <tr class="bg-slate-50/70 text-slate-500">
+              <td class="px-4 py-3 font-semibold text-slate-600 line-through">${escapeHtml(d.name)}</td>
+              <td class="px-4 py-3 text-xs text-slate-500">${escapeHtml(d.email)}</td>
+              <td class="px-4 py-3">
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-rose-50 text-rose-700 border border-rose-200">
+                  Deleted (${rawRole === 'Admin' ? 'Admin' : 'Users'})
+                </span>
+              </td>
+              <td class="px-4 py-3 text-xs text-slate-400">0 assigned</td>
+              <td class="px-4 py-3 text-right whitespace-nowrap">
+                ${perms.canManageUsers ? `
+                  <button type="button" onclick="restoreDeletedUser('${escapeHtml(d.id)}')" class="text-xs font-semibold text-indigo-600 hover:text-indigo-800">Restore</button>
+                ` : '<span class="text-xs text-slate-400">—</span>'}
+              </td>
+            </tr>
+          `;
+        }).join('')}
+      ` : '';
+
+      tbody.innerHTML = activeRowsHtml + deletedSectionHtml;
+    };
+
+    window.openEditUserModal = function (userId) {
+      if (!getCurrentPermissions().canManageUsers) {
+        showToast('Sign in as an Admin to edit user details.');
+        return;
+      }
+      const u = state.nodals.find(n => n.id === userId);
+      if (!u) return;
+      document.getElementById('edit-user-error').classList.add('hidden');
+      document.getElementById('edit-user-id').value = u.id;
+      document.getElementById('edit-user-name').value = u.name;
+      document.getElementById('edit-user-email').value = u.email;
+      const rawRole = normalizeRole(u.permission);
+      const roleWrapper = document.getElementById('edit-user-role-wrapper');
+      if (rawRole === 'Super Admin') {
+        roleWrapper.classList.add('hidden');
+      } else {
+        roleWrapper.classList.remove('hidden');
+        document.getElementById('edit-user-permission').value = rawRole;
+      }
+      document.getElementById('edit-user-modal').classList.remove('hidden');
+    };
+
+    window.closeEditUserModal = function () {
+      document.getElementById('edit-user-modal')?.classList.add('hidden');
+    };
+
+    window.closeConfirmUserEditModal = function () {
+      document.getElementById('confirm-user-edit-modal')?.classList.add('hidden');
+      state.pendingUserEdit = null;
+    };
+
+    window.handleSaveEditedUser = function (e) {
+      e.preventDefault();
+      if (!getCurrentPermissions().canManageUsers) return;
+      const errBox = document.getElementById('edit-user-error');
+      errBox.classList.add('hidden');
+
+      const userId = document.getElementById('edit-user-id').value;
+      const u = state.nodals.find(n => n.id === userId);
+      if (!u) return;
+
+      const name = document.getElementById('edit-user-name').value.trim();
+      const email = document.getElementById('edit-user-email').value.trim().toLowerCase();
+      const isSuper = normalizeRole(u.permission) === 'Super Admin';
+      const nextPermission = isSuper
+        ? 'Super Admin'
+        : normalizeRole(document.getElementById('edit-user-permission').value);
+
+      if (state.nodals.some(n => n.id !== userId && n.email.toLowerCase() === email)) {
+        errBox.textContent = 'Another user already uses this Google email address.';
+        errBox.classList.remove('hidden');
+        return;
+      }
+
+      const prevRole = normalizeRole(u.permission);
+      const changes = [];
+      if (name !== u.name) changes.push(`<div><span class="font-bold">Name:</span> ${escapeHtml(u.name)} → <span class="font-bold text-indigo-700">${escapeHtml(name)}</span></div>`);
+      if (email !== (u.email || '').trim().toLowerCase()) changes.push(`<div><span class="font-bold">Google Email:</span> ${escapeHtml(u.email)} → <span class="font-bold text-indigo-700">${escapeHtml(email)}</span></div>`);
+      if (nextPermission !== prevRole) changes.push(`<div><span class="font-bold">Permission Role:</span> ${escapeHtml(prevRole === 'User' ? 'Users' : prevRole)} → <span class="font-bold text-indigo-700">${escapeHtml(nextPermission === 'User' ? 'Users' : nextPermission)}</span></div>`);
+
+      if (!changes.length) {
+        closeEditUserModal();
+        showToast('No changes detected.');
+        return;
+      }
+
+      state.pendingUserEdit = {
+        userId,
+        name,
+        email,
+        nextPermission,
+        emailChanged: email !== (u.email || '').trim().toLowerCase()
+      };
+
+      document.getElementById('confirm-user-edit-summary').textContent =
+        `Warning: You are about to modify workspace account details for ${u.name}. Please confirm the updates below:`;
+      document.getElementById('confirm-user-edit-changes').innerHTML = changes.join('');
+      document.getElementById('confirm-user-edit-modal').classList.remove('hidden');
+    };
+
+    window.commitSavedUserEdit = function () {
+      const pending = state.pendingUserEdit;
+      if (!pending || !getCurrentPermissions().canManageUsers) return;
+      const u = state.nodals.find(n => n.id === pending.userId);
+      if (!u) {
+        closeConfirmUserEditModal();
+        return;
+      }
+
+      u.name = pending.name;
+      u.email = pending.email;
+      if (normalizeRole(u.permission) !== 'Super Admin') {
+        u.permission = pending.nextPermission;
+      }
+
+      const shouldPromptWelcome = pending.emailChanged;
+      const targetId = u.id;
+      const targetName = u.name;
+
+      closeConfirmUserEditModal();
+      closeEditUserModal();
+      persistWorkspaceToCloud();
+      renderAll();
+
+      if (shouldPromptWelcome) {
+        showToast(`Updated email for ${targetName}. Please send welcome email to the new address.`);
+        openWelcomeEmailModal(targetId);
+      } else {
+        showToast(`Updated details for ${targetName}.`);
+      }
     };
 
     window.handleAddNodalUser = function (e) {
@@ -1602,10 +1910,13 @@
         showToast('At least one workspace user must remain.');
         return;
       }
-      const user = getNodalById(userId);
+      const user = state.nodals.find(n => n.id === userId);
+      if (!user) return;
       const assignedItems = state.items.filter(i => i.nodalId === userId);
       if (!assignedItems.length) {
         state.nodals = state.nodals.filter(n => n.id !== userId);
+        state.deletedNodals = state.deletedNodals || [];
+        state.deletedNodals.push({ ...user, deletedAt: nowTimestamp() });
         persistWorkspaceToCloud();
         renderAll();
         showToast(`Removed ${user.name}.`);
@@ -1644,6 +1955,7 @@
     window.confirmReassignAndDeleteUser = function () {
       const userId = state.reassignTargetUserId;
       if (!userId) return;
+      const removedUser = state.nodals.find(n => n.id === userId);
       document.querySelectorAll('.reassign-item-select').forEach(sel => {
         const itemId = sel.getAttribute('data-reassign-item-id');
         const item = state.items.find(i => i.id === itemId);
@@ -1653,10 +1965,26 @@
         }
       });
       state.nodals = state.nodals.filter(n => n.id !== userId);
+      if (removedUser) {
+        state.deletedNodals = state.deletedNodals || [];
+        state.deletedNodals.push({ ...removedUser, deletedAt: nowTimestamp() });
+      }
       closeReassignModal();
       persistWorkspaceToCloud();
       renderAll();
       showToast('Reassigned items and removed user.');
+    };
+
+    window.restoreDeletedUser = function (userId) {
+      if (!getCurrentPermissions().canManageUsers) return;
+      const idx = (state.deletedNodals || []).findIndex(d => d.id === userId);
+      if (idx === -1) return;
+      const [restored] = state.deletedNodals.splice(idx, 1);
+      delete restored.deletedAt;
+      state.nodals.push(restored);
+      persistWorkspaceToCloud();
+      renderAll();
+      showToast(`Restored ${restored.name}.`);
     };
 
     window.closeReassignModal = function () {
@@ -1858,24 +2186,13 @@
     };
 
     /* MASTER RENDER */
-    function populateNodalFilterDropdowns() {
-      const options = `<option value="All">All Nodals</option>` +
-        state.nodals.map(n => `<option value="${escapeHtml(n.id)}">${escapeHtml(n.name)}</option>`).join('');
-      ['overview-nodal-filter', 'projects-nodal-filter', 'tasks-nodal-filter'].forEach(id => {
-        const el = document.getElementById(id);
-        if (!el) return;
-        const prev = el.value;
-        el.innerHTML = options;
-        if ([...el.options].some(o => o.value === prev)) el.value = prev;
-      });
-    }
-
     function renderAll() {
-      const projects = state.items.filter(i => i.type === 'Project');
-      const tasks = state.items.filter(i => i.type === 'Task');
+      const activeItems = state.items.filter(i => i.status !== 'Archived');
+      const projects = activeItems.filter(i => i.type === 'Project');
+      const tasks = activeItems.filter(i => i.type === 'Task');
       const eligibleTasks = tasks.filter(isTaskReadyForProject);
 
-      document.getElementById('badge-overview').textContent = state.items.length;
+      document.getElementById('badge-overview').textContent = activeItems.length;
       document.getElementById('badge-projects').textContent = projects.length;
       document.getElementById('badge-tasks').textContent = tasks.length;
 
@@ -1890,21 +2207,7 @@
       document.getElementById('kpi-total-tasks').textContent = tasks.length;
       document.getElementById('kpi-tasks-sub').textContent = `${tasks.filter(t => t.status === 'Completed').length} completed`;
       document.getElementById('kpi-ready-convert').textContent = eligibleTasks.length;
-      document.getElementById('kpi-total-users').textContent = state.nodals.length;
 
-      const nudgeBanner = document.getElementById('global-nudge-banner');
-      const showNudge = (state.activeTab === 'overview' || state.activeTab === 'tasks') && eligibleTasks.length > 0;
-      if (nudgeBanner) {
-        nudgeBanner.classList.toggle('hidden', !showNudge);
-        if (showNudge) {
-          const topTask = eligibleTasks[0];
-          document.getElementById('nudge-banner-text').textContent =
-            `"${topTask.title}" has accumulated ${(topTask.documents || []).length} documents and expanded scope — consider promoting it to a formal Project.`;
-          document.getElementById('nudge-banner-action').onclick = () => convertTaskToProject(topTask.id);
-        }
-      }
-
-      populateNodalFilterDropdowns();
       renderGearMenuDropdowns();
       renderOverviewUnifiedTable();
       renderCards('Project');
