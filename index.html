@@ -145,6 +145,14 @@
             <span id="badge-tasks" class="ml-2 px-2 py-0.5 text-xs font-bold rounded-full bg-slate-800 text-slate-300">0</span>
           </button>
 
+          <button type="button" id="nav-tasklets" onclick="switchTab('tasklets')" class="nav-btn flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all text-slate-300 hover:bg-slate-800 whitespace-nowrap">
+            <span class="flex items-center gap-2.5">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h10M4 18h7"/></svg>
+              Tasklet
+            </span>
+            <span id="badge-tasklets" class="ml-2 px-2 py-0.5 text-xs font-bold rounded-full bg-slate-800 text-slate-300">0</span>
+          </button>
+
           <!-- Settings Sub-Menu Below Tasks -->
           <div id="sidebar-settings-group" class="hidden pt-3 mt-1.5 border-t border-slate-800/90 flex lg:flex-col gap-1.5">
             <div class="hidden lg:flex items-center gap-2 px-3.5 py-1 text-[11px] font-bold uppercase tracking-wider text-slate-400">
@@ -173,6 +181,13 @@
                 Email Templates
               </span>
             </button>
+
+            <button type="button" id="nav-tasklet-settings" onclick="switchTab('tasklet-settings')" class="hidden nav-btn flex items-center justify-between px-3.5 py-2.5 lg:pl-6 rounded-xl text-sm font-semibold transition-all text-slate-300 hover:bg-slate-800 whitespace-nowrap">
+              <span class="flex items-center gap-2.5">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+                Tasklet
+              </span>
+            </button>
           </div>
         </nav>
       </div>
@@ -188,6 +203,12 @@
         </div>
 
         <div class="flex items-center gap-2.5">
+          <!-- Add Tasklet Button (Dashboard & Tasklet Page) -->
+          <button type="button" id="btn-header-add-tasklet" onclick="openItemModal('Tasklet')" class="px-3.5 py-2.5 rounded-xl bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 text-xs sm:text-sm font-semibold flex items-center gap-1.5 transition-all">
+            <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+            Add Tasklet
+          </button>
+
           <!-- Add Task Button (Dashboard & Tasks Page) -->
           <button type="button" id="btn-header-add-task" onclick="openItemModal('Task')" class="px-3.5 py-2.5 rounded-xl bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 text-xs sm:text-sm font-semibold flex items-center gap-1.5 transition-all">
             <svg class="w-4 h-4 text-indigo-600" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
@@ -268,6 +289,10 @@
               <label class="inline-flex items-center gap-1.5 cursor-pointer select-none">
                 <input type="radio" name="overview-type-radio" value="Task" onchange="resetPageAndRender('overview')" class="text-indigo-600 focus:ring-indigo-500" />
                 <span>Tasks</span>
+              </label>
+              <label id="overview-radio-tasklet-wrap" class="inline-flex items-center gap-1.5 cursor-pointer select-none">
+                <input type="radio" name="overview-type-radio" value="Tasklet" onchange="resetPageAndRender('overview')" class="text-indigo-600 focus:ring-indigo-500" />
+                <span>Tasklets</span>
               </label>
             </div>
 
@@ -450,6 +475,59 @@
               </table>
             </div>
             <div id="pagination-tasks" class="hidden border-t border-slate-200 bg-slate-50/80 px-4 py-3 flex flex-wrap items-center justify-between gap-2 text-xs text-slate-600"></div>
+          </div>
+        </section>
+
+        <!-- VIEW 3B: TASKLETS TABLE -->
+        <section id="view-tasklets" class="hidden space-y-4">
+          <div class="bg-white rounded-2xl border border-slate-200 p-4 flex flex-wrap items-center gap-3 w-full">
+            <div class="relative flex-1 min-w-[220px]">
+              <svg class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+              <input type="text" id="tasklets-search" oninput="resetPageAndRender('tasklets')" placeholder="Search tasklets..." class="w-full pl-9 pr-3.5 py-2 text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+            </div>
+
+            <select id="tasklets-status-filter" onchange="resetPageAndRender('tasklets')" class="text-xs sm:text-sm font-medium bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 flex-shrink-0">
+              <option value="All">All Statuses</option>
+              <option value="Not Started">Not Started</option>
+              <option value="In Progress">In Progress</option>
+              <option value="On Hold">On Hold</option>
+              <option value="Completed">Completed</option>
+              <option value="Pending Approval">Pending Approval</option>
+            </select>
+
+            <label class="inline-flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs sm:text-sm font-medium text-slate-700 cursor-pointer select-none hover:bg-slate-100/70 transition-colors flex-shrink-0">
+              <input type="checkbox" id="tasklets-show-archived" onchange="resetPageAndRender('tasklets')" class="rounded text-indigo-600 focus:ring-indigo-500" />
+              <span>Show Archived</span>
+            </label>
+          </div>
+
+          <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden">
+            <div class="overflow-x-auto">
+              <table id="table-tasklets" class="w-full table-fixed border-collapse text-left">
+                <colgroup id="colgroup-tasklets">
+                  <col style="width: 11%" />
+                  <col style="width: 18%" />
+                  <col style="width: 25%" />
+                  <col style="width: 12%" />
+                  <col style="width: 14%" />
+                  <col style="width: 11%" />
+                  <col style="width: 9%" />
+                </colgroup>
+                <thead class="bg-slate-50 border-b border-slate-200 text-[11px] font-bold uppercase tracking-wider text-slate-500">
+                  <tr>
+                    <th class="relative px-4 py-3.5 select-none">Status<span class="col-resizer" onmousedown="startColumnResize(event, 'tasklets', 0)"></span></th>
+                    <th class="relative px-4 py-3.5 select-none">Name<span class="col-resizer" onmousedown="startColumnResize(event, 'tasklets', 1)"></span></th>
+                    <th class="relative px-4 py-3.5 select-none">Description<span class="col-resizer" onmousedown="startColumnResize(event, 'tasklets', 2)"></span></th>
+                    <th class="relative px-4 py-3.5 select-none">Nodal<span class="col-resizer" onmousedown="startColumnResize(event, 'tasklets', 3)"></span></th>
+                    <th class="relative px-4 py-3.5 select-none">Last Changed<span class="col-resizer" onmousedown="startColumnResize(event, 'tasklets', 4)"></span></th>
+                    <th class="relative px-4 py-3.5 select-none">Documents Added<span class="col-resizer" onmousedown="startColumnResize(event, 'tasklets', 5)"></span></th>
+                    <th class="px-4 py-3.5 text-right select-none">Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="tasklets-table-body" class="divide-y divide-slate-100 text-sm"></tbody>
+              </table>
+            </div>
+            <div id="pagination-tasklets" class="hidden border-t border-slate-200 bg-slate-50/80 px-4 py-3 flex flex-wrap items-center justify-between gap-2 text-xs text-slate-600"></div>
           </div>
         </section>
 
@@ -654,6 +732,36 @@
                   <textarea id="template-editor-body" rows="10" oninput="handleTemplateFieldInput()" placeholder="Write email template body..." class="w-full px-3.5 py-3 text-xs sm:text-sm font-mono leading-relaxed bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500"></textarea>
                 </div>
               </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- VIEW 8: TASKLET ACCESS SETTINGS (SUPER ADMIN ONLY) -->
+        <section id="view-tasklet-settings" class="hidden space-y-4">
+          <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden">
+            <div class="p-4 sm:p-5 border-b border-slate-200 flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <h2 class="text-base font-extrabold text-slate-900">Tasklet Feature Access</h2>
+                <p class="text-xs text-slate-500 mt-0.5">Select which workspace members can view, create, and manage Tasklets. Only selected users (and Super Admin) can access the Tasklet feature.</p>
+              </div>
+              <div class="flex flex-wrap items-center gap-2.5 w-full sm:w-auto justify-end">
+                <input type="text" id="tasklet-access-search" oninput="renderTaskletSettingsView()" placeholder="Search users..." class="px-3.5 py-2 text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 flex-1 sm:w-60" />
+                <span id="tasklet-access-count-badge" class="px-3 py-1.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold whitespace-nowrap">0 enabled</span>
+              </div>
+            </div>
+
+            <div class="overflow-x-auto">
+              <table class="w-full text-left border-collapse">
+                <thead class="bg-slate-50 border-b border-slate-200 text-[11px] font-bold uppercase tracking-wider text-slate-500">
+                  <tr>
+                    <th class="px-4 py-3.5">User</th>
+                    <th class="px-4 py-3.5">Workspace Role</th>
+                    <th class="px-4 py-3.5">Tasklet Access</th>
+                    <th class="px-4 py-3.5 text-right">Enable / Disable</th>
+                  </tr>
+                </thead>
+                <tbody id="tasklet-access-table-body" class="divide-y divide-slate-100 text-sm"></tbody>
+              </table>
             </div>
           </div>
         </section>
@@ -956,10 +1064,10 @@
     };
 
     const INITIAL_NODALS = [
-      { id: 'usr-1', name: 'Workspace Admin', email: 'admin@spmniwas.in', permission: 'Admin', lastLogin: '2026-11-16', usageHours30d: 42.5 },
-      { id: 'usr-2', name: 'Director SPM-NIWAS', email: 'director@spmniwas.in', permission: 'Super Admin', isSuperAdmin: true, lastLogin: '2026-11-18', usageHours30d: 58.0 },
-      { id: 'usr-3', name: 'Nodal Officer 1', email: 'nodal1@spmniwas.in', permission: 'User', lastLogin: '2026-11-06', usageHours30d: 26.5 },
-      { id: 'usr-4', name: 'Nodal Officer 2', email: 'nodal2@spmniwas.in', permission: 'User', lastLogin: '2026-11-12', usageHours30d: 31.0 }
+      { id: 'usr-1', name: 'Workspace Admin', email: 'admin@spmniwas.in', permission: 'Admin', canAccessTasklets: false, lastLogin: '2026-11-16', usageHours30d: 42.5 },
+      { id: 'usr-2', name: 'Director SPM-NIWAS', email: 'director@spmniwas.in', permission: 'Super Admin', isSuperAdmin: true, canAccessTasklets: true, lastLogin: '2026-11-18', usageHours30d: 58.0 },
+      { id: 'usr-3', name: 'Nodal Officer 1', email: 'nodal1@spmniwas.in', permission: 'User', canAccessTasklets: false, lastLogin: '2026-11-06', usageHours30d: 26.5 },
+      { id: 'usr-4', name: 'Nodal Officer 2', email: 'nodal2@spmniwas.in', permission: 'User', canAccessTasklets: false, lastLogin: '2026-11-12', usageHours30d: 31.0 }
     ];
 
     const BUILTIN_SUPER_ADMINS = [
@@ -1081,6 +1189,7 @@
         overview: 1,
         projects: 1,
         tasks: 1,
+        tasklets: 1,
         nodals: 1,
         usage: 1
       },
@@ -1313,7 +1422,15 @@
 
     function getRoleCapabilities() {
       const user = getCurrentUser();
-      return ROLE_PERMISSIONS[user.permission] || ROLE_PERMISSIONS['User'];
+      const base = ROLE_PERMISSIONS[user.permission] || ROLE_PERMISSIONS['User'];
+      const isSuperAdmin = user.roleLabel === 'Super Admin';
+      const matchedRecord = state.nodals.find(n => n.id === user.id || String(n.email || '').toLowerCase() === String(user.email || '').toLowerCase());
+      const canAccessTasklets = Boolean(isSuperAdmin || (matchedRecord && matchedRecord.canAccessTasklets === true));
+      return {
+        ...base,
+        isSuperAdmin,
+        canAccessTasklets
+      };
     }
 
     function getNodalById(id) {
@@ -1567,8 +1684,15 @@
     document.addEventListener('click', closeSettingsMenu);
 
     window.switchTab = function (tabName) {
+      const caps = getRoleCapabilities();
       const settingsTabs = ['nodals', 'email-settings', 'email-templates'];
-      if (settingsTabs.includes(tabName) && !getRoleCapabilities().canManageUsers) {
+      if (tabName === 'tasklet-settings' && !caps.isSuperAdmin) {
+        tabName = 'overview';
+      }
+      if (settingsTabs.includes(tabName) && !caps.canManageUsers) {
+        tabName = 'overview';
+      }
+      if (tabName === 'tasklets' && !caps.canAccessTasklets) {
         tabName = 'overview';
       }
 
@@ -1587,364 +1711,373 @@
         activeNav.classList.remove('text-slate-300', 'hover:bg-slate-800');
       }
 
-      const views = ['overview', 'projects', 'tasks', 'details', 'nodals', 'email-settings', 'email-templates'];
+      const views = ['overview', 'projects', 'tasks', 'tasklets', 'details', 'nodals', 'email-settings', 'email-templates', 'tasklet-settings'];
       views.forEach(v => {
         const el = document.getElementById(`view-${v}`);
         if (el) el.classList.toggle('hidden', v !== tabName);
       });
 
-      const topHeader = document.getElementById('main-top-header');
-      const kpiSection = document.getElementById('kpi-cards-section');
-      const addTaskBtn = document.getElementById('btn-header-add-task');
-      const addProjectBtn = document.getElementById('btn-header-add-project');
+      const isDetails = tabName === 'details';
+      document.getElementById('main-top-header')?.classList.toggle('hidden', isDetails);
+      document.getElementById('kpi-cards-section')?.classList.toggle('hidden', tabName !== 'overview');
 
-      if (tabName === 'details') {
-        topHeader?.classList.add('hidden');
-      } else {
-        topHeader?.classList.remove('hidden');
-      }
-
-      const isDashboard = tabName === 'overview';
-      kpiSection?.classList.toggle('hidden', !isDashboard);
-      addTaskBtn?.classList.toggle('hidden', !(isDashboard || tabName === 'tasks'));
-      addProjectBtn?.classList.toggle('hidden', !(isDashboard || tabName === 'projects'));
-
-      const titles = {
-        'overview': ['Dashboard', 'Unified overview of all active SPM-NIWAS projects and tasks.'],
-        'projects': ['Projects', 'Manage and monitor all SPM-NIWAS projects.'],
-        'tasks': [
-          state.tasksReadyOnly ? 'Tasks Ready to Convert' : 'Tasks',
-          state.tasksReadyOnly ? 'Tasks eligible for conversion into full SPM-NIWAS Projects.' : 'Track operational tasks, action items, and project conversion candidates.'
-        ],
-        'nodals': ['Users & Permissions', 'Manage Users and their Permissions.'],
-        'email-settings': ['Email & AI Inbox', 'Connect Gmail inboxes and review AI-extracted task/project proposals.'],
-        'email-templates': ['Email Templates', 'Customize email templates used for user onboarding and notifications.']
+      const titleEl = document.getElementById('page-title');
+      const subEl = document.getElementById('page-subtitle');
+      const headers = {
+        overview: ['Dashboard', 'Unified overview of all active SPM-NIWAS projects, tasks, and tasklets.'],
+        projects: ['Projects', 'Manage major multi-milestone initiatives and nodal ownership.'],
+        tasks: ['Tasks', 'Track operational deliverables and items eligible for project conversion.'],
+        tasklets: ['Tasklets', 'Lightweight action items and quick follow-ups.'],
+        nodals: ['Users & Permissions', 'Manage authorized Google users, roles, and nodal assignments.'],
+        'email-settings': ['Email & AI Inbox', 'Connect Gmail inboxes and extract tasks or updates with AI.'],
+        'email-templates': ['Email Templates', 'Customize outbound email templates used across the portal.'],
+        'tasklet-settings': ['Tasklet Access Settings', 'Configure which workspace users have access to the Tasklet feature.']
       };
-
-      if (titles[tabName]) {
-        document.getElementById('page-title').textContent = titles[tabName][0];
-        document.getElementById('page-subtitle').textContent = titles[tabName][1];
+      if (headers[tabName] && titleEl && subEl) {
+        titleEl.textContent = headers[tabName][0];
+        subEl.textContent = headers[tabName][1];
       }
 
-      if (tabName === 'projects') {
-        document.querySelectorAll('input[name="projects-type-radio"]').forEach(r => { r.checked = r.value === 'Project'; });
-      } else if (tabName === 'tasks') {
-        document.querySelectorAll('input[name="tasks-type-radio"]').forEach(r => { r.checked = r.value === 'Task'; });
-      }
+      const btnTasklet = document.getElementById('btn-header-add-tasklet');
+      const btnTask = document.getElementById('btn-header-add-task');
+      const btnProject = document.getElementById('btn-header-add-project');
+      if (btnTasklet) btnTasklet.classList.toggle('hidden', !caps.canAccessTasklets || (tabName !== 'overview' && tabName !== 'tasklets'));
+      if (btnTask) btnTask.classList.toggle('hidden', tabName !== 'overview' && tabName !== 'tasks');
+      if (btnProject) btnProject.classList.toggle('hidden', tabName !== 'overview' && tabName !== 'projects');
 
       renderAll();
     };
 
-    window.handleSubViewTypeRadio = function (selectedType) {
-      if (selectedType === 'Project') {
+    window.handleSubViewTypeRadio = function (targetType) {
+      if (targetType === 'Project') {
         switchTab('projects');
-      } else if (selectedType === 'Task') {
+      } else if (targetType === 'Task') {
         switchTab('tasks');
+      } else if (targetType === 'Tasklet') {
+        switchTab('tasklets');
       }
+    };
+
+    window.switchUsersSubTab = function (subTab) {
+      state.usersSubTab = subTab;
+      const allBtn = document.getElementById('users-subtab-all');
+      const usageBtn = document.getElementById('users-subtab-usage');
+      const allPanel = document.getElementById('users-panel-all');
+      const usagePanel = document.getElementById('users-panel-usage');
+
+      if (allBtn && usageBtn) {
+        const isAll = subTab === 'all';
+        allBtn.classList.toggle('bg-white', isAll);
+        allBtn.classList.toggle('text-slate-900', isAll);
+        allBtn.classList.toggle('shadow-xs', isAll);
+        allBtn.classList.toggle('font-extrabold', isAll);
+        allBtn.classList.toggle('text-slate-600', !isAll);
+        allBtn.classList.toggle('font-semibold', !isAll);
+
+        usageBtn.classList.toggle('bg-white', !isAll);
+        usageBtn.classList.toggle('text-slate-900', !isAll);
+        usageBtn.classList.toggle('shadow-xs', !isAll);
+        usageBtn.classList.toggle('font-extrabold', !isAll);
+        usageBtn.classList.toggle('text-slate-600', isAll);
+        usageBtn.classList.toggle('font-semibold', isAll);
+      }
+
+      if (allPanel) allPanel.classList.toggle('hidden', subTab !== 'all');
+      if (usagePanel) usagePanel.classList.toggle('hidden', subTab !== 'usage');
+      renderNodalsTable();
     };
 
     window.openReadyToConvertLanding = function () {
       state.tasksReadyOnly = true;
       state.pages.tasks = 1;
-      const searchEl = document.getElementById('tasks-search');
-      const statusEl = document.getElementById('tasks-status-filter');
-      const archivedEl = document.getElementById('tasks-show-archived');
-      if (searchEl) searchEl.value = '';
-      if (statusEl) statusEl.value = 'All';
-      if (archivedEl) archivedEl.checked = false;
       switchTab('tasks');
     };
 
     window.clearReadyToConvertFilter = function () {
       state.tasksReadyOnly = false;
       state.pages.tasks = 1;
-      document.getElementById('page-title').textContent = 'Tasks';
-      document.getElementById('page-subtitle').textContent = 'Track operational tasks, action items, and project conversion candidates.';
       renderAll();
     };
 
-    window.resetPageAndRender = function (tableKey) {
-      state.pages[tableKey] = 1;
-      if (tableKey === 'nodals') {
+    window.resetPageAndRender = function (sectionKey) {
+      if (sectionKey && state.pages[sectionKey] !== undefined) {
+        state.pages[sectionKey] = 1;
+      }
+      if (sectionKey === 'nodals') {
         state.pages.usage = 1;
       }
       renderAll();
     };
 
-    window.switchUsersSubTab = function (subTab) {
-      state.usersSubTab = subTab === 'usage' ? 'usage' : 'all';
-      const allBtn = document.getElementById('users-subtab-all');
-      const usageBtn = document.getElementById('users-subtab-usage');
-      const allPanel = document.getElementById('users-panel-all');
-      const usagePanel = document.getElementById('users-panel-usage');
-      const addUserBtn = document.getElementById('btn-open-add-user');
-
-      const isUsage = state.usersSubTab === 'usage';
-      if (allBtn) {
-        allBtn.setAttribute('aria-selected', String(!isUsage));
-        allBtn.className = !isUsage
-          ? 'px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-extrabold bg-white text-slate-900 shadow-xs transition-all'
-          : 'px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-semibold text-slate-600 hover:text-slate-900 transition-all';
-      }
-      if (usageBtn) {
-        usageBtn.setAttribute('aria-selected', String(isUsage));
-        usageBtn.className = isUsage
-          ? 'px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-extrabold bg-white text-slate-900 shadow-xs transition-all'
-          : 'px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-semibold text-slate-600 hover:text-slate-900 transition-all';
-      }
-      allPanel?.classList.toggle('hidden', isUsage);
-      usagePanel?.classList.toggle('hidden', !isUsage);
-      addUserBtn?.classList.toggle('hidden', isUsage);
-
-      renderNodalsTable();
-    };
-
-    window.changeTablePage = function (tableKey, newPage) {
-      state.pages[tableKey] = newPage;
+    window.changePage = function (sectionKey, nextPage) {
+      state.pages[sectionKey] = Math.max(1, nextPage);
       renderAll();
     };
 
     function getStatusBadgeHtml(status) {
-      const map = {
-        'In Progress': 'bg-indigo-50 text-indigo-700 border-indigo-200',
-        'Completed': 'bg-emerald-50 text-emerald-700 border-emerald-200',
+      const styles = {
         'Not Started': 'bg-slate-100 text-slate-700 border-slate-200',
+        'In Progress': 'bg-indigo-50 text-indigo-700 border-indigo-200',
         'On Hold': 'bg-amber-50 text-amber-700 border-amber-200',
-        'Pending Approval': 'bg-rose-50 text-rose-700 border-rose-200',
-        'Archived': 'bg-slate-200/80 text-slate-600 border-slate-300'
+        'Completed': 'bg-emerald-50 text-emerald-700 border-emerald-200',
+        'Pending Approval': 'bg-purple-50 text-purple-700 border-purple-200',
+        'Archived': 'bg-slate-200/70 text-slate-500 border-slate-300'
       };
-      const cls = map[status] || 'bg-slate-100 text-slate-700 border-slate-200';
-      return `<span class="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-bold border ${cls} whitespace-nowrap">${escapeHtml(status)}</span>`;
+      const cls = styles[status] || styles['Not Started'];
+      return `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-bold border ${cls} whitespace-nowrap">${escapeHtml(status || 'Not Started')}</span>`;
     }
 
-    function renderPaginationBar(tableKey, totalItems) {
-      const container = document.getElementById(`pagination-${tableKey}`);
-      if (!container) return;
+    function getTypeBadgeHtml(type) {
+      if (type === 'Project') {
+        return `<span class="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-extrabold uppercase tracking-wider bg-indigo-100 text-indigo-800">Project</span>`;
+      }
+      if (type === 'Tasklet') {
+        return `<span class="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-extrabold uppercase tracking-wider bg-emerald-100 text-emerald-800">Tasklet</span>`;
+      }
+      return `<span class="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-extrabold uppercase tracking-wider bg-sky-100 text-sky-800">Task</span>`;
+    }
 
+    function canUserDeleteItemDocuments(item) {
+      const user = getCurrentUser();
+      if (!user.isSignedIn) return false;
+      if (getRoleCapabilities().canManageUsers) return true;
+      return Boolean(item && item.nodalId && item.nodalId === user.id);
+    }
+
+    function renderPaginationBar(containerId, sectionKey, totalItems, currentPage) {
+      const el = document.getElementById(containerId);
+      if (!el) return;
+      const totalPages = Math.max(1, Math.ceil(totalItems / state.pageSize));
       if (totalItems <= state.pageSize) {
-        container.classList.add('hidden');
-        container.innerHTML = '';
+        el.classList.add('hidden');
+        el.innerHTML = '';
         return;
       }
-
-      const totalPages = Math.ceil(totalItems / state.pageSize);
-      const currentPage = Math.min(Math.max(1, state.pages[tableKey] || 1), totalPages);
-      state.pages[tableKey] = currentPage;
-
+      el.classList.remove('hidden');
       const startIdx = (currentPage - 1) * state.pageSize + 1;
-      const endIdx = Math.min(currentPage * state.pageSize, totalItems);
-
-      let pageButtons = '';
-      for (let p = 1; p <= totalPages; p++) {
-        const activeCls = p === currentPage
-          ? 'bg-indigo-600 text-white border-indigo-600'
-          : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-100';
-        pageButtons += `<button type="button" onclick="changeTablePage('${tableKey}', ${p})" class="px-2.5 py-1 rounded-lg border text-xs font-bold transition-colors ${activeCls}">${p}</button>`;
-      }
-
-      container.classList.remove('hidden');
-      container.innerHTML = `
+      const endIdx = Math.min(totalItems, currentPage * state.pageSize);
+      el.innerHTML = `
         <div>Showing <span class="font-bold text-slate-900">${startIdx}–${endIdx}</span> of <span class="font-bold text-slate-900">${totalItems}</span></div>
         <div class="flex items-center gap-1.5">
-          <button type="button" ${currentPage === 1 ? 'disabled' : ''} onclick="changeTablePage('${tableKey}', ${currentPage - 1})" class="px-2.5 py-1 rounded-lg border border-slate-200 bg-white text-xs font-semibold disabled:opacity-40 hover:bg-slate-100">Prev</button>
-          ${pageButtons}
-          <button type="button" ${currentPage === totalPages ? 'disabled' : ''} onclick="changeTablePage('${tableKey}', ${currentPage + 1})" class="px-2.5 py-1 rounded-lg border border-slate-200 bg-white text-xs font-semibold disabled:opacity-40 hover:bg-slate-100">Next</button>
+          <button type="button" ${currentPage <= 1 ? 'disabled' : ''} onclick="changePage('${sectionKey}', ${currentPage - 1})" class="px-2.5 py-1 rounded-lg border border-slate-200 bg-white hover:bg-slate-100 disabled:opacity-40 font-semibold">Prev</button>
+          <span class="px-2 font-semibold">Page ${currentPage} of ${totalPages}</span>
+          <button type="button" ${currentPage >= totalPages ? 'disabled' : ''} onclick="changePage('${sectionKey}', ${currentPage + 1})" class="px-2.5 py-1 rounded-lg border border-slate-200 bg-white hover:bg-slate-100 disabled:opacity-40 font-semibold">Next</button>
         </div>
       `;
     }
 
-    function renderItemsTable(tableKey, itemsList) {
-      const tbody = document.getElementById(`${tableKey}-table-body`);
+    function renderItemsTable(sectionKey, fixedType) {
+      const tbody = document.getElementById(`${sectionKey}-table-body`);
       if (!tbody) return;
 
-      const caps = getRoleCapabilities();
-      const totalItems = itemsList.length;
-      const totalPages = Math.max(1, Math.ceil(totalItems / state.pageSize));
-      const currentPage = Math.min(Math.max(1, state.pages[tableKey] || 1), totalPages);
-      state.pages[tableKey] = currentPage;
+      const searchVal = (document.getElementById(`${sectionKey}-search`)?.value || '').trim().toLowerCase();
+      const statusVal = document.getElementById(`${sectionKey}-status-filter`)?.value || 'All';
+      const showArchived = Boolean(document.getElementById(`${sectionKey}-show-archived`)?.checked);
 
-      const pagedItems = itemsList.slice((currentPage - 1) * state.pageSize, currentPage * state.pageSize);
-      renderPaginationBar(tableKey, totalItems);
+      let selectedType = fixedType || 'All';
+      if (!fixedType) {
+        const checkedRadio = document.querySelector('input[name="overview-type-radio"]:checked');
+        selectedType = checkedRadio ? checkedRadio.value : 'All';
+      }
 
-      if (pagedItems.length === 0) {
+      if (sectionKey === 'tasks') {
+        const banner = document.getElementById('tasks-ready-filter-banner');
+        if (banner) banner.classList.toggle('hidden', !state.tasksReadyOnly);
+      }
+
+      const filtered = state.items.filter(item => {
+        if (!getRoleCapabilities().canAccessTasklets && item.type === 'Tasklet') return false;
+        if (!showArchived && item.status === 'Archived') return false;
+        if (selectedType !== 'All' && item.type !== selectedType) return false;
+        if (statusVal !== 'All' && item.status !== statusVal) return false;
+        if (sectionKey === 'tasks' && state.tasksReadyOnly && !isTaskReadyForProject(item)) return false;
+        if (searchVal) {
+          const nodal = getNodalById(item.nodalId);
+          const hay = `${item.title} ${item.description} ${nodal.name} ${item.type}`.toLowerCase();
+          if (!hay.includes(searchVal)) return false;
+        }
+        return true;
+      });
+
+      const totalPages = Math.max(1, Math.ceil(filtered.length / state.pageSize));
+      const currentPage = Math.min(state.pages[sectionKey] || 1, totalPages);
+      state.pages[sectionKey] = currentPage;
+      const pageItems = filtered.slice((currentPage - 1) * state.pageSize, currentPage * state.pageSize);
+
+      if (pageItems.length === 0) {
         tbody.innerHTML = `
           <tr>
-            <td colspan="7" class="px-6 py-12 text-center text-sm text-slate-400">
-              No matching records found. Adjust your filters or add a new item.
+            <td colspan="7" class="px-4 py-10 text-center text-xs sm:text-sm text-slate-400">
+              No matching records found. Adjust your filters or create a new item.
             </td>
           </tr>
         `;
+        renderPaginationBar(`pagination-${sectionKey}`, sectionKey, 0, 1);
         return;
       }
 
-      tbody.innerHTML = pagedItems.map(item => {
+      const caps = getRoleCapabilities();
+
+      tbody.innerHTML = pageItems.map(item => {
         const nodal = getNodalById(item.nodalId);
-        const docs = Array.isArray(item.documents) ? item.documents : [];
-        const docCount = docs.length;
-        const typeTag = tableKey === 'overview'
-          ? `<span class="inline-block mr-1.5 px-1.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide ${item.type === 'Project' ? 'bg-indigo-100 text-indigo-700' : 'bg-slate-200 text-slate-700'}">${escapeHtml(item.type)}</span>`
-          : '';
-        const lastChangedInfo = formatLastChangedDisplay(item.lastChanged);
-
-        const approveBtn = (item.status === 'Pending Approval' && caps.canApprove)
-          ? `<button type="button" onclick="approvePendingItem('${item.id}')" title="Approve Item" class="p-1.5 rounded-lg text-emerald-600 hover:bg-emerald-50">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
-            </button>`
-          : '';
-
-        const deleteBtn = caps.canDelete
-          ? `<button type="button" onclick="deleteItem('${item.id}')" title="Delete" class="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
-            </button>`
+        const changed = formatLastChangedDisplay(item.lastChanged);
+        const docsCount = Array.isArray(item.documents) ? item.documents.length : 0;
+        const readyBadge = isTaskReadyForProject(item)
+          ? `<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800">⚡ Eligible for Project</span>`
           : '';
 
         return `
-          <tr class="hover:bg-slate-50/90 transition-colors">
-            <td class="px-4 py-3.5 align-top">${getStatusBadgeHtml(item.status)}</td>
-            <td class="px-4 py-3.5 align-top">
-              <button type="button" onclick="openItemDetails('${item.id}')" class="text-left font-bold text-slate-900 hover:text-indigo-600 transition-colors leading-snug break-words">
-                ${typeTag}${escapeHtml(item.title)}
+          <tr class="hover:bg-slate-50/90 transition-colors align-top">
+            <td class="px-4 py-3.5">
+              <div class="space-y-1.5">
+                ${getStatusBadgeHtml(item.status)}
+                <div>${getTypeBadgeHtml(item.type)}</div>
+              </div>
+            </td>
+            <td class="px-4 py-3.5">
+              <button type="button" onclick="openItemDetails('${item.id}')" class="text-left font-bold text-slate-900 hover:text-indigo-600 transition-colors line-clamp-2">
+                ${escapeHtml(item.title)}
               </button>
+              ${readyBadge ? `<div class="mt-1">${readyBadge}</div>` : ''}
             </td>
-            <td class="px-4 py-3.5 align-top text-xs text-slate-600 leading-relaxed break-words">
-              ${escapeHtml(item.description)}
+            <td class="px-4 py-3.5 text-xs text-slate-600">
+              <p class="line-clamp-2 leading-relaxed">${escapeHtml(item.description)}</p>
             </td>
-            <td class="px-4 py-3.5 align-top">
-              <div class="text-xs font-semibold text-slate-800 truncate">${escapeHtml(nodal.name)}</div>
+            <td class="px-4 py-3.5">
+              <div class="text-xs font-bold text-slate-800 truncate">${escapeHtml(nodal.name)}</div>
+              <div class="text-[11px] text-slate-400 truncate">${escapeHtml(nodal.email)}</div>
             </td>
-            <td class="px-4 py-3.5 align-top">
-              <div class="text-sm font-medium text-slate-800 leading-tight">${lastChangedInfo.daysLabel}</div>
-              <div class="text-xs text-slate-500 mt-0.5">${lastChangedInfo.formattedDate}</div>
+            <td class="px-4 py-3.5">
+              <div class="text-xs font-bold text-slate-800">${changed.daysLabel}</div>
+              <div class="text-[11px] text-slate-400">${changed.formattedDate}</div>
             </td>
-            <td class="px-4 py-3.5 align-top">
-              <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-slate-100 text-slate-700 text-xs font-bold">
-                <svg class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/></svg>
-                ${docCount} ${docCount === 1 ? 'File' : 'Files'}
+            <td class="px-4 py-3.5">
+              <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-slate-100 text-slate-700 text-xs font-semibold">
+                📎 ${docsCount} ${docsCount === 1 ? 'file' : 'files'}
               </span>
             </td>
-            <td class="px-4 py-3.5 align-top text-right whitespace-nowrap">
+            <td class="px-4 py-3.5 text-right whitespace-nowrap">
               <div class="inline-flex items-center justify-end gap-1">
-                ${approveBtn}
-                <button type="button" onclick="openItemModal('${item.type}', '${item.id}')" title="Edit" class="p-1.5 rounded-lg text-slate-400 hover:text-indigo-600 hover:bg-indigo-50">
+                <button type="button" onclick="openItemDetails('${item.id}')" title="View Details" class="p-1.5 rounded-lg text-slate-500 hover:text-indigo-600 hover:bg-indigo-50 transition-colors">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                </button>
+                <button type="button" onclick="openEditItemModal('${item.id}')" title="Edit" class="p-1.5 rounded-lg text-slate-500 hover:text-indigo-600 hover:bg-indigo-50 transition-colors">
                   <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
                 </button>
-                ${deleteBtn}
+                ${caps.canDelete ? `
+                  <button type="button" onclick="deleteItemRecord('${item.id}')" title="Delete" class="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                  </button>
+                ` : ''}
               </div>
             </td>
           </tr>
         `;
       }).join('');
-    }
 
-    function filterItemsForView(viewKey, forcedType = null) {
-      const searchVal = (document.getElementById(`${viewKey}-search`)?.value || '').trim().toLowerCase();
-      const statusVal = document.getElementById(`${viewKey}-status-filter`)?.value || 'All';
-      const showArchived = Boolean(document.getElementById(`${viewKey}-show-archived`)?.checked);
-      const selectedTypeRadio = viewKey === 'overview'
-        ? (document.querySelector('input[name="overview-type-radio"]:checked')?.value || 'All')
-        : forcedType;
-
-      return state.items.filter(item => {
-        if (selectedTypeRadio && selectedTypeRadio !== 'All' && item.type !== selectedTypeRadio) return false;
-        if (viewKey === 'tasks' && state.tasksReadyOnly && !isTaskReadyForProject(item)) return false;
-        if (!showArchived && item.status === 'Archived') return false;
-        if (statusVal !== 'All' && item.status !== statusVal) return false;
-        if (searchVal) {
-          const hay = `${item.title} ${item.description} ${getNodalById(item.nodalId).name}`.toLowerCase();
-          if (!hay.includes(searchVal)) return false;
-        }
-        return true;
-      });
+      renderPaginationBar(`pagination-${sectionKey}`, sectionKey, filtered.length, currentPage);
     }
 
     window.openItemDetails = function (itemId) {
-      state.selectedItemId = itemId;
       const item = state.items.find(i => i.id === itemId);
       if (!item) return;
-
-      const parentBtn = document.getElementById('details-breadcrumb-parent');
-      if (parentBtn) {
-        parentBtn.textContent = item.type === 'Project' ? 'Projects' : 'Tasks';
-        parentBtn.onclick = () => switchTab(item.type === 'Project' ? 'projects' : 'tasks');
-      }
-      const currSpan = document.getElementById('details-breadcrumb-current');
-      if (currSpan) currSpan.textContent = item.title;
-
+      state.selectedItemId = itemId;
       switchTab('details');
+      renderItemDetailsView();
     };
 
     function renderItemDetailsView() {
-      const container = document.getElementById('details-content-card');
-      if (!container) return;
+      const card = document.getElementById('details-content-card');
       const item = state.items.find(i => i.id === state.selectedItemId);
-      if (!item) {
-        container.innerHTML = `<div class="text-sm text-slate-500">Record not found.</div>`;
-        return;
+      if (!card || !item) return;
+
+      const parentBtn = document.getElementById('details-breadcrumb-parent');
+      const currentSpan = document.getElementById('details-breadcrumb-current');
+      if (parentBtn) {
+        const targetTab = item.type === 'Project' ? 'projects' : (item.type === 'Tasklet' ? 'tasklets' : 'tasks');
+        parentBtn.textContent = item.type === 'Project' ? 'Projects' : (item.type === 'Tasklet' ? 'Tasklets' : 'Tasks');
+        parentBtn.onclick = () => switchTab(targetTab);
       }
+      if (currentSpan) currentSpan.textContent = item.title;
 
       const nodal = getNodalById(item.nodalId);
       const caps = getRoleCapabilities();
-      const currentUser = getCurrentUser();
-      const canManageDocs = Boolean(caps.canDelete || (currentUser.id && item.nodalId === currentUser.id));
+      const canRemoveDocs = canUserDeleteItemDocuments(item);
       const docs = Array.isArray(item.documents) ? item.documents : [];
       const history = Array.isArray(item.history) ? item.history : [];
 
-      container.innerHTML = `
+      card.innerHTML = `
         <div class="flex flex-wrap items-start justify-between gap-4 border-b border-slate-100 pb-5">
           <div class="space-y-2 max-w-3xl">
             <div class="flex flex-wrap items-center gap-2">
-              <span class="px-2.5 py-0.5 rounded-full text-xs font-extrabold uppercase tracking-wider ${item.type === 'Project' ? 'bg-indigo-100 text-indigo-700' : 'bg-slate-200 text-slate-700'}">${escapeHtml(item.type)}</span>
+              ${getTypeBadgeHtml(item.type)}
               ${getStatusBadgeHtml(item.status)}
+              ${isTaskReadyForProject(item) ? `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-100 text-amber-800">⚡ Eligible for Project Conversion</span>` : ''}
             </div>
-            <h2 class="text-xl sm:text-2xl font-extrabold text-slate-900">${escapeHtml(item.title)}</h2>
-            <p class="text-sm text-slate-600 leading-relaxed">${escapeHtml(item.description)}</p>
+            <h2 class="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight">${escapeHtml(item.title)}</h2>
+            <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">${escapeHtml(item.description)}</p>
           </div>
 
           <div class="flex flex-wrap items-center gap-2">
-            ${item.type === 'Task' ? `
-              <button type="button" onclick="convertTaskToProject('${item.id}')" class="px-3.5 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold">
+            ${item.status === 'Pending Approval' && caps.canApprove ? `
+              <button type="button" onclick="approvePendingItem('${item.id}')" class="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition-colors">
+                ✓ Approve ${escapeHtml(item.type)}
+              </button>
+            ` : ''}
+            ${item.type === 'Task' && caps.canApprove ? `
+              <button type="button" onclick="convertTaskToProject('${item.id}')" class="px-3.5 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold transition-colors">
                 ⚡ Convert to Project
               </button>
             ` : ''}
-            <button type="button" onclick="openItemModal('${item.type}', '${item.id}')" class="px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold">
-              Edit Details
+            <button type="button" onclick="openEditItemModal('${item.id}')" class="px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold transition-colors">
+              Edit ${escapeHtml(item.type)}
             </button>
-            ${caps.canDelete ? `
-              <button type="button" onclick="deleteItem('${item.id}')" class="px-3.5 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-bold">
-                Delete
-              </button>
-            ` : ''}
           </div>
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 bg-slate-50 rounded-2xl p-4 border border-slate-200/70 text-xs">
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 bg-slate-50 rounded-2xl p-4 border border-slate-200/80 text-xs">
           <div>
-            <div class="font-bold uppercase tracking-wider text-slate-400">Assigned Nodal</div>
+            <div class="font-bold uppercase tracking-wider text-slate-400">Assigned Nodal Officer</div>
             <div class="text-sm font-bold text-slate-900 mt-1">${escapeHtml(nodal.name)}</div>
             <div class="text-slate-500">${escapeHtml(nodal.email)}</div>
           </div>
           <div>
-            <div class="font-bold uppercase tracking-wider text-slate-400">Target Date</div>
+            <div class="font-bold uppercase tracking-wider text-slate-400">Target Completion Date</div>
             <div class="text-sm font-bold text-slate-900 mt-1">${escapeHtml(item.dueDate || 'Not set')}</div>
           </div>
           <div>
             <div class="font-bold uppercase tracking-wider text-slate-400">Last Updated</div>
-            <div class="text-sm font-bold text-slate-900 mt-1">${escapeHtml(item.lastChanged)}</div>
+            <div class="text-sm font-bold text-slate-900 mt-1">${escapeHtml(item.lastChanged || '—')}</div>
           </div>
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <div class="space-y-3">
-            <h3 class="text-sm font-extrabold text-slate-900">Attached Documents (${docs.length})</h3>
-            ${docs.length === 0 ? `<div class="text-xs text-slate-400">No documents attached yet.</div>` : `
+            <div class="flex items-center justify-between">
+              <h3 class="text-sm font-extrabold text-slate-900">Supporting Documents (${docs.length})</h3>
+              <label class="cursor-pointer px-3 py-1.5 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs font-bold transition-colors">
+                + Attach File
+                <input type="file" multiple onchange="handleDetailsFileUpload(event, '${item.id}')" class="hidden" />
+              </label>
+            </div>
+
+            ${docs.length === 0 ? `
+              <div class="rounded-2xl border border-dashed border-slate-200 p-6 text-center text-xs text-slate-400">
+                No documents attached yet.
+              </div>
+            ` : `
               <div class="space-y-2">
-                ${docs.map((d, idx) => `
-                  <div class="flex items-center justify-between px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs">
-                    <span class="font-semibold text-slate-800 truncate">${escapeHtml(d.name)}</span>
-                    <div class="flex items-center gap-2.5 ml-2 flex-shrink-0">
-                      <span class="text-slate-400 whitespace-nowrap">${escapeHtml(d.addedAt || '')}</span>
-                      ${canManageDocs ? `<button type="button" onclick="deleteItemDocument('${item.id}', ${idx})" class="text-rose-600 hover:text-rose-800 font-bold">Remove</button>` : ''}
+                ${docs.map((docItem, idx) => `
+                  <div class="flex items-center justify-between gap-3 px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200/80 text-xs">
+                    <div class="min-w-0">
+                      <div class="font-bold text-slate-800 truncate">📄 ${escapeHtml(docItem.name)}</div>
+                      <div class="text-[11px] text-slate-400">Added ${escapeHtml(docItem.addedAt || 'Recently')} • ${escapeHtml(docItem.source || 'Upload')}</div>
                     </div>
+                    ${canRemoveDocs ? `
+                      <button type="button" onclick="removeItemDocument('${item.id}', ${idx})" class="px-2.5 py-1 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold flex-shrink-0">
+                        Remove
+                      </button>
+                    ` : ''}
                   </div>
                 `).join('')}
               </div>
@@ -1952,12 +2085,14 @@
           </div>
 
           <div class="space-y-3">
-            <h3 class="text-sm font-extrabold text-slate-900">Activity &amp; Audit Log</h3>
-            <div class="space-y-2">
-              ${history.map(h => `
-                <div class="px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs">
-                  <div class="font-semibold text-slate-800">${escapeHtml(h.action)}</div>
-                  <div class="text-slate-400 mt-0.5">${escapeHtml(h.timestamp)} • ${escapeHtml(h.by)}</div>
+            <h3 class="text-sm font-extrabold text-slate-900">Activity &amp; Audit Trail</h3>
+            <div class="space-y-2 max-h-64 overflow-y-auto custom-scrollbar pr-1">
+              ${history.length === 0 ? `
+                <div class="text-xs text-slate-400">No history logged yet.</div>
+              ` : history.slice().reverse().map(entry => `
+                <div class="px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200/70 text-xs">
+                  <div class="font-bold text-slate-800">${escapeHtml(entry.action)}</div>
+                  <div class="text-[11px] text-slate-400 mt-0.5">${escapeHtml(entry.timestamp)} • by ${escapeHtml(entry.by)}</div>
                 </div>
               `).join('')}
             </div>
@@ -1966,192 +2101,367 @@
       `;
     }
 
-    function getUserRoleSortRank(user) {
-      if (user.isSuperAdmin || user.permission === 'Super Admin') return 0;
-      if (user.permission === 'Admin') return 1;
-      return 2;
-    }
-
-    window.renderNodalsTable = function () {
-      const tbody = document.getElementById('nodals-table-body');
-      if (!tbody) return;
-
-      const caps = getRoleCapabilities();
-      const query = (document.getElementById('user-search-input')?.value || '').trim().toLowerCase();
-
-      const filteredUsers = state.nodals.filter(u => {
-        if (!query) return true;
-        return `${u.name} ${u.email} ${u.permission}`.toLowerCase().includes(query);
-      }).sort((a, b) => {
-        const rankDiff = getUserRoleSortRank(a) - getUserRoleSortRank(b);
-        if (rankDiff !== 0) return rankDiff;
-        return (a.name || '').localeCompare(b.name || '', undefined, { sensitivity: 'base' });
-      });
-
-      const filteredDeletedUsers = state.deletedNodals.filter(u => {
-        if (!query) return true;
-        return `${u.name} ${u.email} ${u.permission}`.toLowerCase().includes(query);
-      }).sort((a, b) => (a.name || '').localeCompare(b.name || '', undefined, { sensitivity: 'base' }));
-
-      const totalActive = filteredUsers.length;
-      const totalPages = Math.max(1, Math.ceil(totalActive / state.pageSize));
-      const currentPage = Math.min(Math.max(1, state.pages.nodals || 1), totalPages);
-      state.pages.nodals = currentPage;
-      const pagedUsers = filteredUsers.slice((currentPage - 1) * state.pageSize, currentPage * state.pageSize);
-      renderPaginationBar('nodals', totalActive);
-
-      const renderUserRow = (u) => {
-        const isSuperAdmin = Boolean(u.isSuperAdmin || u.permission === 'Super Admin');
-        const assignedCount = state.items.filter(i => i.nodalId === u.id).length;
-
-        let roleBadgeHtml = '';
-        if (isSuperAdmin) {
-          roleBadgeHtml = `<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-extrabold bg-indigo-100 text-indigo-800 border border-indigo-200">Super Admin</span>`;
-        } else if (u.permission === 'Admin') {
-          roleBadgeHtml = `<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">Admin</span>`;
-        } else {
-          roleBadgeHtml = `<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-slate-100 text-slate-700 border border-slate-200">Users</span>`;
-        }
-
-        const editBtnHtml = `<button type="button" onclick="openEditUserModal('${u.id}')" title="Edit User Details & Role" class="p-1.5 rounded-lg text-slate-500 hover:text-indigo-600 hover:bg-indigo-50 transition-colors">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
-          </button>`;
-
-        const removeBtnHtml = (caps.canManageUsers && !isSuperAdmin)
-          ? `<button type="button" onclick="initiateDeleteNodalUser('${u.id}')" class="px-2.5 py-1 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-bold">Remove</button>`
-          : '';
-
-        return `
-          <tr class="hover:bg-slate-50/90 transition-colors">
-            <td class="px-4 py-3.5 font-bold text-slate-900">${escapeHtml(u.name)}</td>
-            <td class="px-4 py-3.5 text-xs text-slate-600">${escapeHtml(u.email)}</td>
-            <td class="px-4 py-3.5">${roleBadgeHtml}</td>
-            <td class="px-4 py-3.5 text-xs font-semibold text-slate-700">${assignedCount} ${assignedCount === 1 ? 'Item' : 'Items'}</td>
-            <td class="px-4 py-3.5 text-right whitespace-nowrap">
-              <div class="inline-flex items-center justify-end gap-2">
-                <button type="button" onclick="openWelcomeEmailModal('${u.id}')" class="px-2.5 py-1 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs font-bold">
-                  Resend Welcome Email
-                </button>
-                ${removeBtnHtml}
-                ${editBtnHtml}
-              </div>
-            </td>
-          </tr>
-        `;
-      };
-
-      const deletedSectionHtml = filteredDeletedUsers.length > 0 ? `
-        <tr class="bg-slate-100/90 border-t-2 border-slate-200">
-          <td colspan="5" class="px-4 py-2 text-[11px] font-extrabold uppercase tracking-wider text-slate-600">
-            Deleted (${filteredDeletedUsers.length})
-          </td>
-        </tr>
-        ${filteredDeletedUsers.map(u => `
-          <tr class="bg-slate-50/60 text-slate-500">
-            <td class="px-4 py-3 font-semibold text-slate-600 line-through">${escapeHtml(u.name)}</td>
-            <td class="px-4 py-3 text-xs text-slate-500">${escapeHtml(u.email)}</td>
-            <td class="px-4 py-3">
-              <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-slate-200/80 text-slate-600 border border-slate-300">
-                ${escapeHtml(u.permission === 'User' ? 'Users' : u.permission)}
-              </span>
-            </td>
-            <td class="px-4 py-3 text-xs text-slate-400">Removed</td>
-            <td class="px-4 py-3 text-right whitespace-nowrap">
-              ${caps.canManageUsers ? `
-                <button type="button" onclick="restoreDeletedUser('${u.id}')" class="px-2.5 py-1 rounded-lg bg-white border border-slate-300 hover:bg-slate-100 text-slate-700 text-xs font-bold">
-                  Restore
-                </button>
-              ` : ''}
-            </td>
-          </tr>
-        `).join('')}
-      ` : '';
-
-      if (pagedUsers.length === 0 && filteredDeletedUsers.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="5" class="px-6 py-10 text-center text-sm text-slate-400">No workspace users match your search.</td></tr>`;
-        return;
-      }
-
-      tbody.innerHTML = pagedUsers.map(renderUserRow).join('') + deletedSectionHtml;
-      renderUsersUsageTable();
+    window.approvePendingItem = function (itemId) {
+      if (!getRoleCapabilities().canApprove) return;
+      const item = state.items.find(i => i.id === itemId);
+      if (!item) return;
+      item.status = 'In Progress';
+      item.lastChanged = formatNowTimestamp();
+      item.history = item.history || [];
+      item.history.push({ timestamp: item.lastChanged, action: `${item.type} Approved`, by: getCurrentUser().name });
+      persistWorkspaceState();
+      renderAll();
+      if (state.activeTab === 'details') renderItemDetailsView();
+      showToast(`${item.type} approved and moved to In Progress.`);
     };
 
-    function renderUsersUsageTable() {
-      const tbody = document.getElementById('users-usage-table-body');
-      if (!tbody) return;
+    window.convertTaskToProject = function (itemId) {
+      if (!getRoleCapabilities().canApprove) return;
+      const item = state.items.find(i => i.id === itemId);
+      if (!item) return;
+      item.type = 'Project';
+      item.lastChanged = formatNowTimestamp();
+      item.history = item.history || [];
+      item.history.push({ timestamp: item.lastChanged, action: 'Converted from Task to Project', by: getCurrentUser().name });
+      persistWorkspaceState();
+      renderAll();
+      if (state.activeTab === 'details') renderItemDetailsView();
+      showToast(`"${item.title}" converted to a Project.`);
+    };
 
-      const query = (document.getElementById('user-search-input')?.value || '').trim().toLowerCase();
-      const filteredUsers = state.nodals.filter(u => {
-        if (!query) return true;
-        return `${u.name} ${u.email} ${u.permission}`.toLowerCase().includes(query);
-      }).sort((a, b) => {
-        const rankDiff = getUserRoleSortRank(a) - getUserRoleSortRank(b);
-        if (rankDiff !== 0) return rankDiff;
-        return (a.name || '').localeCompare(b.name || '', undefined, { sensitivity: 'base' });
-      });
-
-      const totalItems = filteredUsers.length;
-      const totalPages = Math.max(1, Math.ceil(totalItems / state.pageSize));
-      const currentPage = Math.min(Math.max(1, state.pages.usage || 1), totalPages);
-      state.pages.usage = currentPage;
-      const pagedUsers = filteredUsers.slice((currentPage - 1) * state.pageSize, currentPage * state.pageSize);
-      renderPaginationBar('usage', totalItems);
-
-      if (pagedUsers.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="4" class="px-6 py-10 text-center text-sm text-slate-400">No workspace users match your search.</td></tr>`;
+    window.deleteItemRecord = function (itemId) {
+      if (!getRoleCapabilities().canDelete) {
+        showToast('Only Admins can delete tasks or projects.');
         return;
       }
+      const idx = state.items.findIndex(i => i.id === itemId);
+      if (idx === -1) return;
+      const removed = state.items.splice(idx, 1)[0];
+      persistWorkspaceState();
+      renderAll();
+      showToast(`Deleted "${removed.title}".`);
+    };
 
-      tbody.innerHTML = pagedUsers.map(u => {
-        const isSuperAdmin = Boolean(u.isSuperAdmin || u.permission === 'Super Admin');
-        let roleBadgeHtml = '';
-        if (isSuperAdmin) {
-          roleBadgeHtml = `<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-extrabold bg-indigo-100 text-indigo-800 border border-indigo-200">Super Admin</span>`;
-        } else if (u.permission === 'Admin') {
-          roleBadgeHtml = `<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">Admin</span>`;
-        } else {
-          roleBadgeHtml = `<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-slate-100 text-slate-700 border border-slate-200">Users</span>`;
+    window.handleDetailsFileUpload = function (event, itemId) {
+      const files = Array.from(event.target.files || []);
+      if (!files.length) return;
+      const item = state.items.find(i => i.id === itemId);
+      if (!item) return;
+      const today = formatNowTimestamp().split(' ')[0];
+      item.documents = item.documents || [];
+      files.forEach(f => {
+        item.documents.push({ name: f.name, addedAt: today, source: 'Upload' });
+      });
+      item.lastChanged = formatNowTimestamp();
+      item.history = item.history || [];
+      item.history.push({ timestamp: item.lastChanged, action: `Uploaded ${files.length} document(s)`, by: getCurrentUser().name });
+      persistWorkspaceState();
+      renderAll();
+      renderItemDetailsView();
+      showToast(`Attached ${files.length} file(s).`);
+    };
+
+    window.removeItemDocument = function (itemId, docIndex) {
+      const item = state.items.find(i => i.id === itemId);
+      if (!item || !canUserDeleteItemDocuments(item)) {
+        showToast('Only Admins or the assigned Nodal Officer can remove documents.');
+        return;
+      }
+      const removed = item.documents.splice(docIndex, 1)[0];
+      item.lastChanged = formatNowTimestamp();
+      item.history = item.history || [];
+      item.history.push({ timestamp: item.lastChanged, action: `Removed ${removed?.name || 'document'}`, by: getCurrentUser().name });
+      persistWorkspaceState();
+      renderAll();
+      renderItemDetailsView();
+      showToast('Document removed.');
+    };
+
+    function populateNodalSelectOptions(selectedId) {
+      const sel = document.getElementById('item-nodal');
+      if (!sel) return;
+      sel.innerHTML = state.nodals.map(n => `
+        <option value="${escapeHtml(n.id)}" ${n.id === selectedId ? 'selected' : ''}>${escapeHtml(n.name)} (${escapeHtml(n.permission)})</option>
+      `).join('');
+    }
+
+    function renderModalDocumentsList(canDeleteDocs) {
+      const listEl = document.getElementById('modal-documents-list');
+      if (!listEl) return;
+      if (!state.modalDocuments.length) {
+        listEl.innerHTML = `<div class="text-slate-400 italic">No documents attached yet.</div>`;
+        return;
+      }
+      listEl.innerHTML = state.modalDocuments.map((docObj, idx) => `
+        <div class="flex items-center justify-between gap-2 bg-white px-3 py-1.5 rounded-xl border border-slate-200">
+          <span class="truncate font-medium text-slate-700">📄 ${escapeHtml(docObj.name)}</span>
+          ${canDeleteDocs ? `
+            <button type="button" onclick="removeModalDocument(${idx})" class="text-rose-600 hover:text-rose-800 font-bold text-[11px]">Remove</button>
+          ` : ''}
+        </div>
+      `).join('');
+    }
+
+    window.handleModalFileUpload = function (event) {
+      const files = Array.from(event.target.files || []);
+      if (!files.length) return;
+      const today = formatNowTimestamp().split(' ')[0];
+      files.forEach(f => {
+        state.modalDocuments.push({ name: f.name, addedAt: today, source: 'Upload' });
+      });
+      const existingId = document.getElementById('item-id')?.value;
+      const existingItem = existingId ? state.items.find(i => i.id === existingId) : null;
+      renderModalDocumentsList(existingItem ? canUserDeleteItemDocuments(existingItem) : true);
+    };
+
+    window.removeModalDocument = function (idx) {
+      const existingId = document.getElementById('item-id')?.value;
+      const existingItem = existingId ? state.items.find(i => i.id === existingId) : null;
+      if (existingItem && !canUserDeleteItemDocuments(existingItem)) {
+        showToast('Only Admins or the assigned Nodal Officer can remove documents.');
+        return;
+      }
+      state.modalDocuments.splice(idx, 1);
+      renderModalDocumentsList(existingItem ? canUserDeleteItemDocuments(existingItem) : true);
+    };
+
+    window.openItemModal = function (type) {
+      const user = getCurrentUser();
+      const caps = getRoleCapabilities();
+      if (type === 'Tasklet' && !caps.canAccessTasklets) {
+        showToast('You do not have access to the Tasklet feature.');
+        return;
+      }
+      document.getElementById('item-id').value = '';
+      document.getElementById('item-type').value = type;
+      document.getElementById('modal-heading').textContent = `Create New ${type}`;
+      document.getElementById('item-title').value = '';
+      document.getElementById('item-description').value = '';
+      document.getElementById('item-due-date').value = '';
+
+      const defaultNodal = state.nodals.find(n => n.id === user.id) ? user.id : (state.nodals[0]?.id || '');
+      populateNodalSelectOptions(defaultNodal);
+      const nodalSel = document.getElementById('item-nodal');
+      if (nodalSel) {
+        nodalSel.disabled = !caps.canManageUsers;
+      }
+
+      const statusSel = document.getElementById('item-status');
+      if (statusSel) {
+        statusSel.value = caps.canDirectCreate ? 'Not Started' : 'Pending Approval';
+      }
+
+      state.modalDocuments = [];
+      renderModalDocumentsList(true);
+      document.getElementById('item-modal')?.classList.remove('hidden');
+    };
+
+    window.openEditItemModal = function (itemId) {
+      const item = state.items.find(i => i.id === itemId);
+      if (!item) return;
+      const caps = getRoleCapabilities();
+      document.getElementById('item-id').value = item.id;
+      document.getElementById('item-type').value = item.type;
+      document.getElementById('modal-heading').textContent = `Edit ${item.type}`;
+      document.getElementById('item-title').value = item.title;
+      document.getElementById('item-description').value = item.description;
+      document.getElementById('item-due-date').value = item.dueDate || '';
+
+      populateNodalSelectOptions(item.nodalId);
+      const nodalSel = document.getElementById('item-nodal');
+      if (nodalSel) {
+        nodalSel.disabled = !caps.canManageUsers;
+      }
+
+      const statusSel = document.getElementById('item-status');
+      if (statusSel) statusSel.value = item.status;
+
+      state.modalDocuments = JSON.parse(JSON.stringify(item.documents || []));
+      renderModalDocumentsList(canUserDeleteItemDocuments(item));
+      document.getElementById('item-modal')?.classList.remove('hidden');
+    };
+
+    window.closeItemModal = function () {
+      document.getElementById('item-modal')?.classList.add('hidden');
+    };
+
+    window.proposeTitleAndDescriptionWithAI = function () {
+      const titleInput = document.getElementById('item-title');
+      const descInput = document.getElementById('item-description');
+      const type = document.getElementById('item-type')?.value || 'Task';
+      const rawTitle = (titleInput?.value || '').trim();
+      const docNames = state.modalDocuments.map(d => d.name).join(', ');
+
+      if (!rawTitle && !docNames) {
+        showToast('Enter a working title or attach a file first for AI drafting.');
+        return;
+      }
+      const baseTitle = rawTitle || docNames.replace(/\.[^/.]+$/, '').replace(/[_-]+/g, ' ');
+      if (titleInput && !rawTitle) titleInput.value = baseTitle;
+      if (descInput) {
+        descInput.value = `Structured ${type.toLowerCase()} execution plan for "${baseTitle}", covering stakeholder coordination, milestone tracking, documentation compliance${docNames ? ` (referencing ${docNames})` : ''}, and timely submission to SPM-NIWAS.`;
+      }
+      showToast('AI draft populated.');
+    };
+
+    window.handleSaveItem = function (event) {
+      event.preventDefault();
+      const user = getCurrentUser();
+      const caps = getRoleCapabilities();
+      const existingId = document.getElementById('item-id').value;
+      const type = document.getElementById('item-type').value || 'Task';
+      const title = document.getElementById('item-title').value.trim();
+      const description = document.getElementById('item-description').value.trim();
+      const requestedNodalId = document.getElementById('item-nodal').value;
+      const status = document.getElementById('item-status').value;
+      const dueDate = document.getElementById('item-due-date').value;
+      const nowStr = formatNowTimestamp();
+
+      if (!title) return;
+
+      if (existingId) {
+        const item = state.items.find(i => i.id === existingId);
+        if (!item) return;
+        item.title = title;
+        item.description = description;
+        if (caps.canManageUsers && requestedNodalId) {
+          item.nodalId = requestedNodalId;
         }
+        item.status = status;
+        item.dueDate = dueDate;
+        item.lastChanged = nowStr;
+        item.documents = JSON.parse(JSON.stringify(state.modalDocuments));
+        item.history = item.history || [];
+        item.history.push({ timestamp: nowStr, action: `${item.type} Updated`, by: user.name });
+        showToast(`${item.type} updated.`);
+      } else {
+        const prefix = type === 'Project' ? 'prj' : (type === 'Tasklet' ? 'tkl' : 'tsk');
+        const defaultNodal = state.nodals.find(n => n.id === user.id) ? user.id : (state.nodals[0]?.id || 'usr-1');
+        const assignedNodalId = caps.canManageUsers && requestedNodalId ? requestedNodalId : defaultNodal;
+        const effectiveStatus = caps.canDirectCreate ? status : 'Pending Approval';
 
-        const loginInfo = formatLastLoginUsageDisplay(u.lastLogin);
-        const usageHrs = typeof u.usageHours30d === 'number' ? u.usageHours30d.toFixed(1) : '0.0';
+        const newItem = {
+          id: `${prefix}-${Date.now()}`,
+          type,
+          title,
+          description,
+          nodalId: assignedNodalId,
+          status: effectiveStatus,
+          dueDate,
+          lastChanged: nowStr,
+          documents: JSON.parse(JSON.stringify(state.modalDocuments)),
+          history: [
+            { timestamp: nowStr, action: `${type} Created (${effectiveStatus})`, by: user.name }
+          ]
+        };
+        state.items.unshift(newItem);
+        showToast(effectiveStatus === 'Pending Approval' ? `${type} submitted for Admin approval.` : `${type} created.`);
+      }
 
-        return `
-          <tr class="hover:bg-slate-50/90 transition-colors">
-            <td class="px-4 py-3.5 align-top">
-              <div class="font-bold text-slate-900">${escapeHtml(u.name)}</div>
-              <div class="text-xs text-slate-500 mt-0.5">${escapeHtml(u.email)}</div>
-            </td>
-            <td class="px-4 py-3.5 align-top">${roleBadgeHtml}</td>
-            <td class="px-4 py-3.5 align-top">
-              <div class="text-sm font-semibold text-slate-900 leading-tight">${escapeHtml(loginInfo.firstLine)}</div>
-              <div class="text-xs text-slate-500 mt-0.5">${escapeHtml(loginInfo.secondLine)}</div>
-            </td>
-            <td class="px-4 py-3.5 align-top">
-              <span class="inline-flex items-center px-2.5 py-1 rounded-lg bg-slate-100 text-slate-800 text-xs font-bold">
-                ${escapeHtml(usageHrs)} hrs
-              </span>
-            </td>
+      persistWorkspaceState();
+      closeItemModal();
+      renderAll();
+      if (state.activeTab === 'details') renderItemDetailsView();
+    };
+
+    function renderNodalsTable() {
+      const allBody = document.getElementById('nodals-table-body');
+      const usageBody = document.getElementById('users-usage-table-body');
+      const searchVal = (document.getElementById('user-search-input')?.value || '').trim().toLowerCase();
+      const caps = getRoleCapabilities();
+
+      const filteredUsers = state.nodals.filter(u => {
+        if (!searchVal) return true;
+        return `${u.name} ${u.email} ${u.permission}`.toLowerCase().includes(searchVal);
+      });
+
+      if (allBody) {
+        const totalPages = Math.max(1, Math.ceil(filteredUsers.length / state.pageSize));
+        const currentPage = Math.min(state.pages.nodals || 1, totalPages);
+        state.pages.nodals = currentPage;
+        const pageUsers = filteredUsers.slice((currentPage - 1) * state.pageSize, currentPage * state.pageSize);
+
+        const activeRows = pageUsers.map(u => {
+          const isSuper = Boolean(u.isSuperAdmin || u.permission === 'Super Admin');
+          const assignedCount = state.items.filter(i => i.nodalId === u.id && i.status !== 'Archived').length;
+          const roleBadge = isSuper
+            ? `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-purple-100 text-purple-800">Super Admin</span>`
+            : u.permission === 'Admin'
+              ? `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-indigo-100 text-indigo-800">Admin</span>`
+              : `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-slate-100 text-slate-700">User</span>`;
+
+          return `
+            <tr class="hover:bg-slate-50/90 transition-colors">
+              <td class="px-4 py-3.5 font-bold text-slate-900">${escapeHtml(u.name)}</td>
+              <td class="px-4 py-3.5 text-xs text-slate-600">${escapeHtml(u.email)}</td>
+              <td class="px-4 py-3.5">${roleBadge}</td>
+              <td class="px-4 py-3.5 text-xs font-semibold text-slate-700">${assignedCount} active item(s)</td>
+              <td class="px-4 py-3.5 text-right whitespace-nowrap space-x-1.5">
+                <button type="button" onclick="openWelcomeEmailModal('${u.id}')" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold">Welcome Email</button>
+                ${caps.canManageUsers ? `
+                  <button type="button" onclick="openEditUserModal('${u.id}')" class="px-2.5 py-1 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs font-semibold">Edit</button>
+                  ${!isSuper ? `<button type="button" onclick="initiateDeleteUser('${u.id}')" class="px-2.5 py-1 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-semibold">Remove</button>` : ''}
+                ` : ''}
+              </td>
+            </tr>
+          `;
+        }).join('');
+
+        const deletedRows = state.deletedNodals.length > 0 ? `
+          <tr class="bg-slate-100/80">
+            <td colspan="5" class="px-4 py-2 text-[11px] font-extrabold uppercase tracking-wider text-slate-500">Removed Users (${state.deletedNodals.length})</td>
           </tr>
-        `;
-      }).join('');
+          ${state.deletedNodals.map(du => `
+            <tr class="bg-slate-50/60 text-slate-400">
+              <td class="px-4 py-3 font-semibold">${escapeHtml(du.name)}</td>
+              <td class="px-4 py-3 text-xs">${escapeHtml(du.email)}</td>
+              <td class="px-4 py-3 text-xs">${escapeHtml(du.permission)}</td>
+              <td class="px-4 py-3 text-xs">Removed</td>
+              <td class="px-4 py-3 text-right">
+                ${caps.canManageUsers ? `<button type="button" onclick="restoreDeletedUser('${du.id}')" class="px-2.5 py-1 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-xs font-bold">Restore</button>` : ''}
+              </td>
+            </tr>
+          `).join('')}
+        ` : '';
+
+        allBody.innerHTML = activeRows + deletedRows;
+        renderPaginationBar('pagination-nodals', 'nodals', filteredUsers.length, currentPage);
+      }
+
+      if (usageBody) {
+        const totalPages = Math.max(1, Math.ceil(filteredUsers.length / state.pageSize));
+        const currentPage = Math.min(state.pages.usage || 1, totalPages);
+        state.pages.usage = currentPage;
+        const pageUsers = filteredUsers.slice((currentPage - 1) * state.pageSize, currentPage * state.pageSize);
+
+        usageBody.innerHTML = pageUsers.map(u => {
+          const isSuper = Boolean(u.isSuperAdmin || u.permission === 'Super Admin');
+          const roleText = isSuper ? 'Super Admin' : u.permission;
+          const loginDisplay = formatLastLoginUsageDisplay(u.lastLogin);
+          const hrs = Number(u.usageHours30d || 0).toFixed(1);
+          return `
+            <tr class="hover:bg-slate-50/90 transition-colors">
+              <td class="px-4 py-3.5">
+                <div class="font-bold text-slate-900">${escapeHtml(u.name)}</div>
+                <div class="text-[11px] text-slate-400">${escapeHtml(u.email)}</div>
+              </td>
+              <td class="px-4 py-3.5 text-xs font-semibold text-slate-700">${escapeHtml(roleText)}</td>
+              <td class="px-4 py-3.5">
+                <div class="text-xs font-bold text-slate-900">${loginDisplay.firstLine}</div>
+                <div class="text-[11px] text-slate-400">${loginDisplay.secondLine}</div>
+              </td>
+              <td class="px-4 py-3.5 text-xs font-extrabold text-indigo-700">${hrs} hrs</td>
+            </tr>
+          `;
+        }).join('');
+        renderPaginationBar('pagination-usage', 'usage', filteredUsers.length, currentPage);
+      }
     }
 
     window.openAddUserModal = function () {
-      const caps = getRoleCapabilities();
-      if (!caps.canManageUsers) {
-        showToast('Only Admins can add new workspace users.');
-        return;
-      }
-      const form = document.getElementById('add-user-form');
-      const errBox = document.getElementById('add-user-error');
-      if (form) form.reset();
-      if (errBox) {
-        errBox.textContent = '';
-        errBox.classList.add('hidden');
-      }
+      document.getElementById('add-user-error')?.classList.add('hidden');
+      document.getElementById('add-user-form')?.reset();
       document.getElementById('add-user-modal')?.classList.remove('hidden');
-      setTimeout(() => document.getElementById('new-user-name')?.focus(), 50);
     };
 
     window.closeAddUserModal = function () {
@@ -2160,22 +2470,18 @@
 
     window.handleAddNodalUser = function (event) {
       event.preventDefault();
-      const caps = getRoleCapabilities();
-      if (!caps.canManageUsers) {
-        showToast('Only Admins can add workspace users.');
-        return;
-      }
-
+      if (!getRoleCapabilities().canManageUsers) return;
       const name = document.getElementById('new-user-name').value.trim();
       const email = document.getElementById('new-user-email').value.trim().toLowerCase();
-      const permission = document.querySelector('input[name="new-user-role-radio"]:checked')?.value || 'User';
-      const errBox = document.getElementById('add-user-error');
+      const roleRadio = document.querySelector('input[name="new-user-role-radio"]:checked');
+      const permission = roleRadio ? roleRadio.value : 'User';
+      const errEl = document.getElementById('add-user-error');
 
       if (!name || !email) return;
-      if (state.nodals.some(u => u.email.toLowerCase() === email) || state.deletedNodals.some(u => u.email.toLowerCase() === email)) {
-        if (errBox) {
-          errBox.textContent = 'A user with this email already exists.';
-          errBox.classList.remove('hidden');
+      if (state.nodals.some(u => u.email.toLowerCase() === email)) {
+        if (errEl) {
+          errEl.textContent = 'A user with this Google email already exists.';
+          errEl.classList.remove('hidden');
         }
         return;
       }
@@ -2189,41 +2495,26 @@
         usageHours30d: 0
       };
       state.nodals.push(newUser);
-      closeAddUserModal();
       persistWorkspaceState();
+      closeAddUserModal();
       renderAll();
       openWelcomeEmailModal(newUser.id);
-      showToast(`Added ${name} (${permission}).`);
     };
 
     window.openEditUserModal = function (userId) {
-      const caps = getRoleCapabilities();
-      if (!caps.canManageUsers) {
-        showToast('Only Admins can edit user details.');
-        return;
-      }
-      const target = state.nodals.find(u => u.id === userId);
-      if (!target) return;
+      const user = state.nodals.find(u => u.id === userId);
+      if (!user) return;
+      document.getElementById('edit-user-error')?.classList.add('hidden');
+      document.getElementById('edit-user-id').value = user.id;
+      document.getElementById('edit-user-name').value = user.name;
+      document.getElementById('edit-user-email').value = user.email;
 
-      const isSuperAdmin = Boolean(target.isSuperAdmin || target.permission === 'Super Admin');
-      document.getElementById('edit-user-id').value = target.id;
-      document.getElementById('edit-user-name').value = target.name;
-      document.getElementById('edit-user-email').value = target.email;
+      const isSuper = Boolean(user.isSuperAdmin || user.permission === 'Super Admin');
+      const roleWrap = document.getElementById('edit-user-role-wrapper');
+      const roleSel = document.getElementById('edit-user-permission');
+      if (roleWrap) roleWrap.classList.toggle('hidden', isSuper);
+      if (roleSel && !isSuper) roleSel.value = user.permission;
 
-      const roleWrapper = document.getElementById('edit-user-role-wrapper');
-      const roleSelect = document.getElementById('edit-user-permission');
-      if (roleWrapper && roleSelect) {
-        roleWrapper.classList.toggle('hidden', isSuperAdmin);
-        if (!isSuperAdmin) {
-          roleSelect.value = target.permission === 'Admin' ? 'Admin' : 'User';
-        }
-      }
-
-      const errBox = document.getElementById('edit-user-error');
-      if (errBox) {
-        errBox.textContent = '';
-        errBox.classList.add('hidden');
-      }
       document.getElementById('edit-user-modal')?.classList.remove('hidden');
     };
 
@@ -2233,54 +2524,38 @@
 
     window.handleSaveEditedUser = function (event) {
       event.preventDefault();
-      const id = document.getElementById('edit-user-id').value;
-      const newName = document.getElementById('edit-user-name').value.trim();
-      const newEmail = document.getElementById('edit-user-email').value.trim().toLowerCase();
-      const newPerm = document.getElementById('edit-user-permission').value;
-      const errBox = document.getElementById('edit-user-error');
+      const userId = document.getElementById('edit-user-id').value;
+      const user = state.nodals.find(u => u.id === userId);
+      if (!user) return;
 
-      const target = state.nodals.find(u => u.id === id);
-      if (!target || !newName || !newEmail) return;
+      const nextName = document.getElementById('edit-user-name').value.trim();
+      const nextEmail = document.getElementById('edit-user-email').value.trim().toLowerCase();
+      const isSuper = Boolean(user.isSuperAdmin || user.permission === 'Super Admin');
+      const nextPerm = isSuper ? 'Super Admin' : document.getElementById('edit-user-permission').value;
+      const errEl = document.getElementById('edit-user-error');
 
-      const duplicate = state.nodals.some(u => u.id !== id && u.email.toLowerCase() === newEmail);
-      if (duplicate) {
-        if (errBox) {
-          errBox.textContent = 'Another user already uses this email address.';
-          errBox.classList.remove('hidden');
+      if (state.nodals.some(u => u.id !== userId && u.email.toLowerCase() === nextEmail)) {
+        if (errEl) {
+          errEl.textContent = 'Another user already uses this Google email.';
+          errEl.classList.remove('hidden');
         }
         return;
       }
 
-      const isSuperAdmin = Boolean(target.isSuperAdmin || target.permission === 'Super Admin');
-      const finalPermission = isSuperAdmin ? target.permission : newPerm;
       const changes = [];
+      if (user.name !== nextName) changes.push(`Name: "${user.name}" → "${nextName}"`);
+      if (user.email.toLowerCase() !== nextEmail) changes.push(`Email: "${user.email}" → "${nextEmail}"`);
+      if (user.permission !== nextPerm) changes.push(`Role: "${user.permission}" → "${nextPerm}"`);
 
-      if (target.name !== newName) {
-        changes.push(`<div><span class="font-bold">Name:</span> ${escapeHtml(target.name)} → <span class="font-bold text-indigo-700">${escapeHtml(newName)}</span></div>`);
-      }
-      if (target.email.toLowerCase() !== newEmail) {
-        changes.push(`<div><span class="font-bold">Google Email:</span> ${escapeHtml(target.email)} → <span class="font-bold text-indigo-700">${escapeHtml(newEmail)}</span></div>`);
-      }
-      if (!isSuperAdmin && target.permission !== finalPermission) {
-        changes.push(`<div><span class="font-bold">Permission Role:</span> ${escapeHtml(target.permission)} → <span class="font-bold text-indigo-700">${escapeHtml(finalPermission)}</span></div>`);
-      }
-
-      if (changes.length === 0) {
+      if (!changes.length) {
         closeEditUserModal();
-        showToast('No changes detected.');
         return;
       }
 
-      state.pendingUserEdit = {
-        id,
-        newName,
-        newEmail,
-        finalPermission,
-        emailChanged: target.email.toLowerCase() !== newEmail
-      };
-
-      document.getElementById('confirm-user-edit-summary').textContent = `You are about to update workspace details for ${target.name}. Please confirm before saving:`;
-      document.getElementById('confirm-user-edit-changes').innerHTML = changes.join('');
+      state.pendingUserEdit = { userId, nextName, nextEmail, nextPerm };
+      document.getElementById('confirm-user-edit-summary').textContent = `You are updating workspace credentials for ${user.name}:`;
+      document.getElementById('confirm-user-edit-changes').innerHTML = changes.map(c => `<div>• ${escapeHtml(c)}</div>`).join('');
+      closeEditUserModal();
       document.getElementById('confirm-user-edit-modal')?.classList.remove('hidden');
     };
 
@@ -2290,60 +2565,46 @@
     };
 
     window.commitSavedUserEdit = function () {
-      const pending = state.pendingUserEdit;
-      if (!pending) return;
-
-      const target = state.nodals.find(u => u.id === pending.id);
-      if (target) {
-        target.name = pending.newName;
-        target.email = pending.newEmail;
-        target.permission = pending.finalPermission;
+      if (!state.pendingUserEdit) return;
+      const { userId, nextName, nextEmail, nextPerm } = state.pendingUserEdit;
+      const user = state.nodals.find(u => u.id === userId);
+      if (user) {
+        user.name = nextName;
+        user.email = nextEmail;
+        user.permission = nextPerm;
+        persistWorkspaceState();
+        renderAll();
+        showToast(`Updated details for ${nextName}.`);
       }
-
       closeConfirmUserEditModal();
-      closeEditUserModal();
-      persistWorkspaceState();
-      renderAll();
-      showToast(`Updated details for ${pending.newName}.`);
-
-      if (pending.emailChanged && target) {
-        openWelcomeEmailModal(target.id);
-      }
     };
 
-    window.initiateDeleteNodalUser = function (userId) {
-      const caps = getRoleCapabilities();
-      if (!caps.canManageUsers) return;
-      const target = state.nodals.find(u => u.id === userId);
-      if (!target || target.isSuperAdmin || target.permission === 'Super Admin') return;
+    window.initiateDeleteUser = function (userId) {
+      const user = state.nodals.find(u => u.id === userId);
+      if (!user || user.isSuperAdmin || user.permission === 'Super Admin') return;
 
       const assignedItems = state.items.filter(i => i.nodalId === userId);
-      if (assignedItems.length === 0) {
+      if (assignedItems.length > 0) {
+        state.reassignTargetUserId = userId;
+        const otherUsers = state.nodals.filter(u => u.id !== userId);
+        const optionsHtml = otherUsers.map(u => `<option value="${escapeHtml(u.id)}">${escapeHtml(u.name)} (${escapeHtml(u.email)})</option>`).join('');
+
+        document.getElementById('reassign-modal-subtitle').textContent = `${user.name} is assigned to ${assignedItems.length} item(s). Reassign them before removal:`;
+        document.getElementById('bulk-reassign-select').innerHTML = optionsHtml;
+        document.getElementById('reassign-items-list').innerHTML = assignedItems.map(item => `
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs">
+            <div class="font-bold text-slate-800 truncate">${escapeHtml(item.title)} <span class="text-slate-400 font-normal">(${escapeHtml(item.type)})</span></div>
+            <select data-reassign-item-id="${escapeHtml(item.id)}" class="px-2.5 py-1.5 rounded-lg bg-white border border-slate-300 font-medium text-slate-800">
+              ${optionsHtml}
+            </select>
+          </div>
+        `).join('');
+        document.getElementById('reassign-modal')?.classList.remove('hidden');
+      } else {
         state.pendingDeleteUserId = userId;
-        const msgEl = document.getElementById('confirm-delete-user-message');
-        if (msgEl) {
-          msgEl.innerHTML = `Are you sure you want to remove <span class="font-bold text-slate-900">${escapeHtml(target.name)}</span> (${escapeHtml(target.email)}) from the workspace? They will be moved to the Deleted section and can be restored later.`;
-        }
+        document.getElementById('confirm-delete-user-message').textContent = `Are you sure you want to remove ${user.name} (${user.email}) from the workspace?`;
         document.getElementById('confirm-delete-user-modal')?.classList.remove('hidden');
-        return;
       }
-
-      state.reassignTargetUserId = userId;
-      const remainingUsers = state.nodals.filter(u => u.id !== userId);
-      const optionsHtml = remainingUsers.map(u => `<option value="${u.id}">${escapeHtml(u.name)} (${escapeHtml(u.email)})</option>`).join('');
-
-      document.getElementById('reassign-modal-subtitle').textContent = `${target.name} currently owns ${assignedItems.length} task(s)/project(s). Reassign them before removing this user:`;
-      document.getElementById('bulk-reassign-select').innerHTML = optionsHtml;
-      document.getElementById('reassign-items-list').innerHTML = assignedItems.map(item => `
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs">
-          <div class="font-bold text-slate-800">${escapeHtml(item.title)} <span class="text-slate-400 font-normal">(${escapeHtml(item.type)})</span></div>
-          <select data-reassign-item-id="${item.id}" class="reassign-item-select px-2.5 py-1.5 rounded-lg bg-white border border-slate-300 font-medium text-slate-800">
-            ${optionsHtml}
-          </select>
-        </div>
-      `).join('');
-
-      document.getElementById('reassign-modal')?.classList.remove('hidden');
     };
 
     window.closeConfirmDeleteUserModal = function () {
@@ -2352,25 +2613,16 @@
     };
 
     window.confirmDirectDeleteUser = function () {
-      const userId = state.pendingDeleteUserId;
-      if (!userId) return;
-      const target = state.nodals.find(u => u.id === userId);
-      if (target) {
-        state.nodals = state.nodals.filter(u => u.id !== userId);
-        state.deletedNodals.push(target);
+      if (!state.pendingDeleteUserId) return;
+      const idx = state.nodals.findIndex(u => u.id === state.pendingDeleteUserId);
+      if (idx !== -1) {
+        const removed = state.nodals.splice(idx, 1)[0];
+        state.deletedNodals.push(removed);
+        persistWorkspaceState();
+        renderAll();
+        showToast(`Removed ${removed.name}.`);
       }
       closeConfirmDeleteUserModal();
-      persistWorkspaceState();
-      renderAll();
-      showToast(`Removed ${target ? target.name : 'user'}.`);
-    };
-
-    window.applyBulkReassign = function () {
-      const bulkId = document.getElementById('bulk-reassign-select')?.value;
-      if (!bulkId) return;
-      document.querySelectorAll('.reassign-item-select').forEach(sel => {
-        sel.value = bulkId;
-      });
     };
 
     window.closeReassignModal = function () {
@@ -2378,65 +2630,74 @@
       document.getElementById('reassign-modal')?.classList.add('hidden');
     };
 
-    window.confirmReassignAndDeleteUser = function () {
-      const userId = state.reassignTargetUserId;
-      if (!userId) return;
-      const target = state.nodals.find(u => u.id === userId);
+    window.applyBulkReassign = function () {
+      const bulkVal = document.getElementById('bulk-reassign-select')?.value;
+      if (!bulkVal) return;
+      document.querySelectorAll('[data-reassign-item-id]').forEach(sel => {
+        sel.value = bulkVal;
+      });
+    };
 
-      document.querySelectorAll('.reassign-item-select').forEach(sel => {
+    window.confirmReassignAndDeleteUser = function () {
+      if (!state.reassignTargetUserId) return;
+      document.querySelectorAll('[data-reassign-item-id]').forEach(sel => {
         const itemId = sel.getAttribute('data-reassign-item-id');
-        const newNodalId = sel.value;
+        const nextNodalId = sel.value;
         const item = state.items.find(i => i.id === itemId);
-        if (item && newNodalId) {
-          item.nodalId = newNodalId;
+        if (item && nextNodalId) {
+          item.nodalId = nextNodalId;
         }
       });
 
-      if (target) {
-        state.nodals = state.nodals.filter(u => u.id !== userId);
-        state.deletedNodals.push(target);
+      const idx = state.nodals.findIndex(u => u.id === state.reassignTargetUserId);
+      if (idx !== -1) {
+        const removed = state.nodals.splice(idx, 1)[0];
+        state.deletedNodals.push(removed);
+        persistWorkspaceState();
+        renderAll();
+        showToast(`Reassigned items and removed ${removed.name}.`);
       }
-
       closeReassignModal();
-      persistWorkspaceState();
-      renderAll();
-      showToast(`Reassigned items and removed ${target ? target.name : 'user'}.`);
     };
 
     window.restoreDeletedUser = function (userId) {
-      const caps = getRoleCapabilities();
-      if (!caps.canManageUsers) return;
+      if (!getRoleCapabilities().canManageUsers) return;
       const idx = state.deletedNodals.findIndex(u => u.id === userId);
       if (idx === -1) return;
-      const [restored] = state.deletedNodals.splice(idx, 1);
+      const restored = state.deletedNodals.splice(idx, 1)[0];
       state.nodals.push(restored);
       persistWorkspaceState();
       renderAll();
       showToast(`Restored ${restored.name}.`);
     };
 
-    function renderTemplatePlaceholders(text, vars) {
+    function getPortalLoginUrl() {
+      return window.location.href.split('#')[0];
+    }
+
+    function applyTemplatePlaceholders(text, vars) {
       return String(text || '')
-        .replace(/\{\{\s*name\s*\}\}/gi, vars.name || '')
-        .replace(/\{\{\s*email\s*\}\}/gi, vars.email || '')
-        .replace(/\{\{\s*role\s*\}\}/gi, vars.role || '')
-        .replace(/\{\{\s*loginUrl\s*\}\}/gi, vars.loginUrl || '')
-        .replace(/\{\{\s*title\s*\}\}/gi, vars.title || '');
+        .replace(/\{\{name\}\}/g, vars.name || '')
+        .replace(/\{\{email\}\}/g, vars.email || '')
+        .replace(/\{\{role\}\}/g, vars.role || '')
+        .replace(/\{\{loginUrl\}\}/g, vars.loginUrl || getPortalLoginUrl())
+        .replace(/\{\{title\}\}/g, vars.title || '');
     }
 
     window.openWelcomeEmailModal = function (userId) {
       const user = state.nodals.find(u => u.id === userId);
       if (!user) return;
       state.welcomeTargetUser = user;
-      const loginUrl = window.location.href.split('#')[0];
-      const welcomeTpl = state.emailTemplates.find(t => t.id === 'tpl-welcome') || INITIAL_EMAIL_TEMPLATES[0];
-      document.getElementById('welcome-modal-recipient').textContent = `Recipient: ${user.name} <${user.email}>`;
-      document.getElementById('welcome-email-preview').value = renderTemplatePlaceholders(welcomeTpl.body, {
+      const welcomeTpl = state.emailTemplates.find(t => t.id === 'tpl-welcome') || state.emailTemplates[0];
+      const renderedBody = applyTemplatePlaceholders(welcomeTpl?.body || '', {
         name: user.name,
         email: user.email,
         role: user.permission,
-        loginUrl
+        loginUrl: getPortalLoginUrl()
       });
+
+      document.getElementById('welcome-modal-recipient').textContent = `Recipient: ${user.name} <${user.email}>`;
+      document.getElementById('welcome-email-preview').value = renderedBody;
       document.getElementById('welcome-email-modal')?.classList.remove('hidden');
     };
 
@@ -2446,320 +2707,65 @@
     };
 
     window.copyWelcomeEmailText = function () {
-      const textarea = document.getElementById('welcome-email-preview');
-      if (!textarea) return;
-      textarea.select();
-      document.execCommand('copy');
-      showToast('Welcome message copied to clipboard.');
+      const ta = document.getElementById('welcome-email-preview');
+      if (!ta) return;
+      ta.select();
+      try {
+        document.execCommand('copy');
+        showToast('Welcome email copied to clipboard.');
+      } catch (_) {
+        showToast('Unable to copy text.');
+      }
     };
 
     window.launchOneClickGmailWelcome = function () {
-      const user = state.welcomeTargetUser;
-      if (!user) return;
-      const loginUrl = window.location.href.split('#')[0];
-      const welcomeTpl = state.emailTemplates.find(t => t.id === 'tpl-welcome') || INITIAL_EMAIL_TEMPLATES[0];
-      const subject = encodeURIComponent(renderTemplatePlaceholders(welcomeTpl.subject, {
-        name: user.name,
-        email: user.email,
-        role: user.permission,
-        loginUrl
-      }));
-      const bodyText = document.getElementById('welcome-email-preview')?.value || renderTemplatePlaceholders(welcomeTpl.body, {
-        name: user.name,
-        email: user.email,
-        role: user.permission,
-        loginUrl
+      if (!state.welcomeTargetUser) return;
+      const welcomeTpl = state.emailTemplates.find(t => t.id === 'tpl-welcome') || state.emailTemplates[0];
+      const subject = applyTemplatePlaceholders(welcomeTpl?.subject || 'Welcome to SPM-NIWAS', {
+        name: state.welcomeTargetUser.name,
+        email: state.welcomeTargetUser.email,
+        role: state.welcomeTargetUser.permission,
+        loginUrl: getPortalLoginUrl()
       });
-      const body = encodeURIComponent(bodyText);
-      const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(user.email)}&su=${subject}&body=${body}`;
+      const body = document.getElementById('welcome-email-preview')?.value || '';
+      const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(state.welcomeTargetUser.email)}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
       window.open(gmailUrl, '_blank', 'noopener,noreferrer');
       closeWelcomeEmailModal();
-      showToast(`Opened Gmail compose for ${user.email}.`);
-    };
-
-    window.openItemModal = function (type, itemId = null) {
-      const modal = document.getElementById('item-modal');
-      const heading = document.getElementById('modal-heading');
-      const nodalSelect = document.getElementById('item-nodal');
-      if (!modal || !nodalSelect) return;
-
-      const caps = getRoleCapabilities();
-      const canAssignNodal = Boolean(caps.canManageUsers);
-
-      nodalSelect.innerHTML = state.nodals
-        .map(n => `<option value="${n.id}">${escapeHtml(n.name)} (${escapeHtml(n.email)})</option>`)
-        .join('');
-
-      if (itemId) {
-        const existing = state.items.find(i => i.id === itemId);
-        if (!existing) return;
-        heading.textContent = `Edit ${existing.type}`;
-        document.getElementById('item-id').value = existing.id;
-        document.getElementById('item-type').value = existing.type;
-        document.getElementById('item-title').value = existing.title;
-        document.getElementById('item-description').value = existing.description;
-        document.getElementById('item-nodal').value = existing.nodalId;
-        document.getElementById('item-status').value = existing.status;
-        document.getElementById('item-due-date').value = existing.dueDate || '';
-        state.modalDocuments = JSON.parse(JSON.stringify(existing.documents || []));
-      } else {
-        heading.textContent = `Add New ${type}`;
-        document.getElementById('item-id').value = '';
-        document.getElementById('item-type').value = type;
-        document.getElementById('item-title').value = '';
-        document.getElementById('item-description').value = '';
-        const currUser = getCurrentUser();
-        const defaultNodal = state.nodals.find(n => n.id === currUser.id) || state.nodals[0];
-        document.getElementById('item-nodal').value = defaultNodal ? defaultNodal.id : '';
-        document.getElementById('item-status').value = 'Not Started';
-        document.getElementById('item-due-date').value = '';
-        state.modalDocuments = [];
-      }
-
-      nodalSelect.disabled = !canAssignNodal;
-      nodalSelect.classList.toggle('opacity-60', !canAssignNodal);
-      nodalSelect.classList.toggle('cursor-not-allowed', !canAssignNodal);
-      nodalSelect.title = canAssignNodal ? '' : 'Only Admins can assign or change the Nodal Officer';
-
-      renderModalDocumentsList();
-      modal.classList.remove('hidden');
-    };
-
-    window.closeItemModal = function () {
-      document.getElementById('item-modal')?.classList.add('hidden');
-    };
-
-    function canCurrentUserDeleteDocsForItem(item) {
-      if (!item) return true;
-      const caps = getRoleCapabilities();
-      const currentUser = getCurrentUser();
-      return Boolean(caps.canDelete || (currentUser.id && item.nodalId === currentUser.id));
-    }
-
-    function renderModalDocumentsList() {
-      const listEl = document.getElementById('modal-documents-list');
-      if (!listEl) return;
-      if (state.modalDocuments.length === 0) {
-        listEl.innerHTML = `<div class="text-slate-400">No files attached.</div>`;
-        return;
-      }
-      const editingId = document.getElementById('item-id')?.value || '';
-      const editingItem = editingId ? state.items.find(i => i.id === editingId) : null;
-      const canRemoveSavedDocs = !editingItem || canCurrentUserDeleteDocsForItem(editingItem);
-
-      listEl.innerHTML = state.modalDocuments.map((docItem, idx) => {
-        const canRemoveThis = docItem.isNewUpload || canRemoveSavedDocs;
-        return `
-          <div class="flex items-center justify-between bg-white px-3 py-1.5 rounded-lg border border-slate-200">
-            <span class="font-medium text-slate-700 truncate">${escapeHtml(docItem.name)}</span>
-            ${canRemoveThis ? `<button type="button" onclick="removeModalDocument(${idx})" class="text-rose-600 hover:text-rose-800 font-bold ml-2">Remove</button>` : `<span class="text-[11px] text-slate-400 ml-2 whitespace-nowrap">Locked</span>`}
-          </div>
-        `;
-      }).join('');
-    }
-
-    window.removeModalDocument = function (index) {
-      const targetDoc = state.modalDocuments[index];
-      if (!targetDoc) return;
-      const editingId = document.getElementById('item-id')?.value || '';
-      const editingItem = editingId ? state.items.find(i => i.id === editingId) : null;
-      if (editingItem && !targetDoc.isNewUpload && !canCurrentUserDeleteDocsForItem(editingItem)) {
-        showToast('Only an Admin or the assigned Nodal Officer can remove documents.');
-        return;
-      }
-      state.modalDocuments.splice(index, 1);
-      renderModalDocumentsList();
-    };
-
-    window.deleteItemDocument = function (itemId, docIndex) {
-      const item = state.items.find(i => i.id === itemId);
-      if (!item) return;
-      if (!canCurrentUserDeleteDocsForItem(item)) {
-        showToast('Only an Admin or the assigned Nodal Officer can remove documents.');
-        return;
-      }
-      const docs = Array.isArray(item.documents) ? item.documents : [];
-      const removed = docs[docIndex];
-      if (!removed) return;
-      docs.splice(docIndex, 1);
-      const nowStr = formatNowTimestamp();
-      item.lastChanged = nowStr;
-      item.history = item.history || [];
-      item.history.unshift({ timestamp: nowStr, action: `Removed document "${removed.name}"`, by: getCurrentUser().name });
-      persistWorkspaceState();
-      renderAll();
-      showToast(`Removed "${removed.name}".`);
-    };
-
-    window.handleModalFileUpload = function (event) {
-      const files = Array.from(event.target.files || []);
-      const today = formatNowTimestamp().split(' ')[0];
-      files.forEach(f => {
-        state.modalDocuments.push({ name: f.name, addedAt: today, source: 'Upload', isNewUpload: true });
-      });
-      renderModalDocumentsList();
-      event.target.value = '';
-    };
-
-    window.proposeTitleAndDescriptionWithAI = function () {
-      const titleInput = document.getElementById('item-title');
-      const descInput = document.getElementById('item-description');
-      const type = document.getElementById('item-type').value || 'Task';
-      const rawTitle = titleInput.value.trim();
-
-      if (!rawTitle && state.modalDocuments.length > 0) {
-        titleInput.value = state.modalDocuments[0].name.replace(/\.[^/.]+$/, '').replace(/[_-]+/g, ' ');
-      }
-      const subject = titleInput.value.trim() || `SPM-NIWAS ${type}`;
-      descInput.value = `Coordinate ${subject} across designated state and central nodal officers, track milestone deliverables, and maintain verified documentation under SPM-NIWAS governance standards.`;
-      showToast('AI draft populated.');
-    };
-
-    window.handleSaveItem = function (event) {
-      event.preventDefault();
-      const id = document.getElementById('item-id').value;
-      const type = document.getElementById('item-type').value || 'Task';
-      const title = document.getElementById('item-title').value.trim();
-      const description = document.getElementById('item-description').value.trim();
-      const requestedNodalId = document.getElementById('item-nodal').value;
-      const requestedStatus = document.getElementById('item-status').value;
-      const dueDate = document.getElementById('item-due-date').value;
-      const user = getCurrentUser();
-      const caps = getRoleCapabilities();
-      const canAssignNodal = Boolean(caps.canManageUsers);
-      const nowStr = formatNowTimestamp();
-
-      if (!title || !description) return;
-
-      if (id) {
-        const existing = state.items.find(i => i.id === id);
-        if (existing) {
-          const canDeleteDocs = canCurrentUserDeleteDocsForItem(existing);
-          const cleanedModalDocs = state.modalDocuments.map(({ isNewUpload, ...rest }) => rest);
-          const preservedOldDocs = canDeleteDocs
-            ? cleanedModalDocs
-            : [
-                ...(Array.isArray(existing.documents) ? existing.documents : []),
-                ...state.modalDocuments.filter(d => d.isNewUpload).map(({ isNewUpload, ...rest }) => rest)
-              ];
-
-          existing.title = title;
-          existing.description = description;
-          if (canAssignNodal) {
-            existing.nodalId = requestedNodalId;
-          }
-          existing.status = requestedStatus;
-          existing.dueDate = dueDate;
-          existing.lastChanged = nowStr;
-          existing.documents = preservedOldDocs;
-          existing.history = existing.history || [];
-          existing.history.unshift({ timestamp: nowStr, action: 'Updated details', by: user.name });
-        }
-        showToast(`${type} updated.`);
-      } else {
-        const finalStatus = caps.canDirectCreate ? requestedStatus : 'Pending Approval';
-        const defaultNodal = state.nodals.find(n => n.id === user.id) || state.nodals[0];
-        const finalNodalId = canAssignNodal ? requestedNodalId : (defaultNodal ? defaultNodal.id : requestedNodalId);
-        const cleanedDocs = state.modalDocuments.map(({ isNewUpload, ...rest }) => rest);
-        state.items.unshift({
-          id: `${type === 'Project' ? 'prj' : 'tsk'}-${Date.now()}`,
-          type,
-          title,
-          description,
-          nodalId: finalNodalId,
-          status: finalStatus,
-          dueDate,
-          lastChanged: nowStr,
-          documents: cleanedDocs,
-          history: [{ timestamp: nowStr, action: `${type} Created (${finalStatus})`, by: user.name }]
-        });
-        showToast(caps.canDirectCreate ? `${type} created.` : `${type} submitted for Admin approval.`);
-      }
-
-      closeItemModal();
-      persistWorkspaceState();
-      renderAll();
-    };
-
-    window.approvePendingItem = function (itemId) {
-      const caps = getRoleCapabilities();
-      if (!caps.canApprove) return;
-      const item = state.items.find(i => i.id === itemId);
-      if (!item) return;
-      const nowStr = formatNowTimestamp();
-      item.status = 'In Progress';
-      item.lastChanged = nowStr;
-      item.history = item.history || [];
-      item.history.unshift({ timestamp: nowStr, action: 'Approved by Admin', by: getCurrentUser().name });
-      persistWorkspaceState();
-      renderAll();
-      showToast(`Approved "${item.title}".`);
-    };
-
-    window.convertTaskToProject = function (itemId) {
-      const item = state.items.find(i => i.id === itemId);
-      if (!item || item.type !== 'Task') return;
-      const nowStr = formatNowTimestamp();
-      item.type = 'Project';
-      item.lastChanged = nowStr;
-      item.history = item.history || [];
-      item.history.unshift({ timestamp: nowStr, action: 'Converted from Task to Project', by: getCurrentUser().name });
-      persistWorkspaceState();
-      renderAll();
-      showToast(`Converted "${item.title}" into a Project.`);
-    };
-
-    window.deleteItem = function (itemId) {
-      const caps = getRoleCapabilities();
-      if (!caps.canDelete) return;
-      const item = state.items.find(i => i.id === itemId);
-      if (!item) return;
-      state.items = state.items.filter(i => i.id !== itemId);
-      if (state.selectedItemId === itemId) {
-        state.selectedItemId = null;
-        switchTab('overview');
-      }
-      persistWorkspaceState();
-      renderAll();
-      showToast(`Deleted "${item.title}".`);
     };
 
     function renderEmailInboxView() {
       const inboxesEl = document.getElementById('connected-inboxes-list');
       const proposalsEl = document.getElementById('email-proposals-list');
-      const badgeEl = document.getElementById('sidebar-badge-email-proposals');
-
-      if (badgeEl) {
-        badgeEl.textContent = String(state.emailProposals.length);
-        badgeEl.classList.toggle('hidden', state.emailProposals.length === 0);
-      }
 
       if (inboxesEl) {
-        inboxesEl.innerHTML = state.connectedInboxes.map(box => `
-          <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 flex items-center justify-between gap-3">
-            <div>
-              <div class="text-sm font-bold text-slate-900">${escapeHtml(box.email)}</div>
-              <div class="text-xs text-slate-500 mt-0.5">${escapeHtml(box.provider)} • Last scan: ${escapeHtml(box.lastScan)}</div>
+        inboxesEl.innerHTML = state.connectedInboxes.map((box, idx) => `
+          <div class="flex items-center justify-between gap-3 p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80 text-xs">
+            <div class="min-w-0">
+              <div class="font-bold text-slate-900 truncate">${escapeHtml(box.email)}</div>
+              <div class="text-[11px] text-slate-500">${escapeHtml(box.provider)} • Last scanned: ${escapeHtml(box.lastScan)}</div>
             </div>
-            <span class="px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 text-[11px] font-bold">${escapeHtml(box.status)}</span>
+            <div class="flex items-center gap-2 flex-shrink-0">
+              <span class="px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-bold text-[11px]">${escapeHtml(box.status)}</span>
+              <button type="button" onclick="disconnectInbox(${idx})" class="text-slate-400 hover:text-rose-600 font-bold">✕</button>
+            </div>
           </div>
         `).join('');
       }
 
       if (proposalsEl) {
-        if (state.emailProposals.length === 0) {
-          proposalsEl.innerHTML = `<div class="text-xs text-slate-400 py-4">No pending email import proposals.</div>`;
+        if (!state.emailProposals.length) {
+          proposalsEl.innerHTML = `<div class="text-xs text-slate-400 py-4 text-center">No pending email proposals in queue.</div>`;
         } else {
           proposalsEl.innerHTML = state.emailProposals.map(prop => `
-            <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 flex flex-wrap items-center justify-between gap-3">
-              <div class="space-y-1 max-w-2xl">
-                <div class="text-xs font-bold text-indigo-600">From: ${escapeHtml(prop.sender)}</div>
-                <div class="text-sm font-extrabold text-slate-900">${escapeHtml(prop.subject)}</div>
-                <div class="text-xs text-slate-600">${escapeHtml(prop.proposedSummary)}</div>
+            <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+              <div class="space-y-1">
+                <div class="font-bold text-slate-900">${escapeHtml(prop.subject)}</div>
+                <div class="text-slate-500">From: ${escapeHtml(prop.sender)}</div>
+                <div class="text-slate-700">${escapeHtml(prop.proposedSummary)}</div>
               </div>
-              <div class="flex items-center gap-2">
-                <button type="button" onclick="applyEmailProposal('${prop.id}')" class="px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold">Import to Workspace</button>
-                <button type="button" onclick="dismissEmailProposal('${prop.id}')" class="px-3 py-2 rounded-xl border border-slate-300 bg-white hover:bg-slate-100 text-xs font-semibold text-slate-700">Dismiss</button>
+              <div class="flex items-center gap-2 flex-shrink-0">
+                <button type="button" onclick="dismissEmailProposal('${prop.id}')" class="px-3 py-1.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-100 text-slate-600 font-semibold">Dismiss</button>
+                <button type="button" onclick="importEmailProposal('${prop.id}')" class="px-3.5 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold">Import to Workspace</button>
               </div>
             </div>
           `).join('');
@@ -2767,133 +2773,130 @@
       }
     }
 
-    window.connectGmailInboxPrompt = function () {
-      const email = `desk.${state.connectedInboxes.length + 1}@spmniwas.in`;
-      state.connectedInboxes.push({
-        email,
-        provider: 'Google Workspace',
-        status: 'Connected',
-        lastScan: 'Just now'
-      });
-      persistWorkspaceState();
-      renderEmailInboxView();
-      showToast(`Connected ${email}.`);
-    };
-
     window.scanConnectedInboxes = function () {
-      state.connectedInboxes.forEach(b => { b.lastScan = 'Just now'; });
+      const nowTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      state.connectedInboxes.forEach(b => {
+        b.lastScan = `Today, ${nowTime}`;
+      });
       persistWorkspaceState();
       renderEmailInboxView();
       showToast('Scanned all connected Gmail inboxes.');
     };
 
+    window.connectGmailInboxPrompt = function () {
+      const senderInput = document.getElementById('intake-email-sender');
+      const emailVal = (senderInput?.value || '').trim();
+      if (!emailVal || !emailVal.includes('@')) {
+        showToast('Enter a valid Gmail address in Sender Email to connect.');
+        senderInput?.focus();
+        return;
+      }
+      if (!state.connectedInboxes.some(b => b.email.toLowerCase() === emailVal.toLowerCase())) {
+        state.connectedInboxes.push({
+          email: emailVal,
+          provider: emailVal.endsWith('@spmniwas.in') ? 'Google Workspace' : 'External Gmail',
+          status: 'Connected',
+          lastScan: 'Just now'
+        });
+        persistWorkspaceState();
+        renderEmailInboxView();
+        showToast(`Connected ${emailVal}.`);
+      }
+    };
+
+    window.disconnectInbox = function (idx) {
+      state.connectedInboxes.splice(idx, 1);
+      persistWorkspaceState();
+      renderEmailInboxView();
+      showToast('Inbox disconnected.');
+    };
+
     window.analyzeEmailWithAI = function () {
-      const sender = document.getElementById('intake-email-sender').value.trim() || 'nodal@spmniwas.in';
-      const subject = document.getElementById('intake-email-subject').value.trim();
-      const body = document.getElementById('intake-email-body').value.trim();
+      const sender = (document.getElementById('intake-email-sender')?.value || '').trim() || 'nodal@spmniwas.in';
+      const subject = (document.getElementById('intake-email-subject')?.value || '').trim();
+      const body = (document.getElementById('intake-email-body')?.value || '').trim();
       if (!subject && !body) {
-        showToast('Enter an email subject or body first.');
+        showToast('Enter an email subject or body to extract a proposal.');
         return;
       }
       state.emailProposals.unshift({
         id: `prop-${Date.now()}`,
         sender,
-        subject: subject || 'Extracted Email Action Item',
-        targetItemId: null,
-        proposedSummary: body || subject,
+        subject: subject || 'Incoming Email Action Item',
+        targetItemId: '',
+        proposedSummary: body ? body.slice(0, 160) : `Follow up on "${subject}"`,
         proposedDocs: []
       });
       document.getElementById('intake-email-subject').value = '';
       document.getElementById('intake-email-body').value = '';
       persistWorkspaceState();
-      renderEmailInboxView();
-      showToast('AI extracted a new workspace proposal.');
+      renderAll();
+      showToast('AI extracted a new proposal.');
     };
 
-    window.applyEmailProposal = function (propId) {
+    window.importEmailProposal = function (propId) {
       const idx = state.emailProposals.findIndex(p => p.id === propId);
       if (idx === -1) return;
-      const [prop] = state.emailProposals.splice(idx, 1);
+      const prop = state.emailProposals.splice(idx, 1)[0];
       const nowStr = formatNowTimestamp();
-
-      if (prop.targetItemId) {
-        const target = state.items.find(i => i.id === prop.targetItemId);
-        if (target) {
-          target.lastChanged = nowStr;
-          target.documents = target.documents || [];
-          (prop.proposedDocs || []).forEach(docName => {
-            target.documents.push({ name: docName, addedAt: nowStr.split(' ')[0], source: 'Email' });
-          });
-          target.history = target.history || [];
-          target.history.unshift({ timestamp: nowStr, action: `Imported update from ${prop.sender}`, by: 'AI Inbox' });
-        }
-      } else {
-        state.items.unshift({
-          id: `tsk-${Date.now()}`,
-          type: 'Task',
-          title: prop.subject,
-          description: prop.proposedSummary,
-          nodalId: state.nodals[0]?.id || 'usr-1',
-          status: 'Not Started',
-          dueDate: '',
-          lastChanged: nowStr,
-          documents: [],
-          history: [{ timestamp: nowStr, action: `Created from email (${prop.sender})`, by: 'AI Inbox' }]
-        });
-      }
-
+      state.items.unshift({
+        id: `tsk-${Date.now()}`,
+        type: 'Task',
+        title: prop.subject,
+        description: prop.proposedSummary,
+        nodalId: getCurrentUser().id || 'usr-1',
+        status: 'Not Started',
+        dueDate: '',
+        lastChanged: nowStr,
+        documents: [],
+        history: [{ timestamp: nowStr, action: `Imported from Email (${prop.sender})`, by: getCurrentUser().name }]
+      });
       persistWorkspaceState();
       renderAll();
-      showToast('Proposal imported into workspace.');
+      showToast(`Imported "${prop.subject}" as a Task.`);
     };
 
     window.dismissEmailProposal = function (propId) {
       state.emailProposals = state.emailProposals.filter(p => p.id !== propId);
       persistWorkspaceState();
-      renderEmailInboxView();
+      renderAll();
       showToast('Proposal dismissed.');
     };
 
     function renderEmailTemplatesView() {
       const listEl = document.getElementById('email-templates-list');
-      const nameInput = document.getElementById('template-editor-name');
-      const subjectInput = document.getElementById('template-editor-subject');
-      const bodyInput = document.getElementById('template-editor-body');
-      const deleteBtn = document.getElementById('btn-delete-template');
-      if (!listEl || !nameInput || !subjectInput || !bodyInput) return;
+      if (!listEl) return;
 
-      if (!state.emailTemplates.some(t => t.id === state.selectedTemplateId) && state.emailTemplates.length > 0) {
-        state.selectedTemplateId = state.emailTemplates[0].id;
+      if (!state.emailTemplates.some(t => t.id === state.selectedTemplateId)) {
+        state.selectedTemplateId = state.emailTemplates[0]?.id || '';
       }
-
-      const activeTpl = state.emailTemplates.find(t => t.id === state.selectedTemplateId);
 
       listEl.innerHTML = state.emailTemplates.map(tpl => {
         const isSelected = tpl.id === state.selectedTemplateId;
-        const btnCls = isSelected
-          ? 'bg-indigo-600 text-white shadow-xs'
-          : 'bg-white text-slate-800 hover:bg-slate-100 border border-slate-200/80';
-        const subCls = isSelected ? 'text-indigo-100' : 'text-slate-400';
         return `
-          <button type="button" onclick="selectEmailTemplate('${tpl.id}')" class="w-full text-left px-3.5 py-3 rounded-xl transition-all ${btnCls}">
-            <div class="text-xs sm:text-sm font-bold truncate">${escapeHtml(tpl.name || 'Untitled Template')}</div>
-            <div class="text-[11px] truncate mt-0.5 ${subCls}">${escapeHtml(tpl.subject || 'No subject')}</div>
+          <button type="button" onclick="selectEmailTemplate('${escapeHtml(tpl.id)}')" class="w-full text-left px-3.5 py-3 rounded-xl border transition-all ${isSelected ? 'bg-indigo-600 text-white border-indigo-600 shadow-xs' : 'bg-white hover:bg-slate-100 text-slate-800 border-slate-200'}">
+            <div class="text-xs sm:text-sm font-bold truncate">${escapeHtml(tpl.name)}</div>
+            <div class="text-[11px] truncate mt-0.5 ${isSelected ? 'text-indigo-100' : 'text-slate-400'}">${escapeHtml(tpl.subject)}</div>
           </button>
         `;
       }).join('');
 
-      if (activeTpl) {
-        if (document.activeElement !== nameInput) nameInput.value = activeTpl.name || '';
-        if (document.activeElement !== subjectInput) subjectInput.value = activeTpl.subject || '';
-        if (document.activeElement !== bodyInput) bodyInput.value = activeTpl.body || '';
-        if (deleteBtn) {
-          deleteBtn.classList.toggle('hidden', Boolean(activeTpl.isSystem));
-        }
+      const activeTpl = state.emailTemplates.find(t => t.id === state.selectedTemplateId);
+      const nameInput = document.getElementById('template-editor-name');
+      const subjectInput = document.getElementById('template-editor-subject');
+      const bodyInput = document.getElementById('template-editor-body');
+      const deleteBtn = document.getElementById('btn-delete-template');
+
+      if (activeTpl && nameInput && subjectInput && bodyInput) {
+        nameInput.value = activeTpl.name;
+        subjectInput.value = activeTpl.subject;
+        bodyInput.value = activeTpl.body;
+        if (deleteBtn) deleteBtn.classList.toggle('hidden', Boolean(activeTpl.isSystem));
       }
     }
 
-    window.selectEmailTemplate = function (templateId) {
-      state.selectedTemplateId = templateId;
+    window.selectEmailTemplate = function (tplId) {
+      state.selectedTemplateId = tplId;
       const statusEl = document.getElementById('template-editor-status');
       if (statusEl) statusEl.textContent = 'All changes saved';
       renderEmailTemplatesView();
@@ -2902,36 +2905,28 @@
     window.handleTemplateFieldInput = function () {
       const activeTpl = state.emailTemplates.find(t => t.id === state.selectedTemplateId);
       if (!activeTpl) return;
-      activeTpl.name = document.getElementById('template-editor-name')?.value || '';
+      activeTpl.name = document.getElementById('template-editor-name')?.value || activeTpl.name;
       activeTpl.subject = document.getElementById('template-editor-subject')?.value || '';
       activeTpl.body = document.getElementById('template-editor-body')?.value || '';
-
       const statusEl = document.getElementById('template-editor-status');
-      if (statusEl) statusEl.textContent = 'Saving...';
-
-      clearTimeout(window.__templateSaveTimer);
-      window.__templateSaveTimer = setTimeout(() => {
-        persistWorkspaceState();
-        renderEmailTemplatesView();
-        if (statusEl) statusEl.textContent = 'All changes saved';
-      }, 300);
+      if (statusEl) statusEl.textContent = 'Editing draft...';
     };
 
     window.saveSelectedEmailTemplate = function () {
       handleTemplateFieldInput();
       persistWorkspaceState();
-      renderEmailTemplatesView();
       const statusEl = document.getElementById('template-editor-status');
-      if (statusEl) statusEl.textContent = 'All changes saved';
+      if (statusEl) statusEl.textContent = 'Saved just now';
+      renderEmailTemplatesView();
       showToast('Email template saved.');
     };
 
     window.createNewEmailTemplate = function () {
       const newTpl = {
         id: `tpl-${Date.now()}`,
-        name: `Custom Template ${state.emailTemplates.length + 1}`,
-        subject: 'SPM-NIWAS Notification: {{title}}',
-        body: 'Dear {{name}},\n\nPlease find the update regarding {{title}}.\n\nLogin URL: {{loginUrl}}\n\nRegards,\nSPM-NIWAS Coordination Desk',
+        name: 'Custom Notification Template',
+        subject: 'Update from SPM-NIWAS: {{title}}',
+        body: 'Dear {{name}},\n\nPlease log in to the SPM-NIWAS portal to view the latest update:\n{{loginUrl}}\n\nRegards,\nSPM-NIWAS Coordination Desk',
         isSystem: false
       };
       state.emailTemplates.push(newTpl);
@@ -2945,44 +2940,115 @@
       const activeTpl = state.emailTemplates.find(t => t.id === state.selectedTemplateId);
       if (!activeTpl || activeTpl.isSystem) return;
       state.emailTemplates = state.emailTemplates.filter(t => t.id !== activeTpl.id);
-      state.selectedTemplateId = state.emailTemplates[0]?.id || null;
+      state.selectedTemplateId = state.emailTemplates[0]?.id || '';
       persistWorkspaceState();
       renderEmailTemplatesView();
-      showToast(`Deleted "${activeTpl.name}".`);
+      showToast('Template deleted.');
+    };
+
+    function renderTaskletSettingsView() {
+      const tbody = document.getElementById('tasklet-access-table-body');
+      const countBadge = document.getElementById('tasklet-access-count-badge');
+      if (!tbody) return;
+
+      const searchVal = (document.getElementById('tasklet-access-search')?.value || '').trim().toLowerCase();
+      const eligibleUsers = state.nodals
+        .filter(u => !(u.isSuperAdmin || u.permission === 'Super Admin'))
+        .sort((a, b) => String(a.name || '').localeCompare(String(b.name || ''), undefined, { sensitivity: 'base' }));
+
+      const enabledTotal = eligibleUsers.filter(u => u.canAccessTasklets === true).length;
+      if (countBadge) {
+        countBadge.textContent = `${enabledTotal} user${enabledTotal === 1 ? '' : 's'} enabled`;
+      }
+
+      const filteredUsers = eligibleUsers.filter(u => {
+        if (!searchVal) return true;
+        return `${u.name} ${u.email} ${u.permission}`.toLowerCase().includes(searchVal);
+      });
+
+      if (!filteredUsers.length) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="4" class="px-4 py-8 text-center text-xs text-slate-400">No matching users found.</td>
+          </tr>
+        `;
+        return;
+      }
+
+      tbody.innerHTML = filteredUsers.map(u => {
+        const hasAccess = u.canAccessTasklets === true;
+        const roleLabel = u.permission;
+
+        return `
+          <tr class="hover:bg-slate-50/90 transition-colors">
+            <td class="px-4 py-3.5">
+              <div class="font-bold text-slate-900">${escapeHtml(u.name)}</div>
+              <div class="text-[11px] text-slate-400">${escapeHtml(u.email)}</div>
+            </td>
+            <td class="px-4 py-3.5 text-xs font-semibold text-slate-700">${escapeHtml(roleLabel)}</td>
+            <td class="px-4 py-3.5">
+              ${hasAccess
+                ? `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-800">Allowed</span>`
+                : `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-slate-100 text-slate-500">No Access</span>`}
+            </td>
+            <td class="px-4 py-3.5 text-right">
+              <label class="inline-flex items-center gap-2 cursor-pointer select-none">
+                <input type="checkbox" ${hasAccess ? 'checked' : ''} onchange="toggleUserTaskletAccess('${escapeHtml(u.id)}', this.checked)" class="w-4 h-4 rounded text-indigo-600 focus:ring-indigo-500" />
+                <span class="text-xs font-semibold text-slate-700">${hasAccess ? 'Enabled' : 'Disabled'}</span>
+              </label>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    window.toggleUserTaskletAccess = function (userId, isEnabled) {
+      if (!getRoleCapabilities().isSuperAdmin) return;
+      const targetUser = state.nodals.find(u => u.id === userId);
+      if (!targetUser || targetUser.isSuperAdmin || targetUser.permission === 'Super Admin') return;
+      targetUser.canAccessTasklets = Boolean(isEnabled);
+      persistWorkspaceState();
+      renderAll();
+      showToast(`${targetUser.name} ${isEnabled ? 'granted' : 'removed from'} Tasklet access.`);
     };
 
     window.startColumnResize = function (event, tableKey, colIndex) {
       event.preventDefault();
-      event.stopPropagation();
       const colgroup = document.getElementById(`colgroup-${tableKey}`);
       const table = document.getElementById(`table-${tableKey}`);
       if (!colgroup || !table) return;
-
       const cols = colgroup.querySelectorAll('col');
       const targetCol = cols[colIndex];
       if (!targetCol) return;
 
       const startX = event.clientX;
       const tableWidth = table.getBoundingClientRect().width || 1;
-      const startPercent = parseFloat(targetCol.style.width) || (100 / cols.length);
-      const resizer = event.target;
-      resizer.classList.add('active');
+      const startPct = parseFloat(targetCol.style.width) || 15;
+      const handle = event.target;
+      handle.classList.add('active');
 
-      function onMouseMove(moveEvent) {
-        const deltaPx = moveEvent.clientX - startX;
-        const deltaPercent = (deltaPx / tableWidth) * 100;
-        const clamped = Math.min(45, Math.max(7, startPercent + deltaPercent));
-        targetCol.style.width = `${clamped.toFixed(2)}%`;
+      function onMouseMove(moveEvt) {
+        const deltaPct = ((moveEvt.clientX - startX) / tableWidth) * 100;
+        const nextPct = Math.max(6, Math.min(50, startPct + deltaPct));
+        targetCol.style.width = `${nextPct.toFixed(1)}%`;
       }
 
       function onMouseUp() {
-        resizer.classList.remove('active');
+        handle.classList.remove('active');
         document.removeEventListener('mousemove', onMouseMove);
         document.removeEventListener('mouseup', onMouseUp);
       }
 
       document.addEventListener('mousemove', onMouseMove);
       document.addEventListener('mouseup', onMouseUp);
+    };
+
+    function showUnauthorizedLoginModal() {
+      document.getElementById('unauthorized-login-modal')?.classList.remove('hidden');
+    }
+
+    window.closeUnauthorizedLoginModal = function () {
+      document.getElementById('unauthorized-login-modal')?.classList.add('hidden');
     };
 
     function renderAll() {
@@ -2994,43 +3060,84 @@
       if (settingsGroup) {
         settingsGroup.classList.toggle('hidden', !caps.canManageUsers);
       }
+      const navTaskletSettings = document.getElementById('nav-tasklet-settings');
+      if (navTaskletSettings) {
+        navTaskletSettings.classList.toggle('hidden', !caps.isSuperAdmin);
+      }
+
+      const navTasklets = document.getElementById('nav-tasklets');
+      if (navTasklets) {
+        navTasklets.classList.toggle('hidden', !caps.canAccessTasklets);
+      }
+      const btnHeaderTasklet = document.getElementById('btn-header-add-tasklet');
+      if (btnHeaderTasklet) {
+        btnHeaderTasklet.classList.toggle('hidden', !caps.canAccessTasklets || (state.activeTab !== 'overview' && state.activeTab !== 'tasklets'));
+      }
+      const overviewRadioTaskletWrap = document.getElementById('overview-radio-tasklet-wrap');
+      if (overviewRadioTaskletWrap) {
+        overviewRadioTaskletWrap.classList.toggle('hidden', !caps.canAccessTasklets);
+        if (!caps.canAccessTasklets) {
+          const taskletRadio = overviewRadioTaskletWrap.querySelector('input[type="radio"]');
+          if (taskletRadio && taskletRadio.checked) {
+            const allRadio = document.querySelector('input[name="overview-type-radio"][value="All"]');
+            if (allRadio) allRadio.checked = true;
+          }
+        }
+      }
+
+      if (!caps.isSuperAdmin && state.activeTab === 'tasklet-settings') {
+        switchTab('overview');
+        return;
+      }
       if (!caps.canManageUsers && ['nodals', 'email-settings', 'email-templates'].includes(state.activeTab)) {
         switchTab('overview');
         return;
       }
-
-      const visibleItems = state.items.filter(i => i.status !== 'Archived');
-      const projects = visibleItems.filter(i => i.type === 'Project');
-      const tasks = visibleItems.filter(i => i.type === 'Task');
-      const readyTasks = tasks.filter(isTaskReadyForProject);
-
-      document.getElementById('badge-overview').textContent = String(visibleItems.length);
-      document.getElementById('badge-projects').textContent = String(projects.length);
-      document.getElementById('badge-tasks').textContent = String(tasks.length);
-
-      document.getElementById('kpi-total-projects').textContent = String(projects.length);
-      document.getElementById('kpi-projects-sub').textContent = `${projects.filter(p => p.status === 'In Progress').length} active in progress`;
-
-      document.getElementById('kpi-total-tasks').textContent = String(tasks.length);
-      document.getElementById('kpi-tasks-sub').textContent = `${tasks.filter(t => t.status === 'Completed').length} completed`;
-
-      document.getElementById('kpi-ready-convert').textContent = String(readyTasks.length);
-
-      const readyBanner = document.getElementById('tasks-ready-filter-banner');
-      if (readyBanner) {
-        readyBanner.classList.toggle('hidden', !state.tasksReadyOnly);
+      if (!caps.canAccessTasklets && state.activeTab === 'tasklets') {
+        switchTab('overview');
+        return;
       }
 
-      renderItemsTable('overview', filterItemsForView('overview', null));
-      renderItemsTable('projects', filterItemsForView('projects', 'Project'));
-      renderItemsTable('tasks', filterItemsForView('tasks', 'Task'));
+      const activeItems = state.items.filter(i => i.status !== 'Archived' && (caps.canAccessTasklets || i.type !== 'Tasklet'));
+      const projects = activeItems.filter(i => i.type === 'Project');
+      const tasks = activeItems.filter(i => i.type === 'Task');
+      const tasklets = activeItems.filter(i => i.type === 'Tasklet');
+      const readyToConvert = tasks.filter(isTaskReadyForProject);
+
+      const badgeOverview = document.getElementById('badge-overview');
+      const badgeProjects = document.getElementById('badge-projects');
+      const badgeTasks = document.getElementById('badge-tasks');
+      const badgeTasklets = document.getElementById('badge-tasklets');
+      if (badgeOverview) badgeOverview.textContent = activeItems.length;
+      if (badgeProjects) badgeProjects.textContent = projects.length;
+      if (badgeTasks) badgeTasks.textContent = tasks.length;
+      if (badgeTasklets) badgeTasklets.textContent = tasklets.length;
+
+      const proposalBadge = document.getElementById('sidebar-badge-email-proposals');
+      if (proposalBadge) {
+        proposalBadge.textContent = state.emailProposals.length;
+        proposalBadge.classList.toggle('hidden', state.emailProposals.length === 0);
+      }
+
+      const kpiProjects = document.getElementById('kpi-total-projects');
+      const kpiProjectsSub = document.getElementById('kpi-projects-sub');
+      const kpiTasks = document.getElementById('kpi-total-tasks');
+      const kpiTasksSub = document.getElementById('kpi-tasks-sub');
+      const kpiReady = document.getElementById('kpi-ready-convert');
+      if (kpiProjects) kpiProjects.textContent = projects.length;
+      if (kpiProjectsSub) kpiProjectsSub.textContent = `${projects.filter(p => p.status === 'In Progress').length} active in progress`;
+      if (kpiTasks) kpiTasks.textContent = tasks.filter(t => t.status !== 'Completed').length;
+      if (kpiTasksSub) kpiTasksSub.textContent = `${tasks.filter(t => t.status === 'Completed').length} completed`;
+      if (kpiReady) kpiReady.textContent = readyToConvert.length;
+
+      renderItemsTable('overview', null);
+      renderItemsTable('projects', 'Project');
+      renderItemsTable('tasks', 'Task');
+      renderItemsTable('tasklets', 'Tasklet');
       renderNodalsTable();
       renderEmailInboxView();
       renderEmailTemplatesView();
-
-      if (state.activeTab === 'details') {
-        renderItemDetailsView();
-      }
+      renderTaskletSettingsView();
     }
 
     renderAll();
