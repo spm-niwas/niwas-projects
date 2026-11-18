@@ -484,7 +484,14 @@
         <section id="view-nodals" class="hidden space-y-6">
           <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden">
             <div class="p-4 border-b border-slate-200 flex flex-wrap items-center justify-between gap-3">
-              <h3 class="text-sm font-extrabold text-slate-900">All Users</h3>
+              <div class="inline-flex items-center gap-1.5 bg-slate-100 p-1 rounded-xl" role="tablist" aria-label="Users views">
+                <button type="button" id="users-subtab-all" onclick="switchUsersSubTab('all')" role="tab" aria-selected="true" class="px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-extrabold bg-white text-slate-900 shadow-xs transition-all">
+                  All Users
+                </button>
+                <button type="button" id="users-subtab-usage" onclick="switchUsersSubTab('usage')" role="tab" aria-selected="false" class="px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-semibold text-slate-600 hover:text-slate-900 transition-all">
+                  Usage History
+                </button>
+              </div>
               <div class="flex flex-wrap items-center gap-2.5 w-full sm:w-auto justify-end">
                 <input type="text" id="user-search-input" oninput="resetPageAndRender('nodals')" placeholder="Search by name or email..." class="px-3.5 py-2 text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 flex-1 sm:w-64" />
                 <button type="button" id="btn-open-add-user" onclick="openAddUserModal()" class="px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs sm:text-sm font-semibold flex items-center gap-1.5 whitespace-nowrap transition-colors">
@@ -493,61 +500,102 @@
                 </button>
               </div>
             </div>
-            <div class="overflow-x-auto">
-              <table class="w-full text-left border-collapse">
-                <thead class="bg-slate-50 border-b border-slate-200 text-[11px] font-bold uppercase tracking-wider text-slate-500">
-                  <tr>
-                    <th class="px-4 py-3.5">Name</th>
-                    <th class="px-4 py-3.5">Google Email</th>
-                    <th class="px-4 py-3.5">Permission Role</th>
-                    <th class="px-4 py-3.5">Nodal Assignments</th>
-                    <th class="px-4 py-3.5 text-right">Actions</th>
-                  </tr>
-                </thead>
-                <tbody id="nodals-table-body" class="divide-y divide-slate-100 text-sm"></tbody>
-              </table>
+
+            <!-- SUB-TAB 1: ALL USERS -->
+            <div id="users-panel-all">
+              <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                  <thead class="bg-slate-50 border-b border-slate-200 text-[11px] font-bold uppercase tracking-wider text-slate-500">
+                    <tr>
+                      <th class="px-4 py-3.5">Name</th>
+                      <th class="px-4 py-3.5">Google Email</th>
+                      <th class="px-4 py-3.5">Permission Role</th>
+                      <th class="px-4 py-3.5">Nodal Assignments</th>
+                      <th class="px-4 py-3.5 text-right">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody id="nodals-table-body" class="divide-y divide-slate-100 text-sm"></tbody>
+                </table>
+              </div>
+              <div id="pagination-nodals" class="hidden border-t border-slate-200 bg-slate-50/80 px-4 py-3 flex flex-wrap items-center justify-between gap-2 text-xs text-slate-600"></div>
             </div>
-            <div id="pagination-nodals" class="hidden border-t border-slate-200 bg-slate-50/80 px-4 py-3 flex flex-wrap items-center justify-between gap-2 text-xs text-slate-600"></div>
+
+            <!-- SUB-TAB 2: USAGE HISTORY -->
+            <div id="users-panel-usage" class="hidden">
+              <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                  <thead class="bg-slate-50 border-b border-slate-200 text-[11px] font-bold uppercase tracking-wider text-slate-500">
+                    <tr>
+                      <th class="px-4 py-3.5">Name</th>
+                      <th class="px-4 py-3.5">Role</th>
+                      <th class="px-4 py-3.5">Last Login</th>
+                      <th class="px-4 py-3.5">Usage in Last 30 Days (in hrs)</th>
+                    </tr>
+                  </thead>
+                  <tbody id="users-usage-table-body" class="divide-y divide-slate-100 text-sm"></tbody>
+                </table>
+              </div>
+              <div id="pagination-usage" class="hidden border-t border-slate-200 bg-slate-50/80 px-4 py-3 flex flex-wrap items-center justify-between gap-2 text-xs text-slate-600"></div>
+            </div>
           </div>
         </section>
 
-        <!-- VIEW 6: EMAIL AND AI INBOX -->
+        <!-- VIEW 6: EMAIL & AI INBOX -->
         <section id="view-email-settings" class="hidden space-y-6">
-          <div class="bg-white rounded-2xl border border-slate-200 p-5 sm:p-6 space-y-4">
-            <div class="flex flex-wrap items-center justify-between gap-3">
-              <div>
-                <h3 class="text-base font-extrabold text-slate-900">Connected Gmail Accounts</h3>
-                <p class="text-xs text-slate-500 mt-0.5">Scan authorized inboxes to extract project/task updates and document attachments.</p>
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <!-- Connected Gmail Inboxes -->
+            <div class="bg-white rounded-2xl border border-slate-200 p-5 sm:p-6 space-y-4">
+              <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-4">
+                <div>
+                  <h2 class="text-base font-extrabold text-slate-900">Connected Gmail Inboxes</h2>
+                  <p class="text-xs text-slate-500 mt-0.5">Monitored accounts for incoming task &amp; project updates.</p>
+                </div>
+                <div class="flex items-center gap-2">
+                  <button type="button" onclick="scanConnectedInboxes()" class="px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700 text-xs font-semibold transition-colors">
+                    Scan Now
+                  </button>
+                  <button type="button" onclick="connectGmailInboxPrompt()" class="px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold transition-colors">
+                    + Connect Inbox
+                  </button>
+                </div>
               </div>
-              <div class="flex items-center gap-2">
-                <button type="button" onclick="connectGmailInboxPrompt()" class="px-3.5 py-2 rounded-xl bg-white border border-slate-300 hover:bg-slate-50 text-xs font-semibold text-slate-700">
-                  + Connect Gmail
-                </button>
-                <button type="button" onclick="scanConnectedInboxes()" class="px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold">
-                  Scan Inboxes Now
-                </button>
+              <div id="connected-inboxes-list" class="space-y-3"></div>
+            </div>
+
+            <!-- Manual AI Email Intake -->
+            <div class="bg-white rounded-2xl border border-slate-200 p-5 sm:p-6 space-y-4">
+              <div class="border-b border-slate-100 pb-4">
+                <h2 class="text-base font-extrabold text-slate-900">AI Email Parser &amp; Intake</h2>
+                <p class="text-xs text-slate-500 mt-0.5">Paste an incoming official email to extract actionable tasks or project updates.</p>
+              </div>
+              <div class="space-y-3">
+                <div>
+                  <label for="intake-email-sender" class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Sender Email</label>
+                  <input type="email" id="intake-email-sender" placeholder="nodal@spmniwas.in" class="w-full px-3.5 py-2 text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+                </div>
+                <div>
+                  <label for="intake-email-subject" class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Email Subject</label>
+                  <input type="text" id="intake-email-subject" placeholder="Subject line..." class="w-full px-3.5 py-2 text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+                </div>
+                <div>
+                  <label for="intake-email-body" class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Email Content</label>
+                  <textarea id="intake-email-body" rows="3" placeholder="Paste email body to analyze..." class="w-full px-3.5 py-2 text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500"></textarea>
+                </div>
+                <div class="flex justify-end">
+                  <button type="button" onclick="analyzeEmailWithAI()" class="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs sm:text-sm font-semibold transition-colors">
+                    ✨ Extract Proposal with AI
+                  </button>
+                </div>
               </div>
             </div>
-            <div id="connected-inboxes-list" class="grid grid-cols-1 md:grid-cols-2 gap-3"></div>
           </div>
 
+          <!-- AI-Extracted Proposals Queue -->
           <div class="bg-white rounded-2xl border border-slate-200 p-5 sm:p-6 space-y-4">
-            <div>
-              <h3 class="text-base font-extrabold text-slate-900">AI Email Intake Simulator</h3>
-              <p class="text-xs text-slate-500 mt-0.5">Paste an incoming email or circular to automatically extract tasks, match existing projects, and queue an import proposal.</p>
+            <div class="border-b border-slate-100 pb-4">
+              <h2 class="text-base font-extrabold text-slate-900">AI-Extracted Proposals</h2>
+              <p class="text-xs text-slate-500 mt-0.5">Review and import extracted action items or document updates into your workspace.</p>
             </div>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <input type="email" id="intake-email-sender" placeholder="Sender Email (e.g., nodal@spmniwas.in)" class="px-3.5 py-2.5 text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-xl" />
-              <input type="text" id="intake-email-subject" placeholder="Email Subject" class="px-3.5 py-2.5 text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-xl" />
-            </div>
-            <textarea id="intake-email-body" rows="3" placeholder="Paste email body or action summary..." class="w-full px-3.5 py-2.5 text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-xl"></textarea>
-            <button type="button" onclick="analyzeEmailWithAI()" class="px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs sm:text-sm font-semibold">
-              Extract Proposal with AI
-            </button>
-          </div>
-
-          <div class="bg-white rounded-2xl border border-slate-200 p-5 sm:p-6 space-y-3">
-            <h3 class="text-base font-extrabold text-slate-900">Pending AI Import Proposals</h3>
             <div id="email-proposals-list" class="space-y-3"></div>
           </div>
         </section>
@@ -555,49 +603,55 @@
         <!-- VIEW 7: EMAIL TEMPLATES (TWO-PANE EDITOR) -->
         <section id="view-email-templates" class="hidden">
           <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden grid grid-cols-1 lg:grid-cols-12 min-h-[520px]">
-            <!-- Left Pane: Template Names -->
-            <div class="lg:col-span-4 border-b lg:border-b-0 lg:border-r border-slate-200 bg-slate-50/70 flex flex-col">
-              <div class="p-4 border-b border-slate-200 flex items-center justify-between gap-2">
-                <h3 class="text-sm font-extrabold text-slate-900">Templates</h3>
-                <button type="button" onclick="createNewEmailTemplate()" class="px-3 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold transition-colors">
-                  + New Template
-                </button>
+            <!-- Left Pane: Template List -->
+            <div class="lg:col-span-4 border-b lg:border-b-0 lg:border-r border-slate-200 bg-slate-50/70 p-4 sm:p-5 flex flex-col justify-between gap-4">
+              <div class="space-y-3">
+                <div class="flex items-center justify-between">
+                  <h2 class="text-xs font-extrabold uppercase tracking-wider text-slate-500">Templates</h2>
+                  <button type="button" onclick="createNewEmailTemplate()" class="px-2.5 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold transition-colors">
+                    + New Template
+                  </button>
+                </div>
+                <div id="email-templates-list" class="space-y-2"></div>
               </div>
-              <div id="email-templates-list" class="p-2.5 space-y-1.5 flex-1 overflow-y-auto custom-scrollbar"></div>
+
+              <div class="bg-white border border-slate-200/80 rounded-xl p-3 text-[11px] text-slate-500 space-y-1">
+                <div class="font-bold text-slate-700">Available Placeholders</div>
+                <div><code class="text-indigo-600 font-semibold">{{name}}</code>, <code class="text-indigo-600 font-semibold">{{email}}</code>, <code class="text-indigo-600 font-semibold">{{role}}</code>, <code class="text-indigo-600 font-semibold">{{loginUrl}}</code>, <code class="text-indigo-600 font-semibold">{{title}}</code></div>
+              </div>
             </div>
 
             <!-- Right Pane: Live Template Editor -->
-            <div class="lg:col-span-8 p-5 sm:p-6 flex flex-col justify-between space-y-4">
+            <div class="lg:col-span-8 p-5 sm:p-6 flex flex-col justify-between gap-4">
               <div class="space-y-4">
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-3">
                   <div>
-                    <label for="template-editor-name" class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">Template Name</label>
-                    <input type="text" id="template-editor-name" oninput="handleTemplateFieldInput()" placeholder="e.g., Welcome Email" class="w-full px-3.5 py-2.5 text-sm font-semibold bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+                    <h3 class="text-base font-extrabold text-slate-900">Edit Template</h3>
+                    <p id="template-editor-status" class="text-xs text-slate-400 mt-0.5">All changes saved</p>
                   </div>
-                  <div>
-                    <label for="template-editor-subject" class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">Email Subject</label>
-                    <input type="text" id="template-editor-subject" oninput="handleTemplateFieldInput()" placeholder="Email subject line..." class="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+                  <div class="flex items-center gap-2">
+                    <button type="button" id="btn-delete-template" onclick="deleteSelectedEmailTemplate()" class="hidden px-3 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-bold transition-colors">
+                      Delete Template
+                    </button>
+                    <button type="button" onclick="saveSelectedEmailTemplate()" class="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold transition-colors">
+                      Save Template
+                    </button>
                   </div>
                 </div>
 
                 <div>
-                  <div class="flex flex-wrap items-center justify-between gap-2 mb-1.5">
-                    <label for="template-editor-body" class="block text-xs font-bold uppercase tracking-wider text-slate-500">Template Text</label>
-                    <span class="text-[11px] text-slate-400 font-medium">Placeholders: <code class="text-slate-600">{{name}}</code>, <code class="text-slate-600">{{email}}</code>, <code class="text-slate-600">{{role}}</code>, <code class="text-slate-600">{{loginUrl}}</code>, <code class="text-slate-600">{{title}}</code></span>
-                  </div>
-                  <textarea id="template-editor-body" rows="12" oninput="handleTemplateFieldInput()" placeholder="Write email template body here..." class="w-full px-4 py-3 text-xs sm:text-sm leading-relaxed bg-slate-50 border border-slate-200 rounded-2xl text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 font-mono"></textarea>
+                  <label for="template-editor-name" class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">Template Name</label>
+                  <input type="text" id="template-editor-name" oninput="handleTemplateFieldInput()" placeholder="Template name..." class="w-full px-3.5 py-2.5 text-sm font-semibold bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500" />
                 </div>
-              </div>
 
-              <div class="pt-3 border-t border-slate-100 flex flex-wrap items-center justify-between gap-2">
-                <span id="template-editor-status" class="text-xs font-medium text-emerald-600">All changes saved</span>
-                <div class="flex items-center gap-2">
-                  <button type="button" id="btn-delete-template" onclick="deleteSelectedEmailTemplate()" class="px-3.5 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-bold transition-colors">
-                    Delete Template
-                  </button>
-                  <button type="button" onclick="saveSelectedEmailTemplate()" class="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold transition-colors">
-                    Save Template
-                  </button>
+                <div>
+                  <label for="template-editor-subject" class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">Email Subject</label>
+                  <input type="text" id="template-editor-subject" oninput="handleTemplateFieldInput()" placeholder="Subject line..." class="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+                </div>
+
+                <div>
+                  <label for="template-editor-body" class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">Template Text</label>
+                  <textarea id="template-editor-body" rows="10" oninput="handleTemplateFieldInput()" placeholder="Write email template body..." class="w-full px-3.5 py-3 text-xs sm:text-sm font-mono leading-relaxed bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500"></textarea>
                 </div>
               </div>
             </div>
@@ -882,10 +936,10 @@
     };
 
     const INITIAL_NODALS = [
-      { id: 'usr-1', name: 'Workspace Admin', email: 'admin@spmniwas.in', permission: 'Admin' },
-      { id: 'usr-2', name: 'Director SPM-NIWAS', email: 'director@spmniwas.in', permission: 'Super Admin', isSuperAdmin: true },
-      { id: 'usr-3', name: 'Nodal Officer 1', email: 'nodal1@spmniwas.in', permission: 'User' },
-      { id: 'usr-4', name: 'Nodal Officer 2', email: 'nodal2@spmniwas.in', permission: 'User' }
+      { id: 'usr-1', name: 'Workspace Admin', email: 'admin@spmniwas.in', permission: 'Admin', lastLogin: '2026-11-16', usageHours30d: 42.5 },
+      { id: 'usr-2', name: 'Director SPM-NIWAS', email: 'director@spmniwas.in', permission: 'Super Admin', isSuperAdmin: true, lastLogin: '2026-11-18', usageHours30d: 58.0 },
+      { id: 'usr-3', name: 'Nodal Officer 1', email: 'nodal1@spmniwas.in', permission: 'User', lastLogin: '2026-11-06', usageHours30d: 26.5 },
+      { id: 'usr-4', name: 'Nodal Officer 2', email: 'nodal2@spmniwas.in', permission: 'User', lastLogin: '2026-11-12', usageHours30d: 31.0 }
     ];
 
     const BUILTIN_SUPER_ADMINS = [
@@ -990,6 +1044,7 @@
 
     const state = {
       activeTab: 'overview',
+      usersSubTab: 'all',
       selectedItemId: null,
       tasksReadyOnly: false,
       authUser: null,
@@ -1005,7 +1060,8 @@
         overview: 1,
         projects: 1,
         tasks: 1,
-        nodals: 1
+        nodals: 1,
+        usage: 1
       },
       connectedInboxes: [
         { email: 'admin@spmniwas.in', provider: 'Google Workspace', status: 'Connected', lastScan: 'Today, 10:30 AM' },
@@ -1101,6 +1157,44 @@
         daysLabel,
         formattedDate: `${dayNum} ${monthName} ${yearNum}`
       };
+    }
+
+    function formatLastLoginUsageDisplay(rawDateStr) {
+      const dateStr = String(rawDateStr || '').split(' ')[0];
+      if (!dateStr) {
+        return { firstLine: 'Never logged in', secondLine: '—' };
+      }
+      const parsed = new Date(`${dateStr}T00:00:00`);
+      if (isNaN(parsed.getTime())) {
+        return { firstLine: '0 days', secondLine: escapeHtml(dateStr) };
+      }
+      const now = new Date();
+      const todayMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      const diffMs = Math.max(0, todayMidnight.getTime() - parsed.getTime());
+      const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+      const daysText = diffDays === 1 ? '1 day' : `${diffDays} days`;
+      const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      const dayNum = String(parsed.getDate()).padStart(2, '0');
+      const monthName = months[parsed.getMonth()];
+      const yearNum = parsed.getFullYear();
+      const formattedDate = `${dayNum} ${monthName} ${yearNum}`;
+      return {
+        firstLine: daysText,
+        secondLine: `Last active on ${formattedDate}`
+      };
+    }
+
+    function recordUserLoginActivity(email) {
+      const normalized = String(email || '').trim().toLowerCase();
+      if (!normalized) return;
+      const matched = state.nodals.find(u => String(u.email || '').trim().toLowerCase() === normalized);
+      if (!matched) return;
+      const todayStr = formatNowTimestamp().split(' ')[0];
+      if (matched.lastLogin !== todayStr) {
+        matched.lastLogin = todayStr;
+        matched.usageHours30d = Number(((Number(matched.usageHours30d) || 0) + 0.5).toFixed(1));
+        persistWorkspaceState();
+      }
     }
 
     function findRegisteredWorkspaceUser(email) {
@@ -1276,6 +1370,7 @@
               }
               document.getElementById('login-gate-error')?.classList.add('hidden');
               state.authUser = user;
+              recordUserLoginActivity(user.email);
             } else if (!isEmbeddedDesignPreview()) {
               state.authUser = null;
             }
@@ -1369,6 +1464,7 @@
         recordFreshSevenDaySession();
         document.getElementById('login-gate-error')?.classList.add('hidden');
         state.authUser = result.user;
+        recordUserLoginActivity(signedInEmail);
         closeSettingsMenu();
         renderAll();
         showToast(`Signed in as ${registeredUser.name} (${signedInEmail})`);
@@ -1543,7 +1639,38 @@
 
     window.resetPageAndRender = function (tableKey) {
       state.pages[tableKey] = 1;
+      if (tableKey === 'nodals') {
+        state.pages.usage = 1;
+      }
       renderAll();
+    };
+
+    window.switchUsersSubTab = function (subTab) {
+      state.usersSubTab = subTab === 'usage' ? 'usage' : 'all';
+      const allBtn = document.getElementById('users-subtab-all');
+      const usageBtn = document.getElementById('users-subtab-usage');
+      const allPanel = document.getElementById('users-panel-all');
+      const usagePanel = document.getElementById('users-panel-usage');
+      const addUserBtn = document.getElementById('btn-open-add-user');
+
+      const isUsage = state.usersSubTab === 'usage';
+      if (allBtn) {
+        allBtn.setAttribute('aria-selected', String(!isUsage));
+        allBtn.className = !isUsage
+          ? 'px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-extrabold bg-white text-slate-900 shadow-xs transition-all'
+          : 'px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-semibold text-slate-600 hover:text-slate-900 transition-all';
+      }
+      if (usageBtn) {
+        usageBtn.setAttribute('aria-selected', String(isUsage));
+        usageBtn.className = isUsage
+          ? 'px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-extrabold bg-white text-slate-900 shadow-xs transition-all'
+          : 'px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-semibold text-slate-600 hover:text-slate-900 transition-all';
+      }
+      allPanel?.classList.toggle('hidden', isUsage);
+      usagePanel?.classList.toggle('hidden', !isUsage);
+      addUserBtn?.classList.toggle('hidden', isUsage);
+
+      renderNodalsTable();
     };
 
     window.changeTablePage = function (tableKey, newPage) {
@@ -1915,7 +2042,69 @@
       }
 
       tbody.innerHTML = pagedUsers.map(renderUserRow).join('') + deletedSectionHtml;
+      renderUsersUsageTable();
     };
+
+    function renderUsersUsageTable() {
+      const tbody = document.getElementById('users-usage-table-body');
+      if (!tbody) return;
+
+      const query = (document.getElementById('user-search-input')?.value || '').trim().toLowerCase();
+      const filteredUsers = state.nodals.filter(u => {
+        if (!query) return true;
+        return `${u.name} ${u.email} ${u.permission}`.toLowerCase().includes(query);
+      }).sort((a, b) => {
+        const rankDiff = getUserRoleSortRank(a) - getUserRoleSortRank(b);
+        if (rankDiff !== 0) return rankDiff;
+        return (a.name || '').localeCompare(b.name || '', undefined, { sensitivity: 'base' });
+      });
+
+      const totalItems = filteredUsers.length;
+      const totalPages = Math.max(1, Math.ceil(totalItems / state.pageSize));
+      const currentPage = Math.min(Math.max(1, state.pages.usage || 1), totalPages);
+      state.pages.usage = currentPage;
+      const pagedUsers = filteredUsers.slice((currentPage - 1) * state.pageSize, currentPage * state.pageSize);
+      renderPaginationBar('usage', totalItems);
+
+      if (pagedUsers.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="4" class="px-6 py-10 text-center text-sm text-slate-400">No workspace users match your search.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = pagedUsers.map(u => {
+        const isSuperAdmin = Boolean(u.isSuperAdmin || u.permission === 'Super Admin');
+        let roleBadgeHtml = '';
+        if (isSuperAdmin) {
+          roleBadgeHtml = `<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-extrabold bg-indigo-100 text-indigo-800 border border-indigo-200">Super Admin</span>`;
+        } else if (u.permission === 'Admin') {
+          roleBadgeHtml = `<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">Admin</span>`;
+        } else {
+          roleBadgeHtml = `<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-slate-100 text-slate-700 border border-slate-200">Users</span>`;
+        }
+
+        const loginInfo = formatLastLoginUsageDisplay(u.lastLogin);
+        const usageHrs = typeof u.usageHours30d === 'number' ? u.usageHours30d.toFixed(1) : '0.0';
+
+        return `
+          <tr class="hover:bg-slate-50/90 transition-colors">
+            <td class="px-4 py-3.5 align-top">
+              <div class="font-bold text-slate-900">${escapeHtml(u.name)}</div>
+              <div class="text-xs text-slate-500 mt-0.5">${escapeHtml(u.email)}</div>
+            </td>
+            <td class="px-4 py-3.5 align-top">${roleBadgeHtml}</td>
+            <td class="px-4 py-3.5 align-top">
+              <div class="text-sm font-semibold text-slate-900 leading-tight">${escapeHtml(loginInfo.firstLine)}</div>
+              <div class="text-xs text-slate-500 mt-0.5">${escapeHtml(loginInfo.secondLine)}</div>
+            </td>
+            <td class="px-4 py-3.5 align-top">
+              <span class="inline-flex items-center px-2.5 py-1 rounded-lg bg-slate-100 text-slate-800 text-xs font-bold">
+                ${escapeHtml(usageHrs)} hrs
+              </span>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
 
     window.openAddUserModal = function () {
       const caps = getRoleCapabilities();
@@ -1964,7 +2153,9 @@
         id: `usr-${Date.now()}`,
         name,
         email,
-        permission
+        permission,
+        lastLogin: '',
+        usageHours30d: 0
       };
       state.nodals.push(newUser);
       closeAddUserModal();
