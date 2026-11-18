@@ -716,6 +716,24 @@
     <span id="toast-message"></span>
   </div>
 
+  <!-- Unauthorized Sign-In Gate / Notice Modal -->
+  <div id="unauthorized-login-modal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-md w-full p-6 sm:p-7 shadow-2xl border border-rose-200 space-y-4">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-2xl bg-rose-100 text-rose-700 flex items-center justify-center flex-shrink-0">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+        </div>
+        <div>
+          <h3 class="text-base font-extrabold text-slate-900">Only registered users can log in.</h3>
+        </div>
+      </div>
+      <div class="flex items-center justify-end gap-2.5 pt-2 border-t border-slate-100">
+        <button type="button" onclick="closeUnauthorizedLoginModal()" class="px-4 py-2 rounded-xl border border-slate-200 text-slate-700 hover:bg-slate-50 text-xs sm:text-sm font-semibold">Close</button>
+        <button type="button" onclick="closeUnauthorizedLoginModal(); signInWithGoogleAccount();" class="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs sm:text-sm font-semibold">Try Another Google Account</button>
+      </div>
+    </div>
+  </div>
+
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
     import { getAuth, signInAnonymously, signInWithCustomToken, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
@@ -728,9 +746,13 @@
 
     const INITIAL_NODALS = [
       { id: 'usr-1', name: 'Workspace Admin', email: 'admin@spmniwas.in', permission: 'Admin' },
-      { id: 'usr-2', name: 'Project Director', email: 'director@spmniwas.in', permission: 'Admin' },
+      { id: 'usr-2', name: 'Director SPM-NIWAS', email: 'director@spmniwas.in', permission: 'Super Admin', isSuperAdmin: true },
       { id: 'usr-3', name: 'Nodal Officer 1', email: 'nodal1@spmniwas.in', permission: 'User' },
       { id: 'usr-4', name: 'Nodal Officer 2', email: 'nodal2@spmniwas.in', permission: 'User' }
+    ];
+
+    const BUILTIN_SUPER_ADMINS = [
+      { id: 'usr-2', name: 'Director SPM-NIWAS', email: 'director@spmniwas.in', permission: 'Super Admin', isSuperAdmin: true }
     ];
 
     const INITIAL_ITEMS = [
@@ -909,6 +931,62 @@
       return role === 'Admin' ? 'Admin' : 'User';
     }
 
+    function isGoogleSignedInUser(firebaseUser) {
+      if (!firebaseUser || firebaseUser.isAnonymous || !firebaseUser.email) return false;
+      const providers = firebaseUser.providerData || [];
+      return providers.some(p => p && p.providerId === 'google.com');
+    }
+
+    function findRegisteredWorkspaceUser(email) {
+      const normalized = String(email || '').trim().toLowerCase();
+      if (!normalized) return null;
+      const inRoster = state.nodals.find(n => (n.email || '').trim().toLowerCase() === normalized);
+      if (inRoster) return inRoster;
+      return BUILTIN_SUPER_ADMINS.find(sa => sa.email.toLowerCase() === normalized) || null;
+    }
+
+    window.closeUnauthorizedLoginModal = function () {
+      document.getElementById('unauthorized-login-modal')?.classList.add('hidden');
+    };
+
+    function showUnauthorizedLoginModal() {
+      document.getElementById('unauthorized-login-modal')?.classList.remove('hidden');
+    }
+
+    async function enforceAuthorizedWorkspaceSession(firebaseUser) {
+      if (!firebaseUser || firebaseUser.isAnonymous) {
+        state.authUser = null;
+        state.roleOverride = null;
+        return false;
+      }
+
+      if (!isGoogleSignedInUser(firebaseUser)) {
+        state.authUser = null;
+        state.roleOverride = null;
+        if (auth) {
+          await signOut(auth).catch(() => {});
+          await signInAnonymously(auth).catch(() => {});
+        }
+        showUnauthorizedLoginModal();
+        return false;
+      }
+
+      const registered = findRegisteredWorkspaceUser(firebaseUser.email);
+      if (!registered) {
+        state.authUser = null;
+        state.roleOverride = null;
+        if (auth) {
+          await signOut(auth).catch(() => {});
+          await signInAnonymously(auth).catch(() => {});
+        }
+        showUnauthorizedLoginModal();
+        return false;
+      }
+
+      state.authUser = firebaseUser;
+      return true;
+    }
+
     function getCurrentUser() {
       if (!state.authUser) {
         return {
@@ -919,10 +997,17 @@
           permission: 'User'
         };
       }
-      const matched = state.nodals.find(
-        n => n.email.toLowerCase() === (state.authUser.email || '').toLowerCase()
-      );
-      const rawRole = matched ? normalizeRole(matched.permission) : 'User';
+      const matched = findRegisteredWorkspaceUser(state.authUser.email);
+      if (!matched) {
+        return {
+          isSignedIn: false,
+          name: 'Guest Visitor',
+          email: 'Not signed in',
+          basePermission: 'User',
+          permission: 'User'
+        };
+      }
+      const rawRole = normalizeRole(matched.permission);
       const basePermission = rawRole === 'Super Admin' ? 'Admin' : rawRole;
       const effectivePermission = (basePermission === 'Admin' && state.roleOverride)
         ? state.roleOverride
@@ -930,8 +1015,8 @@
 
       return {
         isSignedIn: true,
-        id: matched ? matched.id : state.authUser.uid,
-        name: matched ? matched.name : (state.authUser.displayName || state.authUser.email),
+        id: matched.id,
+        name: matched.name,
         email: state.authUser.email || '',
         basePermission,
         permission: effectivePermission
@@ -959,9 +1044,9 @@
         auth = getAuth(app);
         db = getFirestore(app);
 
-        onAuthStateChanged(auth, (user) => {
+        onAuthStateChanged(auth, async (user) => {
           if (user && !user.isAnonymous) {
-            state.authUser = user;
+            await enforceAuthorizedWorkspaceSession(user);
           } else {
             state.authUser = null;
             state.roleOverride = null;
@@ -976,7 +1061,7 @@
         }
 
         const ref = doc(db, 'artifacts', appId, 'public', 'data', 'niwas_pm_workspace');
-        onSnapshot(ref, (snap) => {
+        onSnapshot(ref, async (snap) => {
           isCloudReady = true;
           if (snap.exists()) {
             const data = snap.data();
@@ -989,6 +1074,9 @@
             if (Array.isArray(data.items)) state.items = data.items;
             if (Array.isArray(data.connectedInboxes)) state.connectedInboxes = data.connectedInboxes;
             if (Array.isArray(data.emailProposals)) state.emailProposals = data.emailProposals;
+            if (state.authUser) {
+              await enforceAuthorizedWorkspaceSession(state.authUser);
+            }
             renderAll();
           } else {
             persistWorkspaceToCloud();
@@ -1025,13 +1113,18 @@
       }
       try {
         const provider = new GoogleAuthProvider();
+        provider.addScope('email');
+        provider.addScope('profile');
         provider.setCustomParameters({ prompt: 'select_account' });
         const result = await signInWithPopup(auth, provider);
-        state.authUser = result.user;
+        const allowed = await enforceAuthorizedWorkspaceSession(result.user);
         state.roleOverride = null;
         closeAllGearMenus();
         renderAll();
-        showToast(`Signed in as ${result.user.displayName || result.user.email}`);
+        if (allowed) {
+          const registered = findRegisteredWorkspaceUser(result.user.email);
+          showToast(`Signed in as ${registered ? registered.name : (result.user.displayName || result.user.email)}`);
+        }
       } catch (err) {
         showToast(`Google Sign-In failed: ${err.message}`);
       }
