@@ -93,6 +93,33 @@
       <p class="text-[11px] text-slate-400">
         Authorized Google / Gmail accounts only • Session stays active for 7 days
       </p>
+
+      <!-- Optional Firebase Config Setup Panel (For Static Hosting Without Bundled __firebase_config) -->
+      <div class="pt-1">
+        <button type="button" id="btn-toggle-firebase-setup" onclick="toggleFirebaseConfigSetup()" class="text-[11px] font-semibold text-slate-400 hover:text-indigo-600 underline underline-offset-2 transition-colors">
+          Configure Firebase Project
+        </button>
+
+        <div id="firebase-config-setup-panel" class="hidden mt-3 text-left bg-slate-50 border border-slate-200 rounded-2xl p-4 space-y-2.5">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-extrabold text-slate-800">Connect Firebase Web App</span>
+            <span id="firebase-config-status-badge" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-800">Not Configured</span>
+          </div>
+          <p class="text-[11px] text-slate-500 leading-relaxed">
+            Paste your <code class="font-mono text-slate-700">firebaseConfig</code> JSON (from Firebase Console → Project Settings → Your Apps) to enable Google Sign-In on this domain:
+          </p>
+          <textarea id="firebase-config-json-input" rows="4" placeholder='{"apiKey":"...","authDomain":"...","projectId":"...","appId":"..."}' class="w-full px-3 py-2 text-[11px] font-mono bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500"></textarea>
+          <div id="firebase-config-setup-error" class="hidden text-[11px] font-semibold text-rose-600"></div>
+          <div class="flex items-center justify-end gap-2">
+            <button type="button" onclick="clearSavedFirebaseConfig()" class="px-3 py-1.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-100 text-[11px] font-semibold text-slate-600">
+              Reset
+            </button>
+            <button type="button" onclick="saveAndConnectFirebaseConfig()" class="px-3.5 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-[11px] font-bold">
+              Save &amp; Connect
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -943,8 +970,39 @@
     let db = null;
     let auth = null;
     let isCloudReady = false;
-    const isFirebaseConfigured = typeof __firebase_config !== 'undefined' && Boolean(__firebase_config);
+    let isFirebaseAuthListenerAttached = false;
+    const FIREBASE_CONFIG_STORAGE_KEY = 'niwas_firebase_web_config_v1';
     const appId = typeof __app_id !== 'undefined' ? __app_id : 'spm-niwas-default';
+
+    function resolveFirebaseConfigObject() {
+      try {
+        if (typeof __firebase_config !== 'undefined' && __firebase_config) {
+          return typeof __firebase_config === 'string' ? JSON.parse(__firebase_config) : __firebase_config;
+        }
+        if (typeof window.FIREBASE_CONFIG !== 'undefined' && window.FIREBASE_CONFIG) {
+          return typeof window.FIREBASE_CONFIG === 'string' ? JSON.parse(window.FIREBASE_CONFIG) : window.FIREBASE_CONFIG;
+        }
+        const saved = window.localStorage?.getItem(FIREBASE_CONFIG_STORAGE_KEY);
+        if (saved) {
+          return JSON.parse(saved);
+        }
+      } catch (err) {
+        console.warn('Invalid Firebase config format:', err);
+      }
+      return null;
+    }
+
+    function refreshFirebaseSetupStatusBadge() {
+      const badge = document.getElementById('firebase-config-status-badge');
+      if (!badge) return;
+      if (auth) {
+        badge.textContent = 'Connected';
+        badge.className = 'text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800';
+      } else {
+        badge.textContent = 'Not Configured';
+        badge.className = 'text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-800';
+      }
+    }
 
     function escapeHtml(str) {
       return String(str ?? '')
@@ -1121,90 +1179,158 @@
         if (isEmbeddedDesignPreview() && !state.authUser) {
           signInPreviewSuperAdmin();
         }
-        if (!isFirebaseConfigured) {
+        const firebaseConfig = resolveFirebaseConfigObject();
+        if (!firebaseConfig || !firebaseConfig.apiKey || !firebaseConfig.authDomain) {
+          refreshFirebaseSetupStatusBadge();
           updateAuthGateVisibility();
           return;
         }
-        const firebaseConfig = JSON.parse(__firebase_config);
-        const app = initializeApp(firebaseConfig);
-        auth = getAuth(app);
-        db = getFirestore(app);
+        if (!auth) {
+          const app = initializeApp(firebaseConfig);
+          auth = getAuth(app);
+          db = getFirestore(app);
+        }
+        refreshFirebaseSetupStatusBadge();
 
         try {
           await setPersistence(auth, browserLocalPersistence);
         } catch (_) {}
 
-        onAuthStateChanged(auth, async (user) => {
-          if (user && !user.isAnonymous) {
-            if (isSessionExpiredBySevenDayPolicy(user)) {
-              state.authUser = null;
-              clearSevenDaySessionTimestamp();
-              try {
-                await signOut(auth);
-              } catch (_) {}
-              renderAll();
-              showToast('Your 7-day session expired. Please sign in again with Google.');
-              return;
-            }
+        if (!isFirebaseAuthListenerAttached) {
+          isFirebaseAuthListenerAttached = true;
+          onAuthStateChanged(auth, async (user) => {
+            if (user && !user.isAnonymous) {
+              if (isSessionExpiredBySevenDayPolicy(user)) {
+                state.authUser = null;
+                clearSevenDaySessionTimestamp();
+                try {
+                  await signOut(auth);
+                } catch (_) {}
+                renderAll();
+                showToast('Your 7-day session expired. Please sign in again with Google.');
+                return;
+              }
 
-            const registeredUser = findRegisteredWorkspaceUser(user.email);
-            if (!isGoogleAuthenticatedUser(user) || !registeredUser) {
-              state.authUser = null;
-              clearSevenDaySessionTimestamp();
-              try {
-                await signOut(auth);
-              } catch (_) {}
-              document.getElementById('login-gate-error')?.classList.remove('hidden');
-              renderAll();
-              showUnauthorizedLoginModal();
-              return;
-            }
-            document.getElementById('login-gate-error')?.classList.add('hidden');
-            state.authUser = user;
-          } else if (!isEmbeddedDesignPreview()) {
-            state.authUser = null;
-          }
-          renderAll();
-        });
-
-        const stateRef = doc(db, 'artifacts', appId, 'public', 'data', 'niwas_workspace', 'state');
-        onSnapshot(
-          stateRef,
-          async (snap) => {
-            isCloudReady = true;
-            if (snap.exists()) {
-              const data = snap.data();
-              if (Array.isArray(data.items)) state.items = data.items;
-              if (Array.isArray(data.nodals) && data.nodals.length > 0) state.nodals = data.nodals;
-              if (Array.isArray(data.deletedNodals)) state.deletedNodals = data.deletedNodals;
-              if (Array.isArray(data.connectedInboxes)) state.connectedInboxes = data.connectedInboxes;
-              if (Array.isArray(data.emailProposals)) state.emailProposals = data.emailProposals;
-
-              if (state.authUser && !findRegisteredWorkspaceUser(state.authUser.email)) {
+              const registeredUser = findRegisteredWorkspaceUser(user.email);
+              if (!isGoogleAuthenticatedUser(user) || !registeredUser) {
                 state.authUser = null;
                 clearSevenDaySessionTimestamp();
                 try {
                   await signOut(auth);
                 } catch (_) {}
                 document.getElementById('login-gate-error')?.classList.remove('hidden');
+                renderAll();
                 showUnauthorizedLoginModal();
+                return;
               }
-              renderAll();
-            } else {
-              persistWorkspaceState();
+              document.getElementById('login-gate-error')?.classList.add('hidden');
+              state.authUser = user;
+            } else if (!isEmbeddedDesignPreview()) {
+              state.authUser = null;
             }
-          },
-          (err) => {
-            isCloudReady = false;
-            console.warn('Firestore snapshot unavailable (running in local workspace mode):', err?.code || err);
-          }
-        );
+            renderAll();
+          });
+
+          const stateRef = doc(db, 'artifacts', appId, 'public', 'data', 'niwas_workspace', 'state');
+          onSnapshot(
+            stateRef,
+            async (snap) => {
+              isCloudReady = true;
+              if (snap.exists()) {
+                const data = snap.data();
+                if (Array.isArray(data.items)) state.items = data.items;
+                if (Array.isArray(data.nodals) && data.nodals.length > 0) state.nodals = data.nodals;
+                if (Array.isArray(data.deletedNodals)) state.deletedNodals = data.deletedNodals;
+                if (Array.isArray(data.connectedInboxes)) state.connectedInboxes = data.connectedInboxes;
+                if (Array.isArray(data.emailProposals)) state.emailProposals = data.emailProposals;
+
+                if (state.authUser && !findRegisteredWorkspaceUser(state.authUser.email)) {
+                  state.authUser = null;
+                  clearSevenDaySessionTimestamp();
+                  try {
+                    await signOut(auth);
+                  } catch (_) {}
+                  document.getElementById('login-gate-error')?.classList.remove('hidden');
+                  showUnauthorizedLoginModal();
+                }
+                renderAll();
+              } else {
+                persistWorkspaceState();
+              }
+            },
+            (err) => {
+              isCloudReady = false;
+              console.warn('Firestore snapshot unavailable (running in local workspace mode):', err?.code || err);
+            }
+          );
+        }
       } catch (err) {
         isCloudReady = false;
+        refreshFirebaseSetupStatusBadge();
         updateAuthGateVisibility();
         console.warn('Running in local mode:', err);
       }
     }
+
+    window.toggleFirebaseConfigSetup = function (forceOpen = null) {
+      const panel = document.getElementById('firebase-config-setup-panel');
+      const input = document.getElementById('firebase-config-json-input');
+      if (!panel) return;
+      const shouldOpen = forceOpen !== null ? forceOpen : panel.classList.contains('hidden');
+      panel.classList.toggle('hidden', !shouldOpen);
+      if (shouldOpen && input && !input.value.trim()) {
+        const existing = resolveFirebaseConfigObject();
+        if (existing) {
+          input.value = JSON.stringify(existing, null, 2);
+        }
+      }
+      refreshFirebaseSetupStatusBadge();
+    };
+
+    window.saveAndConnectFirebaseConfig = async function () {
+      const input = document.getElementById('firebase-config-json-input');
+      const errBox = document.getElementById('firebase-config-setup-error');
+      if (!input) return;
+
+      try {
+        let raw = input.value.trim();
+        // Allow pasting full "const firebaseConfig = { ... };" snippet from Firebase Console
+        const braceStart = raw.indexOf('{');
+        const braceEnd = raw.lastIndexOf('}');
+        if (braceStart !== -1 && braceEnd > braceStart) {
+          raw = raw.slice(braceStart, braceEnd + 1);
+        }
+        // Normalize unquoted JS object keys (apiKey: "...") to valid JSON ("apiKey": "...")
+        const normalizedJson = raw.replace(/([{,]\s*)([a-zA-Z0-9_]+)\s*:/g, '$1"$2":');
+        const parsed = JSON.parse(normalizedJson);
+
+        if (!parsed.apiKey || !parsed.authDomain) {
+          throw new Error('Config must include at least "apiKey" and "authDomain".');
+        }
+
+        window.localStorage?.setItem(FIREBASE_CONFIG_STORAGE_KEY, JSON.stringify(parsed));
+        if (errBox) {
+          errBox.textContent = '';
+          errBox.classList.add('hidden');
+        }
+        await initFirebaseCloud();
+        showToast('Firebase connected! Click "Sign in with Google" to log in.');
+      } catch (err) {
+        if (errBox) {
+          errBox.textContent = err?.message || 'Invalid Firebase config snippet. Paste the firebaseConfig object from Firebase Console.';
+          errBox.classList.remove('hidden');
+        }
+      }
+    };
+
+    window.clearSavedFirebaseConfig = function () {
+      try {
+        window.localStorage?.removeItem(FIREBASE_CONFIG_STORAGE_KEY);
+      } catch (_) {}
+      const input = document.getElementById('firebase-config-json-input');
+      if (input) input.value = '';
+      showToast('Saved Firebase config cleared. Reload page to reset.');
+    };
 
     window.signInPreviewSuperAdmin = function () {
       const superAdmin = BUILTIN_SUPER_ADMINS[0];
@@ -1223,7 +1349,11 @@
 
     window.signInWithGoogleAccount = async function () {
       if (!auth) {
-        showToast('Google Sign-In requires Firebase configuration.');
+        await initFirebaseCloud();
+      }
+      if (!auth) {
+        toggleFirebaseConfigSetup(true);
+        showToast('Paste your Firebase Web App config below to enable Google Sign-In.');
         return;
       }
       try {
@@ -1253,7 +1383,12 @@
         renderAll();
         showToast(`Signed in as ${registeredUser.name} (${signedInEmail})`);
       } catch (err) {
-        showToast('Google Sign-In cancelled or blocked by browser popup settings.');
+        const code = err?.code || '';
+        if (code === 'auth/unauthorized-domain') {
+          showToast(`Add "${window.location.hostname}" to Firebase Auth → Authorized domains.`);
+        } else {
+          showToast('Google Sign-In cancelled or blocked by browser popup settings.');
+        }
       }
     };
 
