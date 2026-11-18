@@ -830,7 +830,7 @@
           <div class="flex flex-wrap items-center justify-between gap-2">
             <div>
               <span class="text-xs font-bold uppercase tracking-wider text-slate-600">Supporting Documents &amp; Links</span>
-              <p class="text-[11px] text-slate-400">Uploaded files are saved in Firebase Cloud Storage (max 25 MB/file). Google Drive &amp; web URLs are linked only.</p>
+              <p class="text-[11px] text-slate-400">Uploaded files are stored in Firestore (max 700 KB/file). Google Drive &amp; web URLs are linked only.</p>
             </div>
             <label class="cursor-pointer px-3 py-1.5 rounded-xl bg-white border border-slate-300 hover:bg-slate-100 text-xs font-semibold text-slate-700">
               + Upload File
@@ -887,7 +887,7 @@
           <div class="flex items-center justify-between gap-2">
             <div>
               <span class="text-xs font-bold uppercase tracking-wider text-slate-600">File Upload</span>
-              <p class="text-[11px] text-slate-400">Max 1 file allowed at creation time (Cloud Storage max 25 MB).</p>
+              <p class="text-[11px] text-slate-400">Max 1 file allowed at creation time (Firestore max 700 KB).</p>
             </div>
             <label id="tasklet-file-upload-label" class="cursor-pointer px-3 py-1.5 rounded-xl bg-white border border-slate-300 hover:bg-slate-100 text-xs font-semibold text-slate-700">
               + Upload File
@@ -1117,12 +1117,11 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
     import { getAuth, setPersistence, browserLocalPersistence, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
     import { getFirestore, doc, getDoc, setDoc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-    import { getStorage, ref as storageRef, uploadBytes, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-storage.js";
 
     const SESSION_MAX_AGE_MS = 7 * 24 * 60 * 60 * 1000;
     const SESSION_TIMESTAMP_KEY = 'niwas_google_auth_login_ts';
     const LOCAL_WORKSPACE_STATE_KEY = 'niwas_workspace_state_v1';
-    const CLOUD_STORAGE_MAX_FILE_BYTES = 25 * 1024 * 1024;
+    const FIRESTORE_MAX_FILE_BYTES = 700 * 1024;
     const TASKLET_MAX_DOCS = 5;
     const localStoredFileBlobs = new Map();
 
@@ -1321,7 +1320,6 @@
 
     let db = null;
     let auth = null;
-    let storage = null;
     let isCloudReady = false;
     let isFirebaseAuthListenerAttached = false;
     let hasPendingLocalWrite = false;
@@ -1596,7 +1594,6 @@
           const app = initializeApp(firebaseConfig);
           auth = getAuth(app);
           db = getFirestore(app);
-          storage = getStorage(app);
         }
 
         try {
@@ -2215,7 +2212,7 @@
           <div class="flex flex-wrap items-center justify-between gap-2">
             <div>
               <h3 class="text-sm font-extrabold text-slate-900">Supporting Documents &amp; Links (${(item.documents || []).length})</h3>
-              <p class="text-[11px] text-slate-400">Uploaded files are saved in Firebase Cloud Storage (max 25 MB/file). Google Drive &amp; web URLs are linked only.</p>
+              <p class="text-[11px] text-slate-400">Uploaded files are stored in Firestore (max 700 KB/file). Google Drive &amp; web URLs are linked only.</p>
             </div>
             <label class="cursor-pointer px-3 py-1.5 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs font-bold">
               + Upload File
@@ -2448,45 +2445,6 @@
         return;
       }
 
-      if (docItem.storageType === 'cloud_storage' && docItem.url) {
-        const mime = String(docItem.mimeType || '').toLowerCase();
-        const isImage = mime.startsWith('image/');
-        const isPdf = mime.includes('pdf') || String(docItem.name || '').toLowerCase().endsWith('.pdf');
-        const isText = mime.startsWith('text/');
-
-        const previewBodyHtml = isImage
-          ? `<div class="flex-1 min-h-0 overflow-auto custom-scrollbar bg-slate-50 rounded-xl border border-slate-200 p-3 flex items-start justify-center"><img src="${escapeHtml(docItem.url)}" alt="${escapeHtml(docItem.name)}" class="max-w-full h-auto rounded-lg object-contain" /></div>`
-          : isPdf
-            ? `<div class="flex-1 min-h-0 overflow-auto custom-scrollbar rounded-xl border border-slate-200 bg-slate-100"><iframe src="${escapeHtml(docItem.url)}#toolbar=1&navpanes=0&scrollbar=1&view=FitH" class="w-full h-full min-h-[540px] border-0 block" title="${escapeHtml(docItem.name)}"></iframe></div>`
-            : isText
-              ? `<div class="flex-1 min-h-0 overflow-auto custom-scrollbar rounded-xl border border-slate-200 bg-white"><iframe src="${escapeHtml(docItem.url)}" class="w-full h-full min-h-[540px] border-0 block" title="${escapeHtml(docItem.name)}"></iframe></div>`
-              : `
-                <div class="flex-1 min-h-0 overflow-auto flex flex-col items-center justify-center bg-slate-50 rounded-xl border border-slate-200 p-6 text-center space-y-3">
-                  <div class="text-3xl">📄</div>
-                  <div class="text-sm font-bold text-slate-800 break-words max-w-md">${escapeHtml(docItem.name)}</div>
-                  <div class="text-xs text-slate-500">Inline preview is not supported for ${escapeHtml(fileTypeLabel)} files.</div>
-                  <a href="${escapeHtml(docItem.url)}" target="_blank" rel="noopener noreferrer" class="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold">
-                    Open / Download File ↗
-                  </a>
-                </div>
-              `;
-
-        rightPanel.innerHTML = `
-          ${closeOverlayBtnHtml}
-          <div class="flex items-center justify-between gap-2 border-b border-slate-100 pb-2 mb-2 pr-7 flex-shrink-0">
-            <div class="min-w-0 flex-1 flex items-center gap-2">
-              <span class="text-xs font-bold text-slate-900 truncate">${escapeHtml(docItem.name)}</span>
-              <span class="text-[10px] text-slate-400 whitespace-nowrap flex-shrink-0">• ${escapeHtml(fileTypeLabel)} • ${escapeHtml(sizeText)}</span>
-            </div>
-            <a href="${escapeHtml(docItem.url)}" target="_blank" rel="noopener noreferrer" class="px-2 py-1 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-[11px] font-bold flex-shrink-0">
-              Open ↗
-            </a>
-          </div>
-          ${previewBodyHtml}
-        `;
-        return;
-      }
-
       if (docItem.storageType === 'firestore' && docItem.firestoreDocId) {
         rightPanel.innerHTML = `
           ${closeOverlayBtnHtml}
@@ -2598,7 +2556,7 @@
       if (idx === -1) return;
       const removed = state.items.splice(idx, 1)[0];
       (removed.documents || []).forEach(d => {
-        deleteDocumentPayload(d);
+        if (d && d.firestoreDocId) deleteFirestoreFileBlob(d.firestoreDocId);
       });
       persistWorkspaceState();
       renderAll();
@@ -2613,69 +2571,61 @@
       return `${(n / (1024 * 1024)).toFixed(2)} MB`;
     }
 
-    async function saveUploadedFileToCloudStorage(file, folderHint = 'general') {
-      if (file.size > CLOUD_STORAGE_MAX_FILE_BYTES) {
-        throw new Error(`"${file.name}" exceeds the 25 MB Cloud Storage limit (${formatBytesLabel(file.size)}). Share it via Google Drive link instead.`);
-      }
-      if (!storage) {
-        await initFirebaseCloud();
-      }
-      if (!storage) {
-        throw new Error('Firebase Cloud Storage is not initialized. Please refresh and try again.');
-      }
-
-      const today = formatNowTimestamp().split(' ')[0];
-      const safeName = String(file.name || 'file').replace(/[^a-zA-Z0-9._-]/g, '_');
-      const uniqueId = `sdoc-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
-      const objectPath = `artifacts/${appId}/documents/${folderHint}/${uniqueId}_${safeName}`;
-      const fileRef = storageRef(storage, objectPath);
-
-      try {
-        await uploadBytes(fileRef, file, {
-          contentType: file.type || 'application/octet-stream',
-          customMetadata: {
-            uploadedBy: getCurrentUser().email || 'unknown',
-            originalName: file.name || safeName
-          }
-        });
-        const downloadUrl = await getDownloadURL(fileRef);
-        return {
-          name: file.name,
-          addedAt: today,
-          source: 'Cloud Storage',
-          storageType: 'cloud_storage',
-          storagePath: objectPath,
-          url: downloadUrl,
-          mimeType: file.type || 'application/octet-stream',
-          size: file.size
-        };
-      } catch (err) {
-        const code = err?.code || '';
-        if (code === 'storage/unauthorized') {
-          throw new Error('Firebase Storage permission denied. Enable read/write rules for authenticated users on /artifacts/niwas-pm/documents/.');
-        }
-        throw new Error(`Cloud Storage upload failed for "${file.name}": ${err?.message || 'Network/bucket error'}`);
-      }
+    function readFileAsDataUrl(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(String(reader.result || ''));
+        reader.onerror = () => reject(new Error('Failed to read file.'));
+        reader.readAsDataURL(file);
+      });
     }
 
-    async function deleteDocumentPayload(docItem) {
-      if (!docItem) return;
-      if (docItem.storageType === 'cloud_storage' && docItem.storagePath && storage) {
-        try {
-          await deleteObject(storageRef(storage, docItem.storagePath));
-        } catch (err) {
-          console.warn('Cloud Storage cleanup skipped:', err);
-        }
+    async function saveUploadedFileToFirestore(file) {
+      if (file.size > FIRESTORE_MAX_FILE_BYTES) {
+        throw new Error(`"${file.name}" exceeds the 700 KB Firestore limit (${formatBytesLabel(file.size)}). Share it via Google Drive link instead.`);
       }
-      if (docItem.firestoreDocId) {
-        localStoredFileBlobs.delete(docItem.firestoreDocId);
-        if (db && isCloudReady) {
-          try {
-            const fileRef = doc(db, 'artifacts', appId, 'public', 'data', 'niwas_documents', docItem.firestoreDocId);
-            await deleteDoc(fileRef);
-          } catch (err) {
-            console.warn('Legacy Firestore file cleanup skipped:', err);
-          }
+      const dataUrl = await readFileAsDataUrl(file);
+      const docId = `fdoc-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+      const today = formatNowTimestamp().split(' ')[0];
+      localStoredFileBlobs.set(docId, {
+        name: file.name,
+        mimeType: file.type || 'application/octet-stream',
+        size: file.size,
+        dataUrl
+      });
+
+      if (db && isCloudReady) {
+        const fileRef = doc(db, 'artifacts', appId, 'public', 'data', 'niwas_documents', docId);
+        await setDoc(fileRef, {
+          name: file.name,
+          mimeType: file.type || 'application/octet-stream',
+          size: file.size,
+          dataUrl,
+          uploadedBy: getCurrentUser().email || 'unknown',
+          uploadedAt: new Date().toISOString()
+        });
+      }
+
+      return {
+        name: file.name,
+        addedAt: today,
+        source: 'Firestore Upload',
+        storageType: 'firestore',
+        firestoreDocId: docId,
+        mimeType: file.type || 'application/octet-stream',
+        size: file.size
+      };
+    }
+
+    async function deleteFirestoreFileBlob(docId) {
+      if (!docId) return;
+      localStoredFileBlobs.delete(docId);
+      if (db && isCloudReady) {
+        try {
+          const fileRef = doc(db, 'artifacts', appId, 'public', 'data', 'niwas_documents', docId);
+          await deleteDoc(fileRef);
+        } catch (err) {
+          console.warn('Firestore file cleanup skipped:', err);
         }
       }
     }
@@ -2811,18 +2761,15 @@
 
     function renderDocumentRowHtml(docItem, idx, itemId, canRemoveDocs) {
       const isFirestore = docItem.storageType === 'firestore' && docItem.firestoreDocId;
-      const isCloudFile = docItem.storageType === 'cloud_storage' && docItem.url;
       const isExternalLink = (docItem.storageType === 'gdrive' || docItem.storageType === 'web') && docItem.url;
       const icon = docItem.storageType === 'gdrive' ? '🔗' : (docItem.storageType === 'web' ? '🌐' : '📄');
       const sizeText = docItem.size ? ` • ${formatBytesLabel(docItem.size)}` : '';
 
       const openActionHtml = isFirestore
         ? `<button type="button" onclick="openStoredFirestoreDocument('${escapeHtml(docItem.firestoreDocId)}', '${escapeHtml(docItem.name)}')" class="px-2.5 py-1 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-bold flex-shrink-0">Open</button>`
-        : isCloudFile
-          ? `<a href="${escapeHtml(docItem.url)}" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-bold flex-shrink-0">Open ↗</a>`
-          : isExternalLink
-            ? `<a href="${escapeHtml(docItem.url)}" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-bold flex-shrink-0">Open Link ↗</a>`
-            : '';
+        : isExternalLink
+          ? `<a href="${escapeHtml(docItem.url)}" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-bold flex-shrink-0">Open Link ↗</a>`
+          : '';
 
       return `
         <div class="flex items-center justify-between gap-3 px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200/80 text-xs">
@@ -2888,7 +2835,7 @@
       let uploadedCount = 0;
       for (const f of filesToProcess) {
         try {
-          const savedDoc = await saveUploadedFileToCloudStorage(f, item.id);
+          const savedDoc = await saveUploadedFileToFirestore(f);
           item.documents.push(savedDoc);
           uploadedCount += 1;
         } catch (err) {
@@ -2899,11 +2846,11 @@
       if (uploadedCount > 0) {
         item.lastChanged = formatNowTimestamp();
         item.history = item.history || [];
-        item.history.push({ timestamp: item.lastChanged, action: `Uploaded ${uploadedCount} file(s) to Cloud Storage`, by: getCurrentUser().name });
+        item.history.push({ timestamp: item.lastChanged, action: `Uploaded ${uploadedCount} file(s) to Firestore`, by: getCurrentUser().name });
         persistWorkspaceState();
         renderAll();
         renderItemDetailsView();
-        showToast(`Uploaded ${uploadedCount} file(s) to Cloud Storage.`);
+        showToast(`Stored ${uploadedCount} file(s) in Firestore.`);
       }
     };
 
@@ -2914,8 +2861,8 @@
         return;
       }
       const removed = item.documents.splice(docIndex, 1)[0];
-      if (removed) {
-        deleteDocumentPayload(removed);
+      if (removed && removed.firestoreDocId) {
+        deleteFirestoreFileBlob(removed.firestoreDocId);
       }
       item.lastChanged = formatNowTimestamp();
       item.history = item.history || [];
@@ -2943,11 +2890,9 @@
       }
       listEl.innerHTML = state.modalDocuments.map((docObj, idx) => {
         const icon = docObj.storageType === 'gdrive' ? '🔗' : (docObj.storageType === 'web' ? '🌐' : '📄');
-        const badge = docObj.storageType === 'cloud_storage'
-          ? `Cloud Storage${docObj.size ? ` (${formatBytesLabel(docObj.size)})` : ''}`
-          : docObj.storageType === 'firestore'
-            ? `Firestore${docObj.size ? ` (${formatBytesLabel(docObj.size)})` : ''}`
-            : (docObj.storageType === 'gdrive' ? 'Google Drive Link' : (docObj.storageType === 'web' ? 'Web URL' : (docObj.source || 'Upload')));
+        const badge = docObj.storageType === 'firestore'
+          ? `Firestore${docObj.size ? ` (${formatBytesLabel(docObj.size)})` : ''}`
+          : (docObj.storageType === 'gdrive' ? 'Google Drive Link' : (docObj.storageType === 'web' ? 'Web URL' : (docObj.source || 'Upload')));
         const openBtn = docObj.storageType === 'firestore' && docObj.firestoreDocId
           ? `<button type="button" onclick="openStoredFirestoreDocument('${escapeHtml(docObj.firestoreDocId)}', '${escapeHtml(docObj.name)}')" class="text-indigo-600 hover:text-indigo-800 font-bold text-[11px]">Open</button>`
           : docObj.url
@@ -2958,7 +2903,7 @@
           <div class="flex items-center justify-between gap-2 bg-white px-3 py-1.5 rounded-xl border border-slate-200">
             <div class="min-w-0 flex-1">
               <div class="truncate font-medium text-slate-700">${icon} ${escapeHtml(docObj.name)}</div>
-              <div class="text-[10px] text-slate-400 truncate">${escapeHtml(badge)}${docObj.url && docObj.storageType !== 'cloud_storage' ? ` • ${escapeHtml(docObj.url)}` : ''}</div>
+              <div class="text-[10px] text-slate-400 truncate">${escapeHtml(badge)}${docObj.url ? ` • ${escapeHtml(docObj.url)}` : ''}</div>
             </div>
             <div class="flex items-center gap-2 flex-shrink-0">
               ${openBtn}
@@ -3006,20 +2951,20 @@
       }
 
       let addedCount = 0;
-      const existingId = document.getElementById('item-id')?.value || 'draft';
       for (const f of filesToProcess) {
         try {
-          const savedDoc = await saveUploadedFileToCloudStorage(f, existingId);
+          const savedDoc = await saveUploadedFileToFirestore(f);
           state.modalDocuments.push(savedDoc);
           addedCount += 1;
         } catch (err) {
           showToast(err.message || `Failed to upload ${f.name}`);
         }
       }
-      const existingItem = existingId !== 'draft' ? state.items.find(i => i.id === existingId) : null;
+      const existingId = document.getElementById('item-id')?.value;
+      const existingItem = existingId ? state.items.find(i => i.id === existingId) : null;
       renderModalDocumentsList(existingItem ? canUserDeleteItemDocuments(existingItem) : true);
       if (addedCount > 0) {
-        showToast(`Uploaded ${addedCount} file(s) to Cloud Storage.`);
+        showToast(`Uploaded ${addedCount} file(s) to Firestore.`);
       }
     };
 
@@ -3031,14 +2976,8 @@
         return;
       }
       const removed = state.modalDocuments.splice(idx, 1)[0];
-      if (removed) {
-        const isStillReferencedOnSavedItem = existingItem && (existingItem.documents || []).some(d =>
-          (removed.storagePath && d.storagePath === removed.storagePath) ||
-          (removed.firestoreDocId && d.firestoreDocId === removed.firestoreDocId)
-        );
-        if (!isStillReferencedOnSavedItem) {
-          deleteDocumentPayload(removed);
-        }
+      if (removed && removed.firestoreDocId && (!existingItem || !(existingItem.documents || []).some(d => d.firestoreDocId === removed.firestoreDocId))) {
+        deleteFirestoreFileBlob(removed.firestoreDocId);
       }
       renderModalDocumentsList(existingItem ? canUserDeleteItemDocuments(existingItem) : true);
     };
@@ -3124,7 +3063,7 @@
       previewEl.innerHTML = `
         <div class="min-w-0 flex-1">
           <div class="truncate font-semibold text-slate-800">📄 ${escapeHtml(docObj.name)}</div>
-          <div class="text-[10px] text-slate-400">Cloud Storage${docObj.size ? ` (${formatBytesLabel(docObj.size)})` : ''} • Max 1 file attached</div>
+          <div class="text-[10px] text-slate-400">Firestore${docObj.size ? ` (${formatBytesLabel(docObj.size)})` : ''} • Max 1 file attached</div>
         </div>
         <button type="button" onclick="removeTaskletModalFile()" class="text-rose-600 hover:text-rose-800 font-bold text-[11px] flex-shrink-0">Remove</button>
       `;
@@ -3153,8 +3092,8 @@
     };
 
     window.closeTaskletModal = function () {
-      if (state.taskletModalDocument) {
-        deleteDocumentPayload(state.taskletModalDocument);
+      if (state.taskletModalDocument?.firestoreDocId) {
+        deleteFirestoreFileBlob(state.taskletModalDocument.firestoreDocId);
       }
       state.taskletModalDocument = null;
       document.getElementById('tasklet-modal')?.classList.add('hidden');
@@ -3172,18 +3111,18 @@
         showToast('Only the first file was selected (max 1 file allowed).');
       }
       try {
-        const savedDoc = await saveUploadedFileToCloudStorage(files[0], 'tasklets');
+        const savedDoc = await saveUploadedFileToFirestore(files[0]);
         state.taskletModalDocument = savedDoc;
         renderTaskletModalFilePreview();
-        showToast(`Uploaded "${savedDoc.name}" to Cloud Storage.`);
+        showToast(`Attached "${savedDoc.name}".`);
       } catch (err) {
         showToast(err.message || 'Failed to upload file.');
       }
     };
 
     window.removeTaskletModalFile = function () {
-      if (state.taskletModalDocument) {
-        deleteDocumentPayload(state.taskletModalDocument);
+      if (state.taskletModalDocument?.firestoreDocId) {
+        deleteFirestoreFileBlob(state.taskletModalDocument.firestoreDocId);
       }
       state.taskletModalDocument = null;
       renderTaskletModalFilePreview();
