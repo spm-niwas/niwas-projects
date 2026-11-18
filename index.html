@@ -814,22 +814,22 @@
               <option value="On Hold">On Hold</option>
               <option value="Completed">Completed</option>
               <option value="Pending Approval">Pending Approval</option>
-              <option value="Archived">Archived</option>
-            </select>
-          </div>
-          <div>
-            <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">Target Date</label>
-            <input type="date" id="item-due-date" class="w-full px-3 py-2.5 text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500" />
-          </div>
-        </div>
-
-        <div class="bg-slate-50 border border-slate-200 rounded-2xl p-4 space-y-2.5">
-          <div class="flex items-center justify-between">
-            <span class="text-xs font-bold uppercase tracking-wider text-slate-600">Supporting Documents</span>
+        <div class="bg-slate-50 border border-slate-200 rounded-2xl p-4 space-y-3">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <div>
+              <span class="text-xs font-bold uppercase tracking-wider text-slate-600">Supporting Documents &amp; Links</span>
+              <p class="text-[11px] text-slate-400">Uploaded files are stored in Firestore (max 700 KB/file). Google Drive &amp; web URLs are linked only.</p>
+            </div>
             <label class="cursor-pointer px-3 py-1.5 rounded-xl bg-white border border-slate-300 hover:bg-slate-100 text-xs font-semibold text-slate-700">
-              + Upload Files
+              + Upload File
               <input type="file" multiple onchange="handleModalFileUpload(event)" class="hidden" />
             </label>
+          </div>
+          <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+            <input type="url" id="modal-doc-link-input" placeholder="Paste Google Drive or open-access web URL (https://...)" class="flex-1 px-3 py-1.5 text-xs bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+            <button type="button" onclick="handleModalAddExternalLink()" class="px-3 py-1.5 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs font-bold whitespace-nowrap transition-colors">
+              + Add Link
+            </button>
           </div>
           <div id="modal-documents-list" class="space-y-1.5 text-xs text-slate-600"></div>
         </div>
@@ -1053,10 +1053,12 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
     import { getAuth, setPersistence, browserLocalPersistence, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-    import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+    import { getFirestore, doc, getDoc, setDoc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
     const SESSION_MAX_AGE_MS = 7 * 24 * 60 * 60 * 1000;
     const SESSION_TIMESTAMP_KEY = 'niwas_google_auth_login_ts';
+    const FIRESTORE_MAX_FILE_BYTES = 700 * 1024;
+    const localStoredFileBlobs = new Map();
 
     const ROLE_PERMISSIONS = {
       'Admin': { canApprove: true, canManageUsers: true, canDirectCreate: true, canDelete: true },
@@ -2053,33 +2055,31 @@
 
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <div class="space-y-3">
-            <div class="flex items-center justify-between">
-              <h3 class="text-sm font-extrabold text-slate-900">Supporting Documents (${docs.length})</h3>
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <div>
+                <h3 class="text-sm font-extrabold text-slate-900">Supporting Documents &amp; Links (${docs.length})</h3>
+                <p class="text-[11px] text-slate-400">Uploads stored in Firestore (max 700 KB) • Google Drive &amp; web URLs linked only</p>
+              </div>
               <label class="cursor-pointer px-3 py-1.5 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs font-bold transition-colors">
-                + Attach File
+                + Upload File
                 <input type="file" multiple onchange="handleDetailsFileUpload(event, '${item.id}')" class="hidden" />
               </label>
             </div>
 
+            <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+              <input type="url" id="details-doc-link-input" placeholder="Paste Google Drive or open-access web URL (https://...)" class="flex-1 px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+              <button type="button" onclick="handleDetailsAddExternalLink('${item.id}')" class="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-900 text-white text-xs font-bold whitespace-nowrap transition-colors">
+                + Link URL
+              </button>
+            </div>
+
             ${docs.length === 0 ? `
               <div class="rounded-2xl border border-dashed border-slate-200 p-6 text-center text-xs text-slate-400">
-                No documents attached yet.
+                No documents or links attached yet.
               </div>
             ` : `
               <div class="space-y-2">
-                ${docs.map((docItem, idx) => `
-                  <div class="flex items-center justify-between gap-3 px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200/80 text-xs">
-                    <div class="min-w-0">
-                      <div class="font-bold text-slate-800 truncate">📄 ${escapeHtml(docItem.name)}</div>
-                      <div class="text-[11px] text-slate-400">Added ${escapeHtml(docItem.addedAt || 'Recently')} • ${escapeHtml(docItem.source || 'Upload')}</div>
-                    </div>
-                    ${canRemoveDocs ? `
-                      <button type="button" onclick="removeItemDocument('${item.id}', ${idx})" class="px-2.5 py-1 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold flex-shrink-0">
-                        Remove
-                      </button>
-                    ` : ''}
-                  </div>
-                `).join('')}
+                ${docs.map((docItem, idx) => renderDocumentRowHtml(docItem, idx, item.id, canRemoveDocs)).join('')}
               </div>
             `}
           </div>
@@ -2137,28 +2137,290 @@
       const idx = state.items.findIndex(i => i.id === itemId);
       if (idx === -1) return;
       const removed = state.items.splice(idx, 1)[0];
+      (removed.documents || []).forEach(d => {
+        if (d && d.firestoreDocId) deleteFirestoreFileBlob(d.firestoreDocId);
+      });
       persistWorkspaceState();
       renderAll();
       showToast(`Deleted "${removed.title}".`);
     };
 
-    window.handleDetailsFileUpload = function (event, itemId) {
+    function formatBytesLabel(bytes) {
+      const n = Number(bytes) || 0;
+      if (!n) return '';
+      if (n < 1024) return `${n} B`;
+      if (n < 1024 * 1024) return `${(n / 1024).toFixed(1)} KB`;
+      return `${(n / (1024 * 1024)).toFixed(2)} MB`;
+    }
+
+    function readFileAsDataUrl(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(String(reader.result || ''));
+        reader.onerror = () => reject(new Error('Failed to read file.'));
+        reader.readAsDataURL(file);
+      });
+    }
+
+    async function saveUploadedFileToFirestore(file) {
+      if (file.size > FIRESTORE_MAX_FILE_BYTES) {
+        throw new Error(`"${file.name}" exceeds the 700 KB Firestore limit (${formatBytesLabel(file.size)}). Share it via Google Drive link instead.`);
+      }
+      const dataUrl = await readFileAsDataUrl(file);
+      const docId = `fdoc-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+      const today = formatNowTimestamp().split(' ')[0];
+      localStoredFileBlobs.set(docId, {
+        name: file.name,
+        mimeType: file.type || 'application/octet-stream',
+        size: file.size,
+        dataUrl
+      });
+
+      if (db && isCloudReady) {
+        const fileRef = doc(db, 'artifacts', appId, 'public', 'data', 'niwas_documents', docId);
+        await setDoc(fileRef, {
+          name: file.name,
+          mimeType: file.type || 'application/octet-stream',
+          size: file.size,
+          dataUrl,
+          uploadedBy: getCurrentUser().email || 'unknown',
+          uploadedAt: new Date().toISOString()
+        });
+      }
+
+      return {
+        name: file.name,
+        addedAt: today,
+        source: 'Firestore Upload',
+        storageType: 'firestore',
+        firestoreDocId: docId,
+        mimeType: file.type || 'application/octet-stream',
+        size: file.size
+      };
+    }
+
+    async function deleteFirestoreFileBlob(docId) {
+      if (!docId) return;
+      localStoredFileBlobs.delete(docId);
+      if (db && isCloudReady) {
+        try {
+          const fileRef = doc(db, 'artifacts', appId, 'public', 'data', 'niwas_documents', docId);
+          await deleteDoc(fileRef);
+        } catch (err) {
+          console.warn('Firestore file cleanup skipped:', err);
+        }
+      }
+    }
+
+    window.openStoredFirestoreDocument = async function (docId, fallbackName) {
+      if (!docId) return;
+      try {
+        let record = localStoredFileBlobs.get(docId);
+        if (!record && db && isCloudReady) {
+          const fileRef = doc(db, 'artifacts', appId, 'public', 'data', 'niwas_documents', docId);
+          const snap = await getDoc(fileRef);
+          if (snap.exists()) {
+            record = snap.data();
+            localStoredFileBlobs.set(docId, record);
+          }
+        }
+        if (!record || !record.dataUrl) {
+          showToast('File payload not found in Firestore.');
+          return;
+        }
+        const res = await fetch(record.dataUrl);
+        const blob = await res.blob();
+        const blobUrl = URL.createObjectURL(blob);
+        const win = window.open(blobUrl, '_blank', 'noopener,noreferrer');
+        if (!win) {
+          const a = document.createElement('a');
+          a.href = blobUrl;
+          a.download = record.name || fallbackName || 'document';
+          a.click();
+        }
+        setTimeout(() => URL.revokeObjectURL(blobUrl), 60000);
+      } catch (err) {
+        showToast('Unable to open Firestore document.');
+      }
+    };
+
+    function isGoogleDriveUrl(urlObj) {
+      const host = urlObj.hostname.toLowerCase();
+      return host === 'drive.google.com' || host === 'docs.google.com' || host.endsWith('.drive.google.com');
+    }
+
+    function extractGoogleDriveLabel(urlObj) {
+      const path = urlObj.pathname;
+      if (path.includes('/spreadsheets/')) return 'Google Sheet (Drive Link)';
+      if (path.includes('/document/')) return 'Google Doc (Drive Link)';
+      if (path.includes('/presentation/')) return 'Google Slides (Drive Link)';
+      if (path.includes('/folders/')) return 'Google Drive Folder';
+      return 'Google Drive File';
+    }
+
+    async function validateExternalDocumentLink(rawUrl) {
+      const trimmed = String(rawUrl || '').trim();
+      if (!trimmed) {
+        throw new Error('Please enter a valid https:// URL.');
+      }
+      let urlObj;
+      try {
+        urlObj = new URL(trimmed);
+      } catch (_) {
+        throw new Error('Invalid URL format. Please paste a full https:// link.');
+      }
+      if (urlObj.protocol !== 'https:' && urlObj.protocol !== 'http:') {
+        throw new Error('Only HTTP/HTTPS links are supported.');
+      }
+
+      const today = formatNowTimestamp().split(' ')[0];
+
+      if (isGoogleDriveUrl(urlObj)) {
+        const hasSharingKey = urlObj.searchParams.has('usp') || urlObj.searchParams.has('resourcekey') || urlObj.pathname.includes('/file/d/') || urlObj.pathname.includes('/folders/') || urlObj.pathname.includes('/d/');
+        if (!hasSharingKey) {
+          throw new Error('Please paste a valid Google Drive share link (/file/d/..., /folders/..., or Google Docs/Sheets/Slides URL).');
+        }
+
+        let permissionStatus = 'Verified Link (Ensure "Anyone with the link" or org access is enabled)';
+        try {
+          const controller = new AbortController();
+          const timer = setTimeout(() => controller.abort(), 4500);
+          const probe = await fetch(urlObj.toString(), { method: 'HEAD', mode: 'no-cors', signal: controller.signal });
+          clearTimeout(timer);
+          if (probe) {
+            permissionStatus = 'Google Drive Link • Sharing Checked';
+          }
+        } catch (_) {
+          throw new Error('Unable to verify Google Drive link accessibility. Check your network or Drive sharing permissions.');
+        }
+
+        return {
+          name: extractGoogleDriveLabel(urlObj),
+          addedAt: today,
+          source: permissionStatus,
+          storageType: 'gdrive',
+          url: urlObj.toString()
+        };
+      }
+
+      let openAccessStatus = 'Open-Access Web URL (Linked Only)';
+      try {
+        const controller = new AbortController();
+        const timer = setTimeout(() => controller.abort(), 5000);
+        const resp = await fetch(urlObj.toString(), { method: 'HEAD', signal: controller.signal });
+        clearTimeout(timer);
+        if (resp.status === 401 || resp.status === 403) {
+          throw new Error(`Access denied (HTTP ${resp.status}). Only open-access public web URLs can be linked.`);
+        }
+        if (!resp.ok && resp.status !== 405) {
+          throw new Error(`Web URL returned HTTP ${resp.status}. Please verify the link is publicly reachable.`);
+        }
+        openAccessStatus = 'Open-Access Web URL • Verified';
+      } catch (err) {
+        if (err && err.message && (err.message.includes('Access denied') || err.message.includes('Web URL returned'))) {
+          throw err;
+        }
+        try {
+          const controller2 = new AbortController();
+          const timer2 = setTimeout(() => controller2.abort(), 4500);
+          await fetch(urlObj.toString(), { method: 'HEAD', mode: 'no-cors', signal: controller2.signal });
+          clearTimeout(timer2);
+          openAccessStatus = 'Open-Access Web URL (Linked Only)';
+        } catch (_) {
+          throw new Error('Could not reach the provided web URL. Check that it is publicly accessible.');
+        }
+      }
+
+      const lastSegment = decodeURIComponent(urlObj.pathname.split('/').filter(Boolean).pop() || urlObj.hostname);
+      return {
+        name: lastSegment.slice(0, 80),
+        addedAt: today,
+        source: openAccessStatus,
+        storageType: 'web',
+        url: urlObj.toString()
+      };
+    }
+
+    function renderDocumentRowHtml(docItem, idx, itemId, canRemoveDocs) {
+      const isFirestore = docItem.storageType === 'firestore' && docItem.firestoreDocId;
+      const isExternalLink = (docItem.storageType === 'gdrive' || docItem.storageType === 'web') && docItem.url;
+      const icon = docItem.storageType === 'gdrive' ? '🔗' : (docItem.storageType === 'web' ? '🌐' : '📄');
+      const sizeText = docItem.size ? ` • ${formatBytesLabel(docItem.size)}` : '';
+
+      const openActionHtml = isFirestore
+        ? `<button type="button" onclick="openStoredFirestoreDocument('${escapeHtml(docItem.firestoreDocId)}', '${escapeHtml(docItem.name)}')" class="px-2.5 py-1 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-bold flex-shrink-0">Open</button>`
+        : isExternalLink
+          ? `<a href="${escapeHtml(docItem.url)}" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-bold flex-shrink-0">Open Link ↗</a>`
+          : '';
+
+      return `
+        <div class="flex items-center justify-between gap-3 px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200/80 text-xs">
+          <div class="min-w-0 flex-1">
+            <div class="font-bold text-slate-800 truncate">${icon} ${escapeHtml(docItem.name)}</div>
+            <div class="text-[11px] text-slate-400 truncate">Added ${escapeHtml(docItem.addedAt || 'Recently')} • ${escapeHtml(docItem.source || 'Upload')}${sizeText}</div>
+            ${isExternalLink ? `<div class="text-[11px] text-indigo-600 truncate mt-0.5">${escapeHtml(docItem.url)}</div>` : ''}
+          </div>
+          <div class="flex items-center gap-1.5 flex-shrink-0">
+            ${openActionHtml}
+            ${canRemoveDocs ? `
+              <button type="button" onclick="removeItemDocument('${itemId}', ${idx})" class="px-2.5 py-1 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold">
+                Remove
+              </button>
+            ` : ''}
+          </div>
+        </div>
+      `;
+    }
+
+    window.handleDetailsAddExternalLink = async function (itemId) {
+      const input = document.getElementById('details-doc-link-input');
+      const item = state.items.find(i => i.id === itemId);
+      if (!input || !item) return;
+      try {
+        const linkedDoc = await validateExternalDocumentLink(input.value);
+        item.documents = item.documents || [];
+        item.documents.push(linkedDoc);
+        item.lastChanged = formatNowTimestamp();
+        item.history = item.history || [];
+        item.history.push({ timestamp: item.lastChanged, action: `Linked ${linkedDoc.name}`, by: getCurrentUser().name });
+        input.value = '';
+        persistWorkspaceState();
+        renderAll();
+        renderItemDetailsView();
+        showToast(`${linkedDoc.source} attached.`);
+      } catch (err) {
+        showToast(err.message || 'Unable to attach link.');
+      }
+    };
+
+    window.handleDetailsFileUpload = async function (event, itemId) {
       const files = Array.from(event.target.files || []);
+      event.target.value = '';
       if (!files.length) return;
       const item = state.items.find(i => i.id === itemId);
       if (!item) return;
-      const today = formatNowTimestamp().split(' ')[0];
+
       item.documents = item.documents || [];
-      files.forEach(f => {
-        item.documents.push({ name: f.name, addedAt: today, source: 'Upload' });
-      });
-      item.lastChanged = formatNowTimestamp();
-      item.history = item.history || [];
-      item.history.push({ timestamp: item.lastChanged, action: `Uploaded ${files.length} document(s)`, by: getCurrentUser().name });
-      persistWorkspaceState();
-      renderAll();
-      renderItemDetailsView();
-      showToast(`Attached ${files.length} file(s).`);
+      let uploadedCount = 0;
+      for (const f of files) {
+        try {
+          const savedDoc = await saveUploadedFileToFirestore(f);
+          item.documents.push(savedDoc);
+          uploadedCount += 1;
+        } catch (err) {
+          showToast(err.message || `Failed to upload ${f.name}`);
+        }
+      }
+
+      if (uploadedCount > 0) {
+        item.lastChanged = formatNowTimestamp();
+        item.history = item.history || [];
+        item.history.push({ timestamp: item.lastChanged, action: `Uploaded ${uploadedCount} file(s) to Firestore`, by: getCurrentUser().name });
+        persistWorkspaceState();
+        renderAll();
+        renderItemDetailsView();
+        showToast(`Stored ${uploadedCount} file(s) in Firestore.`);
+      }
     };
 
     window.removeItemDocument = function (itemId, docIndex) {
@@ -2168,6 +2430,9 @@
         return;
       }
       const removed = item.documents.splice(docIndex, 1)[0];
+      if (removed && removed.firestoreDocId) {
+        deleteFirestoreFileBlob(removed.firestoreDocId);
+      }
       item.lastChanged = formatNowTimestamp();
       item.history = item.history || [];
       item.history.push({ timestamp: item.lastChanged, action: `Removed ${removed?.name || 'document'}`, by: getCurrentUser().name });
@@ -2189,29 +2454,73 @@
       const listEl = document.getElementById('modal-documents-list');
       if (!listEl) return;
       if (!state.modalDocuments.length) {
-        listEl.innerHTML = `<div class="text-slate-400 italic">No documents attached yet.</div>`;
+        listEl.innerHTML = `<div class="text-slate-400 italic">No documents or links attached yet.</div>`;
         return;
       }
-      listEl.innerHTML = state.modalDocuments.map((docObj, idx) => `
-        <div class="flex items-center justify-between gap-2 bg-white px-3 py-1.5 rounded-xl border border-slate-200">
-          <span class="truncate font-medium text-slate-700">📄 ${escapeHtml(docObj.name)}</span>
-          ${canDeleteDocs ? `
-            <button type="button" onclick="removeModalDocument(${idx})" class="text-rose-600 hover:text-rose-800 font-bold text-[11px]">Remove</button>
-          ` : ''}
-        </div>
-      `).join('');
+      listEl.innerHTML = state.modalDocuments.map((docObj, idx) => {
+        const icon = docObj.storageType === 'gdrive' ? '🔗' : (docObj.storageType === 'web' ? '🌐' : '📄');
+        const badge = docObj.storageType === 'firestore'
+          ? `Firestore${docObj.size ? ` (${formatBytesLabel(docObj.size)})` : ''}`
+          : (docObj.storageType === 'gdrive' ? 'Google Drive Link' : (docObj.storageType === 'web' ? 'Web URL' : (docObj.source || 'Upload')));
+        const openBtn = docObj.storageType === 'firestore' && docObj.firestoreDocId
+          ? `<button type="button" onclick="openStoredFirestoreDocument('${escapeHtml(docObj.firestoreDocId)}', '${escapeHtml(docObj.name)}')" class="text-indigo-600 hover:text-indigo-800 font-bold text-[11px]">Open</button>`
+          : docObj.url
+            ? `<a href="${escapeHtml(docObj.url)}" target="_blank" rel="noopener noreferrer" class="text-indigo-600 hover:text-indigo-800 font-bold text-[11px]">Open ↗</a>`
+            : '';
+
+        return `
+          <div class="flex items-center justify-between gap-2 bg-white px-3 py-1.5 rounded-xl border border-slate-200">
+            <div class="min-w-0 flex-1">
+              <div class="truncate font-medium text-slate-700">${icon} ${escapeHtml(docObj.name)}</div>
+              <div class="text-[10px] text-slate-400 truncate">${escapeHtml(badge)}${docObj.url ? ` • ${escapeHtml(docObj.url)}` : ''}</div>
+            </div>
+            <div class="flex items-center gap-2 flex-shrink-0">
+              ${openBtn}
+              ${canDeleteDocs ? `
+                <button type="button" onclick="removeModalDocument(${idx})" class="text-rose-600 hover:text-rose-800 font-bold text-[11px]">Remove</button>
+              ` : ''}
+            </div>
+          </div>
+        `;
+      }).join('');
     }
 
-    window.handleModalFileUpload = function (event) {
+    window.handleModalAddExternalLink = async function () {
+      const input = document.getElementById('modal-doc-link-input');
+      if (!input) return;
+      try {
+        const linkedDoc = await validateExternalDocumentLink(input.value);
+        state.modalDocuments.push(linkedDoc);
+        input.value = '';
+        const existingId = document.getElementById('item-id')?.value;
+        const existingItem = existingId ? state.items.find(i => i.id === existingId) : null;
+        renderModalDocumentsList(existingItem ? canUserDeleteItemDocuments(existingItem) : true);
+        showToast(`${linkedDoc.source} added.`);
+      } catch (err) {
+        showToast(err.message || 'Unable to verify link.');
+      }
+    };
+
+    window.handleModalFileUpload = async function (event) {
       const files = Array.from(event.target.files || []);
+      event.target.value = '';
       if (!files.length) return;
-      const today = formatNowTimestamp().split(' ')[0];
-      files.forEach(f => {
-        state.modalDocuments.push({ name: f.name, addedAt: today, source: 'Upload' });
-      });
+      let addedCount = 0;
+      for (const f of files) {
+        try {
+          const savedDoc = await saveUploadedFileToFirestore(f);
+          state.modalDocuments.push(savedDoc);
+          addedCount += 1;
+        } catch (err) {
+          showToast(err.message || `Failed to upload ${f.name}`);
+        }
+      }
       const existingId = document.getElementById('item-id')?.value;
       const existingItem = existingId ? state.items.find(i => i.id === existingId) : null;
       renderModalDocumentsList(existingItem ? canUserDeleteItemDocuments(existingItem) : true);
+      if (addedCount > 0) {
+        showToast(`Uploaded ${addedCount} file(s) to Firestore.`);
+      }
     };
 
     window.removeModalDocument = function (idx) {
@@ -2221,7 +2530,10 @@
         showToast('Only Admins or the assigned Nodal Officer can remove documents.');
         return;
       }
-      state.modalDocuments.splice(idx, 1);
+      const removed = state.modalDocuments.splice(idx, 1)[0];
+      if (removed && removed.firestoreDocId && (!existingItem || !(existingItem.documents || []).some(d => d.firestoreDocId === removed.firestoreDocId))) {
+        deleteFirestoreFileBlob(removed.firestoreDocId);
+      }
       renderModalDocumentsList(existingItem ? canUserDeleteItemDocuments(existingItem) : true);
     };
 
