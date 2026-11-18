@@ -204,7 +204,6 @@
               <input type="text" id="overview-search" oninput="resetPageAndRender('overview')" placeholder="Search projects, tasks, or descriptions..." class="w-full pl-9 pr-3.5 py-2 text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500" />
             </div>
 
-            <!-- Radio Group for All / Projects / Tasks -->
             <div class="inline-flex items-center gap-3 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs sm:text-sm font-medium text-slate-700 flex-shrink-0" role="radiogroup" aria-label="Filter by item type">
               <label class="inline-flex items-center gap-1.5 cursor-pointer select-none">
                 <input type="radio" name="overview-type-radio" value="All" checked onchange="resetPageAndRender('overview')" class="text-indigo-600 focus:ring-indigo-500" />
@@ -229,7 +228,6 @@
               <option value="Pending Approval">Pending Approval</option>
             </select>
 
-            <!-- Show Archived Checkbox -->
             <label class="inline-flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs sm:text-sm font-medium text-slate-700 cursor-pointer select-none hover:bg-slate-100/70 transition-colors flex-shrink-0">
               <input type="checkbox" id="overview-show-archived" onchange="resetPageAndRender('overview')" class="rounded text-indigo-600 focus:ring-indigo-500" />
               <span>Show Archived</span>
@@ -274,7 +272,6 @@
               <input type="text" id="projects-search" oninput="resetPageAndRender('projects')" placeholder="Search projects..." class="w-full pl-9 pr-3.5 py-2 text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500" />
             </div>
 
-            <!-- Radio Group for Projects / Tasks -->
             <div class="inline-flex items-center gap-3 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs sm:text-sm font-medium text-slate-700 flex-shrink-0" role="radiogroup" aria-label="Switch between Projects and Tasks">
               <label class="inline-flex items-center gap-1.5 cursor-pointer select-none">
                 <input type="radio" name="projects-type-radio" value="Project" checked onchange="handleSubViewTypeRadio('Project')" class="text-indigo-600 focus:ring-indigo-500" />
@@ -295,7 +292,6 @@
               <option value="Pending Approval">Pending Approval</option>
             </select>
 
-            <!-- Show Archived Checkbox -->
             <label class="inline-flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs sm:text-sm font-medium text-slate-700 cursor-pointer select-none hover:bg-slate-100/70 transition-colors flex-shrink-0">
               <input type="checkbox" id="projects-show-archived" onchange="resetPageAndRender('projects')" class="rounded text-indigo-600 focus:ring-indigo-500" />
               <span>Show Archived</span>
@@ -340,7 +336,6 @@
               <input type="text" id="tasks-search" oninput="resetPageAndRender('tasks')" placeholder="Search tasks..." class="w-full pl-9 pr-3.5 py-2 text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500" />
             </div>
 
-            <!-- Radio Group for Projects / Tasks -->
             <div class="inline-flex items-center gap-3 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs sm:text-sm font-medium text-slate-700 flex-shrink-0" role="radiogroup" aria-label="Switch between Projects and Tasks">
               <label class="inline-flex items-center gap-1.5 cursor-pointer select-none">
                 <input type="radio" name="tasks-type-radio" value="Project" onchange="handleSubViewTypeRadio('Project')" class="text-indigo-600 focus:ring-indigo-500" />
@@ -361,7 +356,6 @@
               <option value="Pending Approval">Pending Approval</option>
             </select>
 
-            <!-- Show Archived Checkbox -->
             <label class="inline-flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs sm:text-sm font-medium text-slate-700 cursor-pointer select-none hover:bg-slate-100/70 transition-colors flex-shrink-0">
               <input type="checkbox" id="tasks-show-archived" onchange="resetPageAndRender('tasks')" class="rounded text-indigo-600 focus:ring-indigo-500" />
               <span>Show Archived</span>
@@ -436,35 +430,22 @@
 
         <!-- VIEW 5: USERS & PERMISSIONS -->
         <section id="view-nodals" class="hidden space-y-6">
-          <div id="add-user-card" class="bg-white rounded-2xl border border-slate-200 p-5 sm:p-6 space-y-4">
-            <div>
-              <h3 class="text-base font-extrabold text-slate-900">Onboard Workspace User</h3>
-              <p class="text-xs text-slate-500 mt-0.5">Register a team member's Google email and assign their Admin or User permission role.</p>
-            </div>
-            <div id="add-user-error" class="hidden bg-rose-50 border border-rose-200 text-rose-700 text-xs font-semibold px-3.5 py-2 rounded-xl"></div>
-            <form onsubmit="handleAddNodalUser(event)" class="grid grid-cols-1 sm:grid-cols-4 gap-3">
-              <input type="text" id="new-user-name" required placeholder="Full Name" class="px-3.5 py-2.5 text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-xl" />
-              <input type="email" id="new-user-email" required placeholder="Google Email (@gmail.com / @spmniwas.in)" class="px-3.5 py-2.5 text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-xl" />
-              <select id="new-user-permission" class="px-3.5 py-2.5 text-xs sm:text-sm font-medium bg-slate-50 border border-slate-200 rounded-xl">
-                <option value="User">User</option>
-                <option value="Admin">Admin</option>
-              </select>
-              <button type="submit" class="px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs sm:text-sm font-semibold">
-                Add User
-              </button>
-            </form>
-          </div>
-
           <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden">
             <div class="p-4 border-b border-slate-200 flex flex-wrap items-center justify-between gap-3">
               <h3 class="text-sm font-extrabold text-slate-900">All Users</h3>
-              <input type="text" id="user-search-input" oninput="resetPageAndRender('nodals')" placeholder="Search by name or email..." class="px-3.5 py-2 text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 w-full sm:w-64" />
+              <div class="flex flex-wrap items-center gap-2.5 w-full sm:w-auto justify-end">
+                <input type="text" id="user-search-input" oninput="resetPageAndRender('nodals')" placeholder="Search by name or email..." class="px-3.5 py-2 text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 flex-1 sm:w-64" />
+                <button type="button" id="btn-open-add-user" onclick="openAddUserModal()" class="px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs sm:text-sm font-semibold flex items-center gap-1.5 whitespace-nowrap transition-colors">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+                  Add User
+                </button>
+              </div>
             </div>
             <div class="overflow-x-auto">
               <table class="w-full text-left border-collapse">
                 <thead class="bg-slate-50 border-b border-slate-200 text-[11px] font-bold uppercase tracking-wider text-slate-500">
                   <tr>
-                    <th class="px-4 py-3.5">User Name</th>
+                    <th class="px-4 py-3.5">Name</th>
                     <th class="px-4 py-3.5">Google Email</th>
                     <th class="px-4 py-3.5">Permission Role</th>
                     <th class="px-4 py-3.5">Nodal Assignments</th>
@@ -710,6 +691,55 @@
     </div>
   </div>
 
+  <!-- MODAL 6: ADD USER DIALOG -->
+  <div id="add-user-modal" class="hidden fixed inset-0 bg-slate-900/50 backdrop-blur-xs z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-md w-full p-6 sm:p-7 shadow-2xl border border-slate-200 space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <div>
+          <h3 class="text-lg font-extrabold text-slate-900">Add User</h3>
+          <p class="text-xs text-slate-500 mt-0.5">Onboard a workspace member and send their welcome email.</p>
+        </div>
+        <button type="button" onclick="closeAddUserModal()" aria-label="Cancel" class="p-2 rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-100">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+
+      <div id="add-user-error" class="hidden bg-rose-50 border border-rose-200 text-rose-700 text-xs font-semibold px-3.5 py-2 rounded-xl"></div>
+
+      <form id="add-user-form" onsubmit="handleAddNodalUser(event)" class="space-y-4">
+        <div>
+          <label for="new-user-name" class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">Name</label>
+          <input type="text" id="new-user-name" required placeholder="Full Name" class="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+        </div>
+
+        <div>
+          <label for="new-user-email" class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">Gmail</label>
+          <input type="email" id="new-user-email" required placeholder="user@gmail.com or user@spmniwas.in" class="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+        </div>
+
+        <div>
+          <span class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">Role</span>
+          <div class="grid grid-cols-2 gap-3" role="radiogroup" aria-label="Select user role">
+            <label class="flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 cursor-pointer hover:bg-slate-100/80 text-sm font-semibold text-slate-800">
+              <input type="radio" name="new-user-role-radio" value="Admin" class="text-indigo-600 focus:ring-indigo-500" />
+              <span>Admin</span>
+            </label>
+            <label class="flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 cursor-pointer hover:bg-slate-100/80 text-sm font-semibold text-slate-800">
+              <input type="radio" name="new-user-role-radio" value="User" checked class="text-indigo-600 focus:ring-indigo-500" />
+              <span>User</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="pt-3 border-t border-slate-100">
+          <button type="submit" class="w-full px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold transition-colors">
+            Add and Send Welcome Email
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <!-- Toast Notification -->
   <div id="toast-banner" class="hidden fixed bottom-5 right-5 z-50 max-w-sm bg-slate-900 text-white px-4 py-3 rounded-2xl shadow-xl text-xs sm:text-sm font-semibold flex items-center gap-2.5">
     <span class="w-2 h-2 rounded-full bg-emerald-400 flex-shrink-0"></span>
@@ -787,7 +817,7 @@
           { name: 'LMS_Architecture_Spec.docx', addedAt: '2026-11-12', source: 'Upload' }
         ],
         history: [
-          { timestamp: '2026-11-12 09:30', action: 'Project Created', by: 'Project Director' }
+          { timestamp: '2026-11-12 09:30', action: 'Project Created', by: 'Director SPM-NIWAS' }
         ]
       },
       {
@@ -866,6 +896,7 @@
     let db = null;
     let auth = null;
     let isCloudReady = false;
+    const isFirebaseConfigured = typeof __firebase_config !== 'undefined' && Boolean(__firebase_config);
     const appId = typeof __app_id !== 'undefined' ? __app_id : 'spm-niwas-default';
 
     function escapeHtml(str) {
@@ -877,176 +908,172 @@
         .replace(/'/g, '&#39;');
     }
 
-    function nowTimestamp() {
-      const d = new Date();
-      const pad = n => String(n).padStart(2, '0');
-      return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+    function showToast(message) {
+      const banner = document.getElementById('toast-banner');
+      const msgEl = document.getElementById('toast-message');
+      if (!banner || !msgEl) return;
+      msgEl.textContent = message;
+      banner.classList.remove('hidden');
+      clearTimeout(window.__toastTimer);
+      window.__toastTimer = setTimeout(() => {
+        banner.classList.add('hidden');
+      }, 3600);
     }
 
-    function todayDateStr() {
-      return new Date().toISOString().slice(0, 10);
+    function formatNowTimestamp() {
+      const now = new Date();
+      const yyyy = now.getFullYear();
+      const mm = String(now.getMonth() + 1).padStart(2, '0');
+      const dd = String(now.getDate()).padStart(2, '0');
+      const hh = String(now.getHours()).padStart(2, '0');
+      const min = String(now.getMinutes()).padStart(2, '0');
+      return `${yyyy}-${mm}-${dd} ${hh}:${min}`;
     }
 
-    function formatLastChangedDisplay(rawDateStr) {
-      if (!rawDateStr) {
-        return { relative: '—', formattedDate: '—' };
-      }
-      const datePart = String(rawDateStr).trim().split(' ')[0];
-      const parsed = new Date(`${datePart}T00:00:00`);
+    function formatLastChangedDisplay(rawTimestamp) {
+      const dateStr = String(rawTimestamp || '').split(' ')[0];
+      const parsed = new Date(`${dateStr}T00:00:00`);
       if (isNaN(parsed.getTime())) {
-        return { relative: '—', formattedDate: String(rawDateStr) };
+        return { daysLabel: '0 Day', formattedDate: escapeHtml(dateStr || '—') };
       }
       const now = new Date();
       const todayMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-      const diffMs = todayMidnight.getTime() - parsed.getTime();
-      const diffDays = Math.max(0, Math.round(diffMs / (1000 * 60 * 60 * 24)));
-      const relative = diffDays === 1 ? '1 Day' : `${diffDays} Days`;
-
+      const diffMs = Math.max(0, todayMidnight.getTime() - parsed.getTime());
+      const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+      const daysLabel = diffDays === 1 ? '1 Day' : `${diffDays} Days`;
       const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-      const dayStr = String(parsed.getDate()).padStart(2, '0');
-      const formattedDate = `${dayStr} ${months[parsed.getMonth()]} ${parsed.getFullYear()}`;
-      return { relative, formattedDate };
-    }
-
-    function showToast(msg) {
-      const banner = document.getElementById('toast-banner');
-      const text = document.getElementById('toast-message');
-      if (!banner || !text) return;
-      text.textContent = msg;
-      banner.classList.remove('hidden');
-      clearTimeout(window._toastTimer);
-      window._toastTimer = setTimeout(() => banner.classList.add('hidden'), 3400);
-    }
-
-    function getNodalById(id) {
-      return state.nodals.find(n => n.id === id) || { id: '', name: 'Unassigned', email: '', permission: 'User' };
-    }
-
-    function isSuperAdminUser(userObj) {
-      return userObj && (userObj.permission === 'Super Admin' || userObj.isSuperAdmin === true);
-    }
-
-    function normalizeRole(role) {
-      if (role === 'Super Admin') return 'Super Admin';
-      return role === 'Admin' ? 'Admin' : 'User';
-    }
-
-    function isGoogleSignedInUser(firebaseUser) {
-      if (!firebaseUser || firebaseUser.isAnonymous || !firebaseUser.email) return false;
-      const providers = firebaseUser.providerData || [];
-      return providers.some(p => p && p.providerId === 'google.com');
+      const dayNum = String(parsed.getDate()).padStart(2, '0');
+      const monthName = months[parsed.getMonth()];
+      const yearNum = parsed.getFullYear();
+      return {
+        daysLabel,
+        formattedDate: `${dayNum} ${monthName} ${yearNum}`
+      };
     }
 
     function findRegisteredWorkspaceUser(email) {
       const normalized = String(email || '').trim().toLowerCase();
       if (!normalized) return null;
-      const inRoster = state.nodals.find(n => (n.email || '').trim().toLowerCase() === normalized);
-      if (inRoster) return inRoster;
-      return BUILTIN_SUPER_ADMINS.find(sa => sa.email.toLowerCase() === normalized) || null;
+      const activeMatch = state.nodals.find(u => String(u.email || '').trim().toLowerCase() === normalized);
+      if (activeMatch) return activeMatch;
+      return BUILTIN_SUPER_ADMINS.find(u => String(u.email || '').trim().toLowerCase() === normalized) || null;
     }
+
+    function isGoogleAuthenticatedUser(firebaseUser) {
+      if (!firebaseUser || firebaseUser.isAnonymous || !firebaseUser.email) return false;
+      const providers = Array.isArray(firebaseUser.providerData) ? firebaseUser.providerData : [];
+      return providers.some(p => p && p.providerId === 'google.com');
+    }
+
+    window.showUnauthorizedLoginModal = function () {
+      document.getElementById('unauthorized-login-modal')?.classList.remove('hidden');
+    };
 
     window.closeUnauthorizedLoginModal = function () {
       document.getElementById('unauthorized-login-modal')?.classList.add('hidden');
     };
 
-    function showUnauthorizedLoginModal() {
-      document.getElementById('unauthorized-login-modal')?.classList.remove('hidden');
-    }
-
-    async function enforceAuthorizedWorkspaceSession(firebaseUser) {
-      if (!firebaseUser || firebaseUser.isAnonymous) {
-        state.authUser = null;
-        state.roleOverride = null;
-        return false;
-      }
-
-      if (!isGoogleSignedInUser(firebaseUser)) {
-        state.authUser = null;
-        state.roleOverride = null;
-        if (auth) {
-          await signOut(auth).catch(() => {});
-          await signInAnonymously(auth).catch(() => {});
-        }
-        showUnauthorizedLoginModal();
-        return false;
-      }
-
-      const registered = findRegisteredWorkspaceUser(firebaseUser.email);
-      if (!registered) {
-        state.authUser = null;
-        state.roleOverride = null;
-        if (auth) {
-          await signOut(auth).catch(() => {});
-          await signInAnonymously(auth).catch(() => {});
-        }
-        showUnauthorizedLoginModal();
-        return false;
-      }
-
-      state.authUser = firebaseUser;
-      return true;
-    }
-
     function getCurrentUser() {
+      if (!isFirebaseConfigured) {
+        const previewSuperAdmin = BUILTIN_SUPER_ADMINS[0];
+        const effectivePermission = state.roleOverride || 'Admin';
+        return {
+          isSignedIn: true,
+          isPreviewMode: true,
+          id: previewSuperAdmin.id,
+          name: `${previewSuperAdmin.name} (Design Preview)`,
+          email: previewSuperAdmin.email,
+          basePermission: 'Admin',
+          permission: effectivePermission
+        };
+      }
+
       if (!state.authUser) {
         return {
           isSignedIn: false,
+          isPreviewMode: false,
+          id: 'guest',
           name: 'Guest Visitor',
           email: 'Not signed in',
           basePermission: 'User',
           permission: 'User'
         };
       }
-      const matched = findRegisteredWorkspaceUser(state.authUser.email);
-      if (!matched) {
-        return {
-          isSignedIn: false,
-          name: 'Guest Visitor',
-          email: 'Not signed in',
-          basePermission: 'User',
-          permission: 'User'
-        };
-      }
-      const rawRole = normalizeRole(matched.permission);
-      const basePermission = rawRole === 'Super Admin' ? 'Admin' : rawRole;
-      const effectivePermission = (basePermission === 'Admin' && state.roleOverride)
-        ? state.roleOverride
-        : basePermission;
 
+      const email = (state.authUser.email || '').toLowerCase();
+      const matched = findRegisteredWorkspaceUser(email);
+      const isSuperOrAdmin = matched && (matched.isSuperAdmin || matched.permission === 'Super Admin' || matched.permission === 'Admin');
+      const basePermission = isSuperOrAdmin ? 'Admin' : 'User';
+      const effectivePermission = (basePermission === 'Admin' && state.roleOverride) ? state.roleOverride : basePermission;
       return {
         isSignedIn: true,
-        id: matched.id,
-        name: matched.name,
-        email: state.authUser.email || '',
+        isPreviewMode: false,
+        id: matched ? matched.id : state.authUser.uid,
+        name: matched ? matched.name : (state.authUser.displayName || email.split('@')[0]),
+        email: state.authUser.email,
         basePermission,
         permission: effectivePermission
       };
     }
 
-    function getCurrentPermissions() {
-      const u = getCurrentUser();
-      return ROLE_PERMISSIONS[u.permission] || ROLE_PERMISSIONS['User'];
+    function getRoleCapabilities() {
+      const user = getCurrentUser();
+      return ROLE_PERMISSIONS[user.permission] || ROLE_PERMISSIONS['User'];
+    }
+
+    function getNodalById(id) {
+      return state.nodals.find(n => n.id === id) || state.nodals[0] || { id: '', name: 'Unassigned', email: '' };
     }
 
     function isTaskReadyForProject(item) {
-      if (item.type !== 'Task' || item.status === 'Archived') return false;
-      const docCount = (item.documents || []).length;
-      const textLen = ((item.title || '') + ' ' + (item.description || '')).length;
-      return docCount >= 2 || textLen >= 130;
+      return item.type === 'Task' && item.status !== 'Pending Approval' && item.status !== 'Archived' && ((item.documents && item.documents.length >= 3) || (item.description && item.description.length >= 120));
     }
 
-    /* FIREBASE CLOUD SYNC & GOOGLE AUTH */
+    async function persistWorkspaceState() {
+      if (!db || !isCloudReady) return;
+      try {
+        const ref = doc(db, 'artifacts', appId, 'public', 'data', 'niwas_workspace', 'state');
+        await setDoc(ref, {
+          items: state.items,
+          nodals: state.nodals,
+          deletedNodals: state.deletedNodals,
+          connectedInboxes: state.connectedInboxes,
+          emailProposals: state.emailProposals,
+          updatedAt: new Date().toISOString()
+        });
+      } catch (err) {
+        console.warn('Cloud sync skipped:', err);
+      }
+    }
+
     async function initFirebaseCloud() {
       try {
-        if (typeof __firebase_config === 'undefined' || !__firebase_config) return;
+        if (!isFirebaseConfigured) return;
         const firebaseConfig = JSON.parse(__firebase_config);
         const app = initializeApp(firebaseConfig);
         auth = getAuth(app);
         db = getFirestore(app);
 
+        if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+          await signInWithCustomToken(auth, __initial_auth_token);
+        } else {
+          await signInAnonymously(auth);
+        }
+
         onAuthStateChanged(auth, async (user) => {
           if (user && !user.isAnonymous) {
-            await enforceAuthorizedWorkspaceSession(user);
+            const registeredUser = findRegisteredWorkspaceUser(user.email);
+            if (!isGoogleAuthenticatedUser(user) || !registeredUser) {
+              state.authUser = null;
+              state.roleOverride = null;
+              try {
+                await signOut(auth);
+              } catch (_) {}
+              renderAll();
+              showUnauthorizedLoginModal();
+              return;
+            }
+            state.authUser = user;
           } else {
             state.authUser = null;
             state.roleOverride = null;
@@ -1054,156 +1081,131 @@
           renderAll();
         });
 
-        if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-          await signInWithCustomToken(auth, __initial_auth_token);
-        } else if (!auth.currentUser) {
-          await signInAnonymously(auth);
-        }
+        const stateRef = doc(db, 'artifacts', appId, 'public', 'data', 'niwas_workspace', 'state');
+        onSnapshot(
+          stateRef,
+          async (snap) => {
+            isCloudReady = true;
+            if (snap.exists()) {
+              const data = snap.data();
+              if (Array.isArray(data.items)) state.items = data.items;
+              if (Array.isArray(data.nodals) && data.nodals.length > 0) state.nodals = data.nodals;
+              if (Array.isArray(data.deletedNodals)) state.deletedNodals = data.deletedNodals;
+              if (Array.isArray(data.connectedInboxes)) state.connectedInboxes = data.connectedInboxes;
+              if (Array.isArray(data.emailProposals)) state.emailProposals = data.emailProposals;
 
-        const ref = doc(db, 'artifacts', appId, 'public', 'data', 'niwas_pm_workspace');
-        onSnapshot(ref, async (snap) => {
-          isCloudReady = true;
-          if (snap.exists()) {
-            const data = snap.data();
-            if (Array.isArray(data.nodals) && data.nodals.length) {
-              state.nodals = data.nodals.map(n => ({ ...n, permission: normalizeRole(n.permission) }));
+              if (state.authUser && !findRegisteredWorkspaceUser(state.authUser.email)) {
+                state.authUser = null;
+                state.roleOverride = null;
+                try {
+                  await signOut(auth);
+                } catch (_) {}
+                showUnauthorizedLoginModal();
+              }
+              renderAll();
+            } else {
+              persistWorkspaceState();
             }
-            if (Array.isArray(data.deletedNodals)) {
-              state.deletedNodals = data.deletedNodals.map(n => ({ ...n, permission: normalizeRole(n.permission) }));
-            }
-            if (Array.isArray(data.items)) state.items = data.items;
-            if (Array.isArray(data.connectedInboxes)) state.connectedInboxes = data.connectedInboxes;
-            if (Array.isArray(data.emailProposals)) state.emailProposals = data.emailProposals;
-            if (state.authUser) {
-              await enforceAuthorizedWorkspaceSession(state.authUser);
-            }
-            renderAll();
-          } else {
-            persistWorkspaceToCloud();
+          },
+          (err) => {
+            isCloudReady = false;
+            console.warn('Firestore snapshot unavailable (running in local workspace mode):', err?.code || err);
           }
-        }, () => {
-          isCloudReady = false;
-        });
+        );
       } catch (err) {
-        console.warn('Running in local fallback mode:', err);
-      }
-    }
-
-    async function persistWorkspaceToCloud() {
-      if (!db || !isCloudReady) return;
-      try {
-        const ref = doc(db, 'artifacts', appId, 'public', 'data', 'niwas_pm_workspace');
-        await setDoc(ref, {
-          nodals: state.nodals,
-          deletedNodals: state.deletedNodals,
-          items: state.items,
-          connectedInboxes: state.connectedInboxes,
-          emailProposals: state.emailProposals,
-          updatedAt: nowTimestamp()
-        }, { merge: true });
-      } catch (err) {
-        console.warn('Cloud sync skipped:', err);
+        isCloudReady = false;
+        console.warn('Running in local mode:', err);
       }
     }
 
     window.signInWithGoogleAccount = async function () {
       if (!auth) {
-        showToast('Firebase Auth is not initialized in this preview environment.');
+        showToast('Preview Admin Mode is already active in this design console.');
         return;
       }
       try {
         const provider = new GoogleAuthProvider();
-        provider.addScope('email');
-        provider.addScope('profile');
         provider.setCustomParameters({ prompt: 'select_account' });
         const result = await signInWithPopup(auth, provider);
-        const allowed = await enforceAuthorizedWorkspaceSession(result.user);
-        state.roleOverride = null;
-        closeAllGearMenus();
-        renderAll();
-        if (allowed) {
-          const registered = findRegisteredWorkspaceUser(result.user.email);
-          showToast(`Signed in as ${registered ? registered.name : (result.user.displayName || result.user.email)}`);
+        const signedInEmail = result.user?.email || '';
+        const registeredUser = findRegisteredWorkspaceUser(signedInEmail);
+
+        if (!isGoogleAuthenticatedUser(result.user) || !registeredUser) {
+          state.authUser = null;
+          state.roleOverride = null;
+          try {
+            await signOut(auth);
+          } catch (_) {}
+          renderAll();
+          showUnauthorizedLoginModal();
+          return;
         }
+
+        state.authUser = result.user;
+        state.roleOverride = null;
+        closeSettingsMenu();
+        renderAll();
+        showToast(`Signed in as ${registeredUser.name} (${signedInEmail})`);
       } catch (err) {
-        showToast(`Google Sign-In failed: ${err.message}`);
+        showToast('Google Sign-In cancelled or blocked by browser popup settings.');
       }
     };
 
     window.signOutGoogleAccount = async function () {
       try {
-        if (auth) {
-          await signOut(auth);
-          await signInAnonymously(auth).catch(() => {});
-        }
-        state.authUser = null;
-        state.roleOverride = null;
-        closeAllGearMenus();
-        renderAll();
-        showToast('Signed out successfully.');
-      } catch (err) {
-        showToast(`Sign-out error: ${err.message}`);
-      }
-    };
-
-    window.switchActiveRole = function (newRole) {
-      const user = getCurrentUser();
-      if (!user.isSignedIn || user.basePermission !== 'Admin') return;
-      state.roleOverride = newRole === user.basePermission ? null : newRole;
+        if (auth) await signOut(auth);
+      } catch (_) {}
+      state.authUser = null;
+      state.roleOverride = null;
+      closeSettingsMenu();
       renderAll();
-      showToast(`Previewing workspace as ${newRole}`);
+      showToast('Signed out.');
     };
 
-    /* GEAR DROPDOWN MENUS */
-    function closeAllGearMenus() {
-      document.getElementById('settings-dropdown')?.classList.add('hidden');
-      document.getElementById('details-settings-dropdown')?.classList.add('hidden');
-    }
-
-    window.toggleSettingsMenu = function (e) {
-      e.stopPropagation();
-      const el = document.getElementById('settings-dropdown');
-      const wasHidden = el.classList.contains('hidden');
-      closeAllGearMenus();
-      if (wasHidden) el.classList.remove('hidden');
-    };
-
-    window.toggleDetailsSettingsMenu = function (e) {
-      e.stopPropagation();
-      const el = document.getElementById('details-settings-dropdown');
-      const wasHidden = el.classList.contains('hidden');
-      closeAllGearMenus();
-      if (wasHidden) el.classList.remove('hidden');
-    };
-
-    document.addEventListener('click', closeAllGearMenus);
-
-    function renderGearMenuDropdowns() {
+    window.switchRoleOverride = function (newRole) {
       const user = getCurrentUser();
-      const roles = ['Admin', 'User'];
-      const canSwitchRoles = user.isSignedIn && user.basePermission === 'Admin';
-      const html = `
-        <div class="space-y-1 border-b border-slate-100 pb-3">
-          <div class="text-xs font-extrabold text-slate-900 truncate">${escapeHtml(user.name)}</div>
-          <div class="text-[11px] text-slate-500 truncate">${escapeHtml(user.email)}</div>
-          <div class="pt-1 flex items-center gap-1.5">
-            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-indigo-50 text-indigo-700 border border-indigo-200">
-              Role: ${escapeHtml(user.permission)}
-            </span>
+      if (user.basePermission !== 'Admin') return;
+      state.roleOverride = newRole === 'Admin' ? null : 'User';
+      renderAll();
+      showToast(`Switched active view role to ${newRole}.`);
+    };
+
+    function buildSettingsDropdownHtml() {
+      const user = getCurrentUser();
+      const isBaseAdmin = user.basePermission === 'Admin';
+      const initial = (user.name || 'G').charAt(0).toUpperCase();
+
+      return `
+        <div class="flex items-center gap-3 pb-3 border-b border-slate-100">
+          <div class="w-10 h-10 rounded-full bg-indigo-600 text-white font-extrabold text-sm flex items-center justify-center flex-shrink-0">
+            ${escapeHtml(initial)}
+          </div>
+          <div class="min-w-0">
+            <div class="text-sm font-bold text-slate-900 truncate">${escapeHtml(user.name)}</div>
+            <div class="text-xs text-slate-500 truncate">${escapeHtml(user.email)}</div>
           </div>
         </div>
 
-        ${canSwitchRoles ? `
-          <div class="space-y-1.5">
-            <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-400">Role Switcher (Admin Preview)</label>
-            <select onchange="switchActiveRole(this.value)" class="w-full px-3 py-2 text-xs font-semibold bg-slate-50 border border-slate-200 rounded-xl text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-              ${roles.map(r => `<option value="${r}" ${user.permission === r ? 'selected' : ''}>${r}</option>`).join('')}
+        <div class="space-y-1.5">
+          <div class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Workspace Role</div>
+          ${isBaseAdmin ? `
+            <select onchange="switchRoleOverride(this.value)" class="w-full px-3 py-2 text-xs font-bold bg-slate-50 border border-slate-200 rounded-xl text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+              <option value="Admin" ${user.permission === 'Admin' ? 'selected' : ''}>Admin (Full Access)</option>
+              <option value="User" ${user.permission === 'User' ? 'selected' : ''}>User (Standard View)</option>
             </select>
-          </div>
-        ` : ''}
+          ` : `
+            <div class="px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs font-bold text-slate-700">
+              User (Approval Required for Changes)
+            </div>
+          `}
+        </div>
 
         <div class="pt-2 border-t border-slate-100">
-          ${user.isSignedIn ? `
+          ${user.isPreviewMode ? `
+            <div class="px-3 py-2 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 text-[11px] font-semibold text-center">
+              Preview Admin Mode Active (Firebase Auth connects automatically when deployed)
+            </div>
+          ` : user.isSignedIn ? `
             <button type="button" onclick="signOutGoogleAccount()" class="w-full px-3.5 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-bold transition-colors text-center">
               Logout
             </button>
@@ -1214,474 +1216,876 @@
           `}
         </div>
       `;
-      const d1 = document.getElementById('settings-dropdown');
-      const d2 = document.getElementById('details-settings-dropdown');
-      if (d1) d1.innerHTML = html;
-      if (d2) d2.innerHTML = html;
     }
 
-    /* NAVIGATION & VIEW SWITCHING */
-    window.switchTab = function (tab) {
-      state.activeTab = tab;
-      closeAllGearMenus();
+    window.toggleSettingsMenu = function (event) {
+      if (event) event.stopPropagation();
+      const dd = document.getElementById('settings-dropdown');
+      const detailsDd = document.getElementById('details-settings-dropdown');
+      if (detailsDd) detailsDd.classList.add('hidden');
+      if (!dd) return;
+      dd.innerHTML = buildSettingsDropdownHtml();
+      dd.classList.toggle('hidden');
+    };
 
-      if (tab === 'projects') {
+    window.toggleDetailsSettingsMenu = function (event) {
+      if (event) event.stopPropagation();
+      const dd = document.getElementById('details-settings-dropdown');
+      const mainDd = document.getElementById('settings-dropdown');
+      if (mainDd) mainDd.classList.add('hidden');
+      if (!dd) return;
+      dd.innerHTML = buildSettingsDropdownHtml();
+      dd.classList.toggle('hidden');
+    };
+
+    function closeSettingsMenu() {
+      document.getElementById('settings-dropdown')?.classList.add('hidden');
+      document.getElementById('details-settings-dropdown')?.classList.add('hidden');
+    }
+
+    document.addEventListener('click', closeSettingsMenu);
+
+    window.switchTab = function (tabName) {
+      state.activeTab = tabName;
+      if (tabName !== 'tasks') {
         state.tasksReadyOnly = false;
-        document.querySelectorAll('input[name="projects-type-radio"]').forEach(r => { r.checked = r.value === 'Project'; });
-      } else if (tab === 'tasks') {
-        document.querySelectorAll('input[name="tasks-type-radio"]').forEach(r => { r.checked = r.value === 'Task'; });
-      } else {
-        state.tasksReadyOnly = false;
+      }
+
+      document.querySelectorAll('.nav-btn').forEach(btn => {
+        btn.classList.remove('bg-indigo-600', 'text-white');
+        btn.classList.add('text-slate-300', 'hover:bg-slate-800');
+      });
+      const activeNav = document.getElementById(`nav-${tabName}`);
+      if (activeNav) {
+        activeNav.classList.add('bg-indigo-600', 'text-white');
+        activeNav.classList.remove('text-slate-300', 'hover:bg-slate-800');
       }
 
       const views = ['overview', 'projects', 'tasks', 'details', 'nodals', 'email-settings'];
       views.forEach(v => {
         const el = document.getElementById(`view-${v}`);
-        if (el) el.classList.toggle('hidden', v !== tab);
-      });
-
-      document.querySelectorAll('.nav-btn').forEach(btn => {
-        const isActive = btn.id === `nav-${tab}` || (tab === 'details' && btn.id === `nav-${state.selectedItemId && state.items.find(i => i.id === state.selectedItemId)?.type === 'Project' ? 'projects' : 'tasks'}`);
-        btn.classList.toggle('bg-indigo-600', isActive);
-        btn.classList.toggle('text-white', isActive);
-        btn.classList.toggle('text-slate-300', !isActive);
-        btn.classList.toggle('hover:bg-slate-800', !isActive);
+        if (el) el.classList.toggle('hidden', v !== tabName);
       });
 
       const topHeader = document.getElementById('main-top-header');
-      if (topHeader) topHeader.classList.toggle('hidden', tab === 'details');
-
       const kpiSection = document.getElementById('kpi-cards-section');
-      if (kpiSection) kpiSection.classList.toggle('hidden', tab !== 'overview');
+      const addTaskBtn = document.getElementById('btn-header-add-task');
+      const addProjectBtn = document.getElementById('btn-header-add-project');
 
-      const btnAddTask = document.getElementById('btn-header-add-task');
-      const btnAddProject = document.getElementById('btn-header-add-project');
-      if (btnAddTask) btnAddTask.classList.toggle('hidden', tab !== 'overview');
-      if (btnAddProject) btnAddProject.classList.toggle('hidden', tab !== 'overview');
+      if (tabName === 'details') {
+        topHeader?.classList.add('hidden');
+      } else {
+        topHeader?.classList.remove('hidden');
+      }
+
+      const isDashboard = tabName === 'overview';
+      kpiSection?.classList.toggle('hidden', !isDashboard);
+      addTaskBtn?.classList.toggle('hidden', !isDashboard);
+      addProjectBtn?.classList.toggle('hidden', !isDashboard);
 
       const titles = {
         'overview': ['Dashboard', 'Unified overview of all active SPM-NIWAS projects and tasks.'],
-        'projects': ['Projects', 'Formal multi-milestone initiatives tracked across SPM-NIWAS.'],
-        'tasks': state.tasksReadyOnly
-          ? ['Convert Tasks to Projects', 'Tasks meeting project readiness criteria and eligible for conversion into formal Projects.']
-          : ['Tasks', 'Actionable operational deliverables and tasks eligible for project promotion.'],
+        'projects': ['Projects', 'Manage and monitor all SPM-NIWAS projects.'],
+        'tasks': [
+          state.tasksReadyOnly ? 'Tasks Ready to Convert' : 'Tasks',
+          state.tasksReadyOnly ? 'Tasks eligible for conversion into full SPM-NIWAS Projects.' : 'Track operational tasks, action items, and project conversion candidates.'
+        ],
         'nodals': ['Users & Permissions', 'Manage Users and their Permissions.'],
-        'email-settings': ['Email & AI Inbox', 'Connect Gmail accounts and review AI-extracted task/project proposals.']
+        'email-settings': ['Email & AI Inbox', 'Connect Gmail inboxes and review AI-extracted task/project proposals.']
       };
-      if (titles[tab]) {
-        document.getElementById('page-title').textContent = titles[tab][0];
-        document.getElementById('page-subtitle').textContent = titles[tab][1];
+
+      if (titles[tabName]) {
+        document.getElementById('page-title').textContent = titles[tabName][0];
+        document.getElementById('page-subtitle').textContent = titles[tabName][1];
+      }
+
+      if (tabName === 'projects') {
+        document.querySelectorAll('input[name="projects-type-radio"]').forEach(r => { r.checked = r.value === 'Project'; });
+      } else if (tabName === 'tasks') {
+        document.querySelectorAll('input[name="tasks-type-radio"]').forEach(r => { r.checked = r.value === 'Task'; });
       }
 
       renderAll();
     };
 
+    window.handleSubViewTypeRadio = function (selectedType) {
+      if (selectedType === 'Project') {
+        switchTab('projects');
+      } else if (selectedType === 'Task') {
+        switchTab('tasks');
+      }
+    };
+
     window.openReadyToConvertLanding = function () {
       state.tasksReadyOnly = true;
       state.pages.tasks = 1;
+      const searchEl = document.getElementById('tasks-search');
+      const statusEl = document.getElementById('tasks-status-filter');
+      const archivedEl = document.getElementById('tasks-show-archived');
+      if (searchEl) searchEl.value = '';
+      if (statusEl) statusEl.value = 'All';
+      if (archivedEl) archivedEl.checked = false;
       switchTab('tasks');
     };
 
     window.clearReadyToConvertFilter = function () {
       state.tasksReadyOnly = false;
       state.pages.tasks = 1;
-      switchTab('tasks');
+      document.getElementById('page-title').textContent = 'Tasks';
+      document.getElementById('page-subtitle').textContent = 'Track operational tasks, action items, and project conversion candidates.';
+      renderAll();
     };
 
-    window.handleSubViewTypeRadio = function (targetType) {
-      state.tasksReadyOnly = false;
-      switchTab(targetType === 'Project' ? 'projects' : 'tasks');
+    window.resetPageAndRender = function (tableKey) {
+      state.pages[tableKey] = 1;
+      renderAll();
     };
 
-    /* STATUS & TYPE BADGES */
+    window.changeTablePage = function (tableKey, newPage) {
+      state.pages[tableKey] = newPage;
+      renderAll();
+    };
+
     function getStatusBadgeHtml(status) {
       const map = {
-        'Not Started': 'bg-slate-100 text-slate-700 border-slate-200',
-        'In Progress': 'bg-sky-50 text-sky-700 border-sky-200',
-        'On Hold': 'bg-amber-50 text-amber-700 border-amber-200',
+        'In Progress': 'bg-indigo-50 text-indigo-700 border-indigo-200',
         'Completed': 'bg-emerald-50 text-emerald-700 border-emerald-200',
-        'Pending Approval': 'bg-purple-50 text-purple-700 border-purple-200',
-        'Archived': 'bg-slate-200 text-slate-600 border-slate-300'
+        'Not Started': 'bg-slate-100 text-slate-700 border-slate-200',
+        'On Hold': 'bg-amber-50 text-amber-700 border-amber-200',
+        'Pending Approval': 'bg-rose-50 text-rose-700 border-rose-200',
+        'Archived': 'bg-slate-200/80 text-slate-600 border-slate-300'
       };
       const cls = map[status] || 'bg-slate-100 text-slate-700 border-slate-200';
-      return `<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-bold border ${cls}">${escapeHtml(status)}</span>`;
+      return `<span class="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-bold border ${cls} whitespace-nowrap">${escapeHtml(status)}</span>`;
     }
 
-    function getTypeBadgeHtml(type) {
-      return type === 'Project'
-        ? `<span class="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-extrabold uppercase tracking-wider bg-indigo-50 text-indigo-700 border border-indigo-200">Project</span>`
-        : `<span class="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-extrabold uppercase tracking-wider bg-slate-100 text-slate-700 border border-slate-200">Task</span>`;
-    }
+    function renderPaginationBar(tableKey, totalItems) {
+      const container = document.getElementById(`pagination-${tableKey}`);
+      if (!container) return;
 
-    /* AUTO PAGINATION (25 ROWS PER PAGE) */
-    function paginateRows(rows, listKey) {
-      const total = rows.length;
-      const pageSize = state.pageSize || 25;
-      const totalPages = Math.max(1, Math.ceil(total / pageSize));
-      const currentPage = Math.min(Math.max(1, state.pages[listKey] || 1), totalPages);
-      state.pages[listKey] = currentPage;
-
-      const footer = document.getElementById(`pagination-${listKey}`);
-      if (footer) {
-        if (total <= pageSize) {
-          footer.classList.add('hidden');
-          footer.innerHTML = '';
-        } else {
-          const startIdx = (currentPage - 1) * pageSize + 1;
-          const endIdx = Math.min(total, currentPage * pageSize);
-          footer.classList.remove('hidden');
-          footer.innerHTML = `
-            <div class="font-medium text-slate-600">
-              Showing <span class="font-bold text-slate-900">${startIdx}–${endIdx}</span> of <span class="font-bold text-slate-900">${total}</span> items
-            </div>
-            <div class="flex items-center gap-2">
-              <button type="button" onclick="changeListPage('${listKey}', ${currentPage - 1})" ${currentPage <= 1 ? 'disabled' : ''} class="px-3 py-1.5 rounded-xl border border-slate-300 bg-white text-slate-700 font-semibold hover:bg-slate-100 disabled:opacity-40 disabled:pointer-events-none transition-colors">
-                Previous
-              </button>
-              <span class="px-2 font-bold text-slate-800">Page ${currentPage} of ${totalPages}</span>
-              <button type="button" onclick="changeListPage('${listKey}', ${currentPage + 1})" ${currentPage >= totalPages ? 'disabled' : ''} class="px-3 py-1.5 rounded-xl border border-slate-300 bg-white text-slate-700 font-semibold hover:bg-slate-100 disabled:opacity-40 disabled:pointer-events-none transition-colors">
-                Next
-              </button>
-            </div>
-          `;
-        }
+      if (totalItems <= state.pageSize) {
+        container.classList.add('hidden');
+        container.innerHTML = '';
+        return;
       }
 
-      const sliceStart = (currentPage - 1) * pageSize;
-      return rows.slice(sliceStart, sliceStart + pageSize);
-    }
+      const totalPages = Math.ceil(totalItems / state.pageSize);
+      const currentPage = Math.min(Math.max(1, state.pages[tableKey] || 1), totalPages);
+      state.pages[tableKey] = currentPage;
 
-    window.changeListPage = function (listKey, nextPage) {
-      state.pages[listKey] = Math.max(1, nextPage);
-      if (listKey === 'overview') renderOverviewUnifiedTable();
-      else if (listKey === 'projects') renderCards('Project');
-      else if (listKey === 'tasks') renderCards('Task');
-      else if (listKey === 'nodals') renderNodalsTable();
-    };
+      const startIdx = (currentPage - 1) * state.pageSize + 1;
+      const endIdx = Math.min(currentPage * state.pageSize, totalItems);
 
-    window.resetPageAndRender = function (listKey) {
-      state.pages[listKey] = 1;
-      if (listKey === 'overview') renderOverviewUnifiedTable();
-      else if (listKey === 'projects') renderCards('Project');
-      else if (listKey === 'tasks') renderCards('Task');
-      else if (listKey === 'nodals') renderNodalsTable();
-    };
+      let pageButtons = '';
+      for (let p = 1; p <= totalPages; p++) {
+        const activeCls = p === currentPage
+          ? 'bg-indigo-600 text-white border-indigo-600'
+          : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-100';
+        pageButtons += `<button type="button" onclick="changeTablePage('${tableKey}', ${p})" class="px-2.5 py-1 rounded-lg border text-xs font-bold transition-colors ${activeCls}">${p}</button>`;
+      }
 
-    /* TABLE ROW RENDERING */
-    function buildItemTableRow(item, includeTypeBadge) {
-      const nodal = getNodalById(item.nodalId);
-      const perms = getCurrentPermissions();
-      const readyConvert = isTaskReadyForProject(item);
-      const docs = item.documents || [];
-      const lastChangedInfo = formatLastChangedDisplay(item.lastChanged || item.dueDate);
-
-      return `
-        <tr class="hover:bg-slate-50/90 transition-colors">
-          <td class="px-4 py-3.5 align-top">
-            <div class="flex flex-col items-start gap-1">
-              ${includeTypeBadge ? getTypeBadgeHtml(item.type) : ''}
-              ${getStatusBadgeHtml(item.status)}
-            </div>
-          </td>
-          <td class="px-4 py-3.5 align-top">
-            <button type="button" onclick="openItemDetails('${escapeHtml(item.id)}')" class="text-left font-bold text-slate-900 hover:text-indigo-600 transition-colors break-words">
-              ${escapeHtml(item.title)}
-            </button>
-            ${readyConvert ? `<div class="mt-1"><span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800">⚡ Eligible for Project</span></div>` : ''}
-          </td>
-          <td class="px-4 py-3.5 align-top text-xs text-slate-600 leading-relaxed break-words">
-            ${escapeHtml(item.description)}
-          </td>
-          <td class="px-4 py-3.5 align-top">
-            <div class="text-xs font-bold text-slate-800 truncate">${escapeHtml(nodal.name)}</div>
-          </td>
-          <td class="px-4 py-3.5 align-top whitespace-nowrap">
-            <div class="text-xs sm:text-sm font-medium text-slate-800">${escapeHtml(lastChangedInfo.relative)}</div>
-            <div class="text-[11px] text-slate-400 mt-0.5">${escapeHtml(lastChangedInfo.formattedDate)}</div>
-          </td>
-          <td class="px-4 py-3.5 align-top">
-            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-slate-100 text-slate-700 text-xs font-semibold">
-              <svg class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/></svg>
-              ${docs.length} file${docs.length === 1 ? '' : 's'}
-            </span>
-          </td>
-          <td class="px-4 py-3.5 align-top text-right whitespace-nowrap">
-            <div class="inline-flex items-center gap-1.5">
-              ${item.status === 'Pending Approval' && perms.canApprove ? `
-                <button type="button" onclick="approveItemById('${escapeHtml(item.id)}')" class="px-2 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] font-bold">Approve</button>
-              ` : ''}
-              <button type="button" onclick="openItemDetails('${escapeHtml(item.id)}')" class="px-2.5 py-1 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs font-semibold">View</button>
-              ${perms.canDelete ? `
-                <button type="button" onclick="deleteItemById('${escapeHtml(item.id)}')" class="px-2 py-1 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-semibold">Delete</button>
-              ` : ''}
-            </div>
-          </td>
-        </tr>
+      container.classList.remove('hidden');
+      container.innerHTML = `
+        <div>Showing <span class="font-bold text-slate-900">${startIdx}–${endIdx}</span> of <span class="font-bold text-slate-900">${totalItems}</span></div>
+        <div class="flex items-center gap-1.5">
+          <button type="button" ${currentPage === 1 ? 'disabled' : ''} onclick="changeTablePage('${tableKey}', ${currentPage - 1})" class="px-2.5 py-1 rounded-lg border border-slate-200 bg-white text-xs font-semibold disabled:opacity-40 hover:bg-slate-100">Prev</button>
+          ${pageButtons}
+          <button type="button" ${currentPage === totalPages ? 'disabled' : ''} onclick="changeTablePage('${tableKey}', ${currentPage + 1})" class="px-2.5 py-1 rounded-lg border border-slate-200 bg-white text-xs font-semibold disabled:opacity-40 hover:bg-slate-100">Next</button>
+        </div>
       `;
     }
 
-    window.renderOverviewUnifiedTable = function () {
-      const tbody = document.getElementById('overview-table-body');
-      if (!tbody) return;
-      const q = (document.getElementById('overview-search')?.value || '').toLowerCase().trim();
-      const typeF = document.querySelector('input[name="overview-type-radio"]:checked')?.value || 'All';
-      const statusF = document.getElementById('overview-status-filter')?.value || 'All';
-      const showArchived = Boolean(document.getElementById('overview-show-archived')?.checked);
-
-      const rows = state.items.filter(item => {
-        if (!showArchived && item.status === 'Archived') return false;
-        if (typeF !== 'All' && item.type !== typeF) return false;
-        if (statusF !== 'All' && item.status !== statusF) return false;
-        if (q) {
-          const hay = `${item.title} ${item.description} ${getNodalById(item.nodalId).name}`.toLowerCase();
-          if (!hay.includes(q)) return false;
-        }
-        return true;
-      });
-
-      const pagedRows = paginateRows(rows, 'overview');
-
-      tbody.innerHTML = pagedRows.length
-        ? pagedRows.map(i => buildItemTableRow(i, true)).join('')
-        : `<tr><td colspan="7" class="px-4 py-10 text-center text-sm text-slate-400">No projects or tasks match the selected filters.</td></tr>`;
-    };
-
-    window.renderCards = function (type) {
-      const prefix = type === 'Project' ? 'projects' : 'tasks';
-      const tbody = document.getElementById(`${prefix}-table-body`);
+    function renderItemsTable(tableKey, itemsList) {
+      const tbody = document.getElementById(`${tableKey}-table-body`);
       if (!tbody) return;
 
-      if (type === 'Task') {
-        const banner = document.getElementById('tasks-ready-filter-banner');
-        if (banner) banner.classList.toggle('hidden', !state.tasksReadyOnly);
+      const caps = getRoleCapabilities();
+      const totalItems = itemsList.length;
+      const totalPages = Math.max(1, Math.ceil(totalItems / state.pageSize));
+      const currentPage = Math.min(Math.max(1, state.pages[tableKey] || 1), totalPages);
+      state.pages[tableKey] = currentPage;
+
+      const pagedItems = itemsList.slice((currentPage - 1) * state.pageSize, currentPage * state.pageSize);
+      renderPaginationBar(tableKey, totalItems);
+
+      if (pagedItems.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="7" class="px-6 py-12 text-center text-sm text-slate-400">
+              No matching records found. Adjust your filters or add a new item.
+            </td>
+          </tr>
+        `;
+        return;
       }
 
-      const q = (document.getElementById(`${prefix}-search`)?.value || '').toLowerCase().trim();
-      const statusF = document.getElementById(`${prefix}-status-filter`)?.value || 'All';
-      const showArchived = Boolean(document.getElementById(`${prefix}-show-archived`)?.checked);
+      tbody.innerHTML = pagedItems.map(item => {
+        const nodal = getNodalById(item.nodalId);
+        const docs = Array.isArray(item.documents) ? item.documents : [];
+        const docCount = docs.length;
+        const typeTag = tableKey === 'overview'
+          ? `<span class="inline-block mr-1.5 px-1.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide ${item.type === 'Project' ? 'bg-indigo-100 text-indigo-700' : 'bg-slate-200 text-slate-700'}">${escapeHtml(item.type)}</span>`
+          : '';
+        const lastChangedInfo = formatLastChangedDisplay(item.lastChanged);
 
-      const rows = state.items.filter(item => {
-        if (item.type !== type) return false;
-        if (type === 'Task' && state.tasksReadyOnly && !isTaskReadyForProject(item)) return false;
+        const approveBtn = (item.status === 'Pending Approval' && caps.canApprove)
+          ? `<button type="button" onclick="approvePendingItem('${item.id}')" title="Approve Item" class="p-1.5 rounded-lg text-emerald-600 hover:bg-emerald-50">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+            </button>`
+          : '';
+
+        const deleteBtn = caps.canDelete
+          ? `<button type="button" onclick="deleteItem('${item.id}')" title="Delete" class="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+            </button>`
+          : '';
+
+        return `
+          <tr class="hover:bg-slate-50/90 transition-colors">
+            <td class="px-4 py-3.5 align-top">${getStatusBadgeHtml(item.status)}</td>
+            <td class="px-4 py-3.5 align-top">
+              <button type="button" onclick="openItemDetails('${item.id}')" class="text-left font-bold text-slate-900 hover:text-indigo-600 transition-colors leading-snug break-words">
+                ${typeTag}${escapeHtml(item.title)}
+              </button>
+            </td>
+            <td class="px-4 py-3.5 align-top text-xs text-slate-600 leading-relaxed break-words">
+              ${escapeHtml(item.description)}
+            </td>
+            <td class="px-4 py-3.5 align-top">
+              <div class="text-xs font-semibold text-slate-800 truncate">${escapeHtml(nodal.name)}</div>
+            </td>
+            <td class="px-4 py-3.5 align-top">
+              <div class="text-sm font-medium text-slate-800 leading-tight">${lastChangedInfo.daysLabel}</div>
+              <div class="text-xs text-slate-500 mt-0.5">${lastChangedInfo.formattedDate}</div>
+            </td>
+            <td class="px-4 py-3.5 align-top">
+              <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-slate-100 text-slate-700 text-xs font-bold">
+                <svg class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/></svg>
+                ${docCount} ${docCount === 1 ? 'File' : 'Files'}
+              </span>
+            </td>
+            <td class="px-4 py-3.5 align-top text-right whitespace-nowrap">
+              <div class="inline-flex items-center justify-end gap-1">
+                ${approveBtn}
+                <button type="button" onclick="openItemModal('${item.type}', '${item.id}')" title="Edit" class="p-1.5 rounded-lg text-slate-400 hover:text-indigo-600 hover:bg-indigo-50">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                </button>
+                ${deleteBtn}
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function filterItemsForView(viewKey, forcedType = null) {
+      const searchVal = (document.getElementById(`${viewKey}-search`)?.value || '').trim().toLowerCase();
+      const statusVal = document.getElementById(`${viewKey}-status-filter`)?.value || 'All';
+      const showArchived = Boolean(document.getElementById(`${viewKey}-show-archived`)?.checked);
+      const selectedTypeRadio = viewKey === 'overview'
+        ? (document.querySelector('input[name="overview-type-radio"]:checked')?.value || 'All')
+        : forcedType;
+
+      return state.items.filter(item => {
+        if (selectedTypeRadio && selectedTypeRadio !== 'All' && item.type !== selectedTypeRadio) return false;
+        if (viewKey === 'tasks' && state.tasksReadyOnly && !isTaskReadyForProject(item)) return false;
         if (!showArchived && item.status === 'Archived') return false;
-        if (statusF !== 'All' && item.status !== statusF) return false;
-        if (q) {
+        if (statusVal !== 'All' && item.status !== statusVal) return false;
+        if (searchVal) {
           const hay = `${item.title} ${item.description} ${getNodalById(item.nodalId).name}`.toLowerCase();
-          if (!hay.includes(q)) return false;
+          if (!hay.includes(searchVal)) return false;
         }
         return true;
       });
+    }
 
-      const pagedRows = paginateRows(rows, prefix);
-
-      tbody.innerHTML = pagedRows.length
-        ? pagedRows.map(i => buildItemTableRow(i, false)).join('')
-        : `<tr><td colspan="7" class="px-4 py-10 text-center text-sm text-slate-400">${type === 'Task' && state.tasksReadyOnly ? 'No tasks currently meet the project conversion criteria.' : `No ${prefix} found.`}</td></tr>`;
-    };
-
-    /* ITEM DETAILS PAGE */
     window.openItemDetails = function (itemId) {
       state.selectedItemId = itemId;
-      switchTab('details');
-    };
-
-    function renderDetailsPage() {
-      const card = document.getElementById('details-content-card');
-      const item = state.items.find(i => i.id === state.selectedItemId);
-      if (!card || !item) return;
+      const item = state.items.find(i => i.id === itemId);
+      if (!item) return;
 
       const parentBtn = document.getElementById('details-breadcrumb-parent');
-      const currSpan = document.getElementById('details-breadcrumb-current');
       if (parentBtn) {
         parentBtn.textContent = item.type === 'Project' ? 'Projects' : 'Tasks';
         parentBtn.onclick = () => switchTab(item.type === 'Project' ? 'projects' : 'tasks');
       }
+      const currSpan = document.getElementById('details-breadcrumb-current');
       if (currSpan) currSpan.textContent = item.title;
 
-      const nodal = getNodalById(item.nodalId);
-      const perms = getCurrentPermissions();
-      const readyConvert = isTaskReadyForProject(item);
-      const docs = item.documents || [];
-      const history = item.history || [];
+      switchTab('details');
+    };
 
-      card.innerHTML = `
+    function renderItemDetailsView() {
+      const container = document.getElementById('details-content-card');
+      if (!container) return;
+      const item = state.items.find(i => i.id === state.selectedItemId);
+      if (!item) {
+        container.innerHTML = `<div class="text-sm text-slate-500">Record not found.</div>`;
+        return;
+      }
+
+      const nodal = getNodalById(item.nodalId);
+      const caps = getRoleCapabilities();
+      const docs = Array.isArray(item.documents) ? item.documents : [];
+      const history = Array.isArray(item.history) ? item.history : [];
+
+      container.innerHTML = `
         <div class="flex flex-wrap items-start justify-between gap-4 border-b border-slate-100 pb-5">
-          <div class="space-y-2">
+          <div class="space-y-2 max-w-3xl">
             <div class="flex flex-wrap items-center gap-2">
-              ${getTypeBadgeHtml(item.type)}
+              <span class="px-2.5 py-0.5 rounded-full text-xs font-extrabold uppercase tracking-wider ${item.type === 'Project' ? 'bg-indigo-100 text-indigo-700' : 'bg-slate-200 text-slate-700'}">${escapeHtml(item.type)}</span>
               ${getStatusBadgeHtml(item.status)}
-              ${readyConvert ? `<span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-100 text-amber-800">⚡ Eligible for Project Conversion</span>` : ''}
             </div>
             <h2 class="text-xl sm:text-2xl font-extrabold text-slate-900">${escapeHtml(item.title)}</h2>
-            <p class="text-sm text-slate-600 max-w-3xl leading-relaxed">${escapeHtml(item.description)}</p>
+            <p class="text-sm text-slate-600 leading-relaxed">${escapeHtml(item.description)}</p>
           </div>
 
           <div class="flex flex-wrap items-center gap-2">
             ${item.type === 'Task' ? `
-              <button type="button" onclick="convertTaskToProject('${escapeHtml(item.id)}')" class="px-3.5 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold transition-colors">
-                Convert to Project
+              <button type="button" onclick="convertTaskToProject('${item.id}')" class="px-3.5 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold">
+                ⚡ Convert to Project
               </button>
             ` : ''}
-            <button type="button" onclick="openItemModal('${escapeHtml(item.type)}', '${escapeHtml(item.id)}')" class="px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold transition-colors">
+            <button type="button" onclick="openItemModal('${item.type}', '${item.id}')" class="px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold">
               Edit Details
             </button>
-            ${perms.canDelete ? `
-              <button type="button" onclick="deleteItemById('${escapeHtml(item.id)}')" class="px-3.5 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-bold transition-colors">
+            ${caps.canDelete ? `
+              <button type="button" onclick="deleteItem('${item.id}')" class="px-3.5 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-bold">
                 Delete
               </button>
             ` : ''}
           </div>
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 bg-slate-50 rounded-2xl p-4 border border-slate-200/80">
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 bg-slate-50 rounded-2xl p-4 border border-slate-200/70 text-xs">
           <div>
-            <div class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Nodal Officer</div>
+            <div class="font-bold uppercase tracking-wider text-slate-400">Assigned Nodal</div>
             <div class="text-sm font-bold text-slate-900 mt-1">${escapeHtml(nodal.name)}</div>
-            <div class="text-xs text-slate-500">${escapeHtml(nodal.email)}</div>
+            <div class="text-slate-500">${escapeHtml(nodal.email)}</div>
           </div>
           <div>
-            <div class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Target Date</div>
-            <div class="text-sm font-bold text-slate-900 mt-1">${escapeHtml(item.dueDate || 'Not specified')}</div>
+            <div class="font-bold uppercase tracking-wider text-slate-400">Target Date</div>
+            <div class="text-sm font-bold text-slate-900 mt-1">${escapeHtml(item.dueDate || 'Not set')}</div>
           </div>
           <div>
-            <div class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Last Updated</div>
-            <div class="text-sm font-bold text-slate-900 mt-1">${escapeHtml(item.lastChanged || '—')}</div>
+            <div class="font-bold uppercase tracking-wider text-slate-400">Last Updated</div>
+            <div class="text-sm font-bold text-slate-900 mt-1">${escapeHtml(item.lastChanged)}</div>
           </div>
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <div class="space-y-3">
-            <div class="flex items-center justify-between">
-              <h3 class="text-sm font-extrabold uppercase tracking-wider text-slate-700">Documents (${docs.length})</h3>
-              <label class="cursor-pointer px-3 py-1.5 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs font-bold">
-                + Add Document
-                <input type="file" multiple onchange="handleDetailsFileUpload(event, '${escapeHtml(item.id)}')" class="hidden" />
-              </label>
-            </div>
-            <div class="space-y-2">
-              ${docs.length ? docs.map(d => `
-                <div class="flex items-center justify-between p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs">
-                  <span class="font-semibold text-slate-800 truncate">${escapeHtml(d.name)}</span>
-                  <span class="text-slate-400 whitespace-nowrap ml-2">${escapeHtml(d.addedAt || '')}</span>
-                </div>
-              `).join('') : `<div class="text-xs text-slate-400 py-4">No documents attached yet.</div>`}
-            </div>
+            <h3 class="text-sm font-extrabold text-slate-900">Attached Documents (${docs.length})</h3>
+            ${docs.length === 0 ? `<div class="text-xs text-slate-400">No documents attached yet.</div>` : `
+              <div class="space-y-2">
+                ${docs.map(d => `
+                  <div class="flex items-center justify-between px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs">
+                    <span class="font-semibold text-slate-800 truncate">${escapeHtml(d.name)}</span>
+                    <span class="text-slate-400 whitespace-nowrap ml-2">${escapeHtml(d.addedAt || '')}</span>
+                  </div>
+                `).join('')}
+              </div>
+            `}
           </div>
 
           <div class="space-y-3">
-            <h3 class="text-sm font-extrabold uppercase tracking-wider text-slate-700">Audit &amp; Activity Log</h3>
+            <h3 class="text-sm font-extrabold text-slate-900">Activity &amp; Audit Log</h3>
             <div class="space-y-2">
-              ${history.length ? history.map(h => `
-                <div class="p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs flex items-center justify-between gap-2">
-                  <div>
-                    <div class="font-semibold text-slate-800">${escapeHtml(h.action)}</div>
-                    <div class="text-[11px] text-slate-500">By ${escapeHtml(h.by)}</div>
-                  </div>
-                  <span class="text-[11px] text-slate-400 whitespace-nowrap">${escapeHtml(h.timestamp)}</span>
+              ${history.map(h => `
+                <div class="px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs">
+                  <div class="font-semibold text-slate-800">${escapeHtml(h.action)}</div>
+                  <div class="text-slate-400 mt-0.5">${escapeHtml(h.timestamp)} • ${escapeHtml(h.by)}</div>
                 </div>
-              `).join('') : `<div class="text-xs text-slate-400 py-4">No activity history recorded.</div>`}
+              `).join('')}
             </div>
           </div>
         </div>
       `;
     }
 
-    /* MODAL CREATE / EDIT & ACTIONS */
-    window.openItemModal = function (type, itemId = null) {
-      const modal = document.getElementById('item-modal');
-      const nodalSelect = document.getElementById('item-nodal');
-      nodalSelect.innerHTML = state.nodals.map(n =>
-        `<option value="${escapeHtml(n.id)}">${escapeHtml(n.name)} (${escapeHtml(n.email)})</option>`
-      ).join('');
+    function getUserRoleSortRank(user) {
+      if (user.isSuperAdmin || user.permission === 'Super Admin') return 0;
+      if (user.permission === 'Admin') return 1;
+      return 2;
+    }
 
-      if (itemId) {
-        const item = state.items.find(i => i.id === itemId);
-        if (!item) return;
-        document.getElementById('modal-heading').textContent = `Edit ${item.type}`;
-        document.getElementById('item-id').value = item.id;
-        document.getElementById('item-type').value = item.type;
-        document.getElementById('item-title').value = item.title;
-        document.getElementById('item-description').value = item.description;
-        document.getElementById('item-nodal').value = item.nodalId;
-        document.getElementById('item-status').value = item.status;
-        document.getElementById('item-due-date').value = item.dueDate || '';
-        state.modalDocuments = JSON.parse(JSON.stringify(item.documents || []));
-      } else {
-        const perms = getCurrentPermissions();
-        document.getElementById('modal-heading').textContent = `Create New ${type}`;
-        document.getElementById('item-id').value = '';
-        document.getElementById('item-type').value = type;
-        document.getElementById('item-title').value = '';
-        document.getElementById('item-description').value = '';
-        document.getElementById('item-status').value = perms.canDirectCreate ? 'Not Started' : 'Pending Approval';
-        document.getElementById('item-due-date').value = '';
-        state.modalDocuments = [];
+    window.renderNodalsTable = function () {
+      const tbody = document.getElementById('nodals-table-body');
+      if (!tbody) return;
+
+      const caps = getRoleCapabilities();
+      const query = (document.getElementById('user-search-input')?.value || '').trim().toLowerCase();
+
+      const filteredUsers = state.nodals.filter(u => {
+        if (!query) return true;
+        return `${u.name} ${u.email} ${u.permission}`.toLowerCase().includes(query);
+      }).sort((a, b) => {
+        const rankDiff = getUserRoleSortRank(a) - getUserRoleSortRank(b);
+        if (rankDiff !== 0) return rankDiff;
+        return (a.name || '').localeCompare(b.name || '', undefined, { sensitivity: 'base' });
+      });
+
+      const filteredDeletedUsers = state.deletedNodals.filter(u => {
+        if (!query) return true;
+        return `${u.name} ${u.email} ${u.permission}`.toLowerCase().includes(query);
+      }).sort((a, b) => (a.name || '').localeCompare(b.name || '', undefined, { sensitivity: 'base' }));
+
+      const totalActive = filteredUsers.length;
+      const totalPages = Math.max(1, Math.ceil(totalActive / state.pageSize));
+      const currentPage = Math.min(Math.max(1, state.pages.nodals || 1), totalPages);
+      state.pages.nodals = currentPage;
+      const pagedUsers = filteredUsers.slice((currentPage - 1) * state.pageSize, currentPage * state.pageSize);
+      renderPaginationBar('nodals', totalActive);
+
+      const renderUserRow = (u) => {
+        const isSuperAdmin = Boolean(u.isSuperAdmin || u.permission === 'Super Admin');
+        const assignedCount = state.items.filter(i => i.nodalId === u.id).length;
+
+        let roleBadgeHtml = '';
+        if (isSuperAdmin) {
+          roleBadgeHtml = `<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-extrabold bg-indigo-100 text-indigo-800 border border-indigo-200">Super Admin</span>`;
+        } else if (u.permission === 'Admin') {
+          roleBadgeHtml = `<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">Admin</span>`;
+        } else {
+          roleBadgeHtml = `<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-slate-100 text-slate-700 border border-slate-200">Users</span>`;
+        }
+
+        const editBtnHtml = `<button type="button" onclick="openEditUserModal('${u.id}')" title="Edit User Details & Role" class="p-1.5 rounded-lg text-slate-500 hover:text-indigo-600 hover:bg-indigo-50 transition-colors">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+          </button>`;
+
+        const removeBtnHtml = (caps.canManageUsers && !isSuperAdmin)
+          ? `<button type="button" onclick="initiateDeleteNodalUser('${u.id}')" class="px-2.5 py-1 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-bold">Remove</button>`
+          : '';
+
+        return `
+          <tr class="hover:bg-slate-50/90 transition-colors">
+            <td class="px-4 py-3.5 font-bold text-slate-900">${escapeHtml(u.name)}</td>
+            <td class="px-4 py-3.5 text-xs text-slate-600">${escapeHtml(u.email)}</td>
+            <td class="px-4 py-3.5">${roleBadgeHtml}</td>
+            <td class="px-4 py-3.5 text-xs font-semibold text-slate-700">${assignedCount} ${assignedCount === 1 ? 'Item' : 'Items'}</td>
+            <td class="px-4 py-3.5 text-right whitespace-nowrap">
+              <div class="inline-flex items-center justify-end gap-2">
+                <button type="button" onclick="openWelcomeEmailModal('${u.id}')" class="px-2.5 py-1 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs font-bold">
+                  Resend Welcome Email
+                </button>
+                ${removeBtnHtml}
+                ${editBtnHtml}
+              </div>
+            </td>
+          </tr>
+        `;
+      };
+
+      const deletedSectionHtml = filteredDeletedUsers.length > 0 ? `
+        <tr class="bg-slate-100/90 border-t-2 border-slate-200">
+          <td colspan="5" class="px-4 py-2 text-[11px] font-extrabold uppercase tracking-wider text-slate-600">
+            Deleted (${filteredDeletedUsers.length})
+          </td>
+        </tr>
+        ${filteredDeletedUsers.map(u => `
+          <tr class="bg-slate-50/60 text-slate-500">
+            <td class="px-4 py-3 font-semibold text-slate-600 line-through">${escapeHtml(u.name)}</td>
+            <td class="px-4 py-3 text-xs text-slate-500">${escapeHtml(u.email)}</td>
+            <td class="px-4 py-3">
+              <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-slate-200/80 text-slate-600 border border-slate-300">
+                ${escapeHtml(u.permission === 'User' ? 'Users' : u.permission)}
+              </span>
+            </td>
+            <td class="px-4 py-3 text-xs text-slate-400">Removed</td>
+            <td class="px-4 py-3 text-right whitespace-nowrap">
+              ${caps.canManageUsers ? `
+                <button type="button" onclick="restoreDeletedUser('${u.id}')" class="px-2.5 py-1 rounded-lg bg-white border border-slate-300 hover:bg-slate-100 text-slate-700 text-xs font-bold">
+                  Restore
+                </button>
+              ` : ''}
+            </td>
+          </tr>
+        `).join('')}
+      ` : '';
+
+      if (pagedUsers.length === 0 && filteredDeletedUsers.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5" class="px-6 py-10 text-center text-sm text-slate-400">No workspace users match your search.</td></tr>`;
+        return;
       }
 
-      renderModalDocuments();
-      modal.classList.remove('hidden');
+      tbody.innerHTML = pagedUsers.map(renderUserRow).join('') + deletedSectionHtml;
+    };
+
+    window.openAddUserModal = function () {
+      const caps = getRoleCapabilities();
+      if (!caps.canManageUsers) {
+        showToast('Only Admins can add new workspace users.');
+        return;
+      }
+      const form = document.getElementById('add-user-form');
+      const errBox = document.getElementById('add-user-error');
+      if (form) form.reset();
+      if (errBox) {
+        errBox.textContent = '';
+        errBox.classList.add('hidden');
+      }
+      document.getElementById('add-user-modal')?.classList.remove('hidden');
+      setTimeout(() => document.getElementById('new-user-name')?.focus(), 50);
+    };
+
+    window.closeAddUserModal = function () {
+      document.getElementById('add-user-modal')?.classList.add('hidden');
+    };
+
+    window.handleAddNodalUser = function (event) {
+      event.preventDefault();
+      const caps = getRoleCapabilities();
+      if (!caps.canManageUsers) {
+        showToast('Only Admins can add workspace users.');
+        return;
+      }
+
+      const name = document.getElementById('new-user-name').value.trim();
+      const email = document.getElementById('new-user-email').value.trim().toLowerCase();
+      const permission = document.querySelector('input[name="new-user-role-radio"]:checked')?.value || 'User';
+      const errBox = document.getElementById('add-user-error');
+
+      if (!name || !email) return;
+      if (state.nodals.some(u => u.email.toLowerCase() === email) || state.deletedNodals.some(u => u.email.toLowerCase() === email)) {
+        if (errBox) {
+          errBox.textContent = 'A user with this email already exists.';
+          errBox.classList.remove('hidden');
+        }
+        return;
+      }
+
+      const newUser = {
+        id: `usr-${Date.now()}`,
+        name,
+        email,
+        permission
+      };
+      state.nodals.push(newUser);
+      closeAddUserModal();
+      persistWorkspaceState();
+      renderAll();
+      openWelcomeEmailModal(newUser.id);
+      showToast(`Added ${name} (${permission}).`);
+    };
+
+    window.openEditUserModal = function (userId) {
+      const caps = getRoleCapabilities();
+      if (!caps.canManageUsers) {
+        showToast('Only Admins can edit user details.');
+        return;
+      }
+      const target = state.nodals.find(u => u.id === userId);
+      if (!target) return;
+
+      const isSuperAdmin = Boolean(target.isSuperAdmin || target.permission === 'Super Admin');
+      document.getElementById('edit-user-id').value = target.id;
+      document.getElementById('edit-user-name').value = target.name;
+      document.getElementById('edit-user-email').value = target.email;
+
+      const roleWrapper = document.getElementById('edit-user-role-wrapper');
+      const roleSelect = document.getElementById('edit-user-permission');
+      if (roleWrapper && roleSelect) {
+        roleWrapper.classList.toggle('hidden', isSuperAdmin);
+        if (!isSuperAdmin) {
+          roleSelect.value = target.permission === 'Admin' ? 'Admin' : 'User';
+        }
+      }
+
+      const errBox = document.getElementById('edit-user-error');
+      if (errBox) {
+        errBox.textContent = '';
+        errBox.classList.add('hidden');
+      }
+      document.getElementById('edit-user-modal')?.classList.remove('hidden');
+    };
+
+    window.closeEditUserModal = function () {
+      document.getElementById('edit-user-modal')?.classList.add('hidden');
+    };
+
+    window.handleSaveEditedUser = function (event) {
+      event.preventDefault();
+      const id = document.getElementById('edit-user-id').value;
+      const newName = document.getElementById('edit-user-name').value.trim();
+      const newEmail = document.getElementById('edit-user-email').value.trim().toLowerCase();
+      const newPerm = document.getElementById('edit-user-permission').value;
+      const errBox = document.getElementById('edit-user-error');
+
+      const target = state.nodals.find(u => u.id === id);
+      if (!target || !newName || !newEmail) return;
+
+      const duplicate = state.nodals.some(u => u.id !== id && u.email.toLowerCase() === newEmail);
+      if (duplicate) {
+        if (errBox) {
+          errBox.textContent = 'Another user already uses this email address.';
+          errBox.classList.remove('hidden');
+        }
+        return;
+      }
+
+      const isSuperAdmin = Boolean(target.isSuperAdmin || target.permission === 'Super Admin');
+      const finalPermission = isSuperAdmin ? target.permission : newPerm;
+      const changes = [];
+
+      if (target.name !== newName) {
+        changes.push(`<div><span class="font-bold">Name:</span> ${escapeHtml(target.name)} → <span class="font-bold text-indigo-700">${escapeHtml(newName)}</span></div>`);
+      }
+      if (target.email.toLowerCase() !== newEmail) {
+        changes.push(`<div><span class="font-bold">Google Email:</span> ${escapeHtml(target.email)} → <span class="font-bold text-indigo-700">${escapeHtml(newEmail)}</span></div>`);
+      }
+      if (!isSuperAdmin && target.permission !== finalPermission) {
+        changes.push(`<div><span class="font-bold">Permission Role:</span> ${escapeHtml(target.permission)} → <span class="font-bold text-indigo-700">${escapeHtml(finalPermission)}</span></div>`);
+      }
+
+      if (changes.length === 0) {
+        closeEditUserModal();
+        showToast('No changes detected.');
+        return;
+      }
+
+      state.pendingUserEdit = {
+        id,
+        newName,
+        newEmail,
+        finalPermission,
+        emailChanged: target.email.toLowerCase() !== newEmail
+      };
+
+      document.getElementById('confirm-user-edit-summary').textContent = `You are about to update workspace details for ${target.name}. Please confirm before saving:`;
+      document.getElementById('confirm-user-edit-changes').innerHTML = changes.join('');
+      document.getElementById('confirm-user-edit-modal')?.classList.remove('hidden');
+    };
+
+    window.closeConfirmUserEditModal = function () {
+      state.pendingUserEdit = null;
+      document.getElementById('confirm-user-edit-modal')?.classList.add('hidden');
+    };
+
+    window.commitSavedUserEdit = function () {
+      const pending = state.pendingUserEdit;
+      if (!pending) return;
+
+      const target = state.nodals.find(u => u.id === pending.id);
+      if (target) {
+        target.name = pending.newName;
+        target.email = pending.newEmail;
+        target.permission = pending.finalPermission;
+      }
+
+      closeConfirmUserEditModal();
+      closeEditUserModal();
+      persistWorkspaceState();
+      renderAll();
+      showToast(`Updated details for ${pending.newName}.`);
+
+      if (pending.emailChanged && target) {
+        openWelcomeEmailModal(target.id);
+      }
+    };
+
+    window.initiateDeleteNodalUser = function (userId) {
+      const caps = getRoleCapabilities();
+      if (!caps.canManageUsers) return;
+      const target = state.nodals.find(u => u.id === userId);
+      if (!target || target.isSuperAdmin || target.permission === 'Super Admin') return;
+
+      const assignedItems = state.items.filter(i => i.nodalId === userId);
+      if (assignedItems.length === 0) {
+        state.nodals = state.nodals.filter(u => u.id !== userId);
+        state.deletedNodals.push(target);
+        persistWorkspaceState();
+        renderAll();
+        showToast(`Removed ${target.name}.`);
+        return;
+      }
+
+      state.reassignTargetUserId = userId;
+      const remainingUsers = state.nodals.filter(u => u.id !== userId);
+      const optionsHtml = remainingUsers.map(u => `<option value="${u.id}">${escapeHtml(u.name)} (${escapeHtml(u.email)})</option>`).join('');
+
+      document.getElementById('reassign-modal-subtitle').textContent = `${target.name} currently owns ${assignedItems.length} task(s)/project(s). Reassign them before removing this user:`;
+      document.getElementById('bulk-reassign-select').innerHTML = optionsHtml;
+      document.getElementById('reassign-items-list').innerHTML = assignedItems.map(item => `
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs">
+          <div class="font-bold text-slate-800">${escapeHtml(item.title)} <span class="text-slate-400 font-normal">(${escapeHtml(item.type)})</span></div>
+          <select data-reassign-item-id="${item.id}" class="reassign-item-select px-2.5 py-1.5 rounded-lg bg-white border border-slate-300 font-medium text-slate-800">
+            ${optionsHtml}
+          </select>
+        </div>
+      `).join('');
+
+      document.getElementById('reassign-modal')?.classList.remove('hidden');
+    };
+
+    window.applyBulkReassign = function () {
+      const bulkId = document.getElementById('bulk-reassign-select')?.value;
+      if (!bulkId) return;
+      document.querySelectorAll('.reassign-item-select').forEach(sel => {
+        sel.value = bulkId;
+      });
+    };
+
+    window.closeReassignModal = function () {
+      state.reassignTargetUserId = null;
+      document.getElementById('reassign-modal')?.classList.add('hidden');
+    };
+
+    window.confirmReassignAndDeleteUser = function () {
+      const userId = state.reassignTargetUserId;
+      if (!userId) return;
+      const target = state.nodals.find(u => u.id === userId);
+
+      document.querySelectorAll('.reassign-item-select').forEach(sel => {
+        const itemId = sel.getAttribute('data-reassign-item-id');
+        const newNodalId = sel.value;
+        const item = state.items.find(i => i.id === itemId);
+        if (item && newNodalId) {
+          item.nodalId = newNodalId;
+        }
+      });
+
+      if (target) {
+        state.nodals = state.nodals.filter(u => u.id !== userId);
+        state.deletedNodals.push(target);
+      }
+
+      closeReassignModal();
+      persistWorkspaceState();
+      renderAll();
+      showToast(`Reassigned items and removed ${target ? target.name : 'user'}.`);
+    };
+
+    window.restoreDeletedUser = function (userId) {
+      const caps = getRoleCapabilities();
+      if (!caps.canManageUsers) return;
+      const idx = state.deletedNodals.findIndex(u => u.id === userId);
+      if (idx === -1) return;
+      const [restored] = state.deletedNodals.splice(idx, 1);
+      state.nodals.push(restored);
+      persistWorkspaceState();
+      renderAll();
+      showToast(`Restored ${restored.name} to active users.`);
+    };
+
+    window.openWelcomeEmailModal = function (userId) {
+      const user = state.nodals.find(u => u.id === userId);
+      if (!user) return;
+      state.welcomeTargetUser = user;
+      document.getElementById('welcome-modal-recipient').textContent = `Recipient: ${user.name} <${user.email}>`;
+      document.getElementById('welcome-email-preview').value =
+        `Dear ${user.name},\n\nYou have been added to the SPM-NIWAS Task & Project Management Portal with "${user.permission}" access.\n\nPlease sign in using your Google account (${user.email}) to review your assigned tasks and projects.\n\nRegards,\nSPM-NIWAS Coordination Desk`;
+      document.getElementById('welcome-email-modal')?.classList.remove('hidden');
+    };
+
+    window.closeWelcomeEmailModal = function () {
+      state.welcomeTargetUser = null;
+      document.getElementById('welcome-email-modal')?.classList.add('hidden');
+    };
+
+    window.copyWelcomeEmailText = function () {
+      const textarea = document.getElementById('welcome-email-preview');
+      if (!textarea) return;
+      textarea.select();
+      document.execCommand('copy');
+      showToast('Welcome message copied to clipboard.');
+    };
+
+    window.launchOneClickGmailWelcome = function () {
+      const user = state.welcomeTargetUser;
+      const body = document.getElementById('welcome-email-preview')?.value || '';
+      if (!user) return;
+      const subject = encodeURIComponent('Welcome to SPM-NIWAS Task & Project Management Portal');
+      const encodedBody = encodeURIComponent(body);
+      const to = encodeURIComponent(user.email);
+      window.open(`https://mail.google.com/mail/?view=cm&fs=1&to=${to}&su=${subject}&body=${encodedBody}`, '_blank', 'noopener');
+      closeWelcomeEmailModal();
+    };
+
+    window.openItemModal = function (type, itemId = null) {
+      const item = itemId ? state.items.find(i => i.id === itemId) : null;
+      document.getElementById('item-id').value = item ? item.id : '';
+      document.getElementById('item-type').value = item ? item.type : type;
+      document.getElementById('modal-heading').textContent = item ? `Edit ${item.type}` : `Create New ${type}`;
+      document.getElementById('item-title').value = item ? item.title : '';
+      document.getElementById('item-description').value = item ? item.description : '';
+      document.getElementById('item-due-date').value = item ? (item.dueDate || '') : '';
+
+      const nodalSelect = document.getElementById('item-nodal');
+      nodalSelect.innerHTML = state.nodals.map(n => `<option value="${n.id}">${escapeHtml(n.name)}</option>`).join('');
+      nodalSelect.value = item ? item.nodalId : (state.nodals[0]?.id || '');
+
+      const statusSelect = document.getElementById('item-status');
+      statusSelect.value = item ? item.status : 'Not Started';
+
+      state.modalDocuments = item && Array.isArray(item.documents) ? JSON.parse(JSON.stringify(item.documents)) : [];
+      renderModalDocumentsList();
+
+      document.getElementById('item-modal')?.classList.remove('hidden');
     };
 
     window.closeItemModal = function () {
       document.getElementById('item-modal')?.classList.add('hidden');
     };
 
-    function renderModalDocuments() {
-      const box = document.getElementById('modal-documents-list');
-      if (!box) return;
-      box.innerHTML = state.modalDocuments.length
-        ? state.modalDocuments.map((d, idx) => `
-            <div class="flex items-center justify-between bg-white px-3 py-1.5 rounded-lg border border-slate-200">
-              <span class="font-medium text-slate-800 truncate">${escapeHtml(d.name)}</span>
-              <button type="button" onclick="removeModalDoc(${idx})" class="text-rose-600 hover:text-rose-800 font-bold ml-2">Remove</button>
-            </div>
-          `).join('')
-        : `<div class="text-slate-400">No files attached yet.</div>`;
+    function renderModalDocumentsList() {
+      const listEl = document.getElementById('modal-documents-list');
+      if (!listEl) return;
+      if (state.modalDocuments.length === 0) {
+        listEl.innerHTML = `<div class="text-slate-400">No files attached.</div>`;
+        return;
+      }
+      listEl.innerHTML = state.modalDocuments.map((docItem, idx) => `
+        <div class="flex items-center justify-between bg-white px-3 py-1.5 rounded-lg border border-slate-200">
+          <span class="font-medium text-slate-700 truncate">${escapeHtml(docItem.name)}</span>
+          <button type="button" onclick="removeModalDocument(${idx})" class="text-rose-600 hover:text-rose-800 font-bold ml-2">Remove</button>
+        </div>
+      `).join('');
     }
 
-    window.removeModalDoc = function (idx) {
-      state.modalDocuments.splice(idx, 1);
-      renderModalDocuments();
+    window.removeModalDocument = function (index) {
+      state.modalDocuments.splice(index, 1);
+      renderModalDocumentsList();
     };
 
-    window.handleModalFileUpload = function (e) {
-      const files = Array.from(e.target.files || []);
+    window.handleModalFileUpload = function (event) {
+      const files = Array.from(event.target.files || []);
+      const today = formatNowTimestamp().split(' ')[0];
       files.forEach(f => {
-        state.modalDocuments.push({ name: f.name, addedAt: todayDateStr(), source: 'Upload' });
+        state.modalDocuments.push({ name: f.name, addedAt: today, source: 'Upload' });
       });
-      renderModalDocuments();
-      e.target.value = '';
+      renderModalDocumentsList();
+      event.target.value = '';
     };
 
-    window.handleDetailsFileUpload = function (e, itemId) {
-      const item = state.items.find(i => i.id === itemId);
-      if (!item) return;
-      const files = Array.from(e.target.files || []);
-      if (!files.length) return;
-      const user = getCurrentUser();
-      files.forEach(f => {
-        item.documents = item.documents || [];
-        item.documents.push({ name: f.name, addedAt: todayDateStr(), source: 'Upload' });
-        item.history = item.history || [];
-        item.history.unshift({ timestamp: nowTimestamp(), action: `Uploaded ${f.name}`, by: user.name });
-      });
-      item.lastChanged = nowTimestamp();
-      persistWorkspaceToCloud();
-      renderAll();
-      showToast(`Attached ${files.length} document(s).`);
-      e.target.value = '';
+    window.proposeTitleAndDescriptionWithAI = function () {
+      const titleInput = document.getElementById('item-title');
+      const descInput = document.getElementById('item-description');
+      const type = document.getElementById('item-type').value || 'Task';
+      const rawTitle = titleInput.value.trim();
+
+      if (!rawTitle && state.modalDocuments.length > 0) {
+        titleInput.value = state.modalDocuments[0].name.replace(/\.[^/.]+$/, '').replace(/[_-]+/g, ' ');
+      }
+      const subject = titleInput.value.trim() || `SPM-NIWAS ${type}`;
+      descInput.value = `Coordinate ${subject} across designated state and central nodal officers, track milestone deliverables, and maintain verified documentation under SPM-NIWAS governance standards.`;
+      showToast('AI draft populated.');
     };
 
-    window.handleSaveItem = function (e) {
-      e.preventDefault();
+    window.handleSaveItem = function (event) {
+      event.preventDefault();
       const id = document.getElementById('item-id').value;
-      const type = document.getElementById('item-type').value;
+      const type = document.getElementById('item-type').value || 'Task';
       const title = document.getElementById('item-title').value.trim();
       const description = document.getElementById('item-description').value.trim();
       const nodalId = document.getElementById('item-nodal').value;
-      const status = document.getElementById('item-status').value;
+      const requestedStatus = document.getElementById('item-status').value;
       const dueDate = document.getElementById('item-due-date').value;
       const user = getCurrentUser();
+      const caps = getRoleCapabilities();
+      const nowStr = formatNowTimestamp();
+
+      if (!title || !description) return;
 
       if (id) {
         const existing = state.items.find(i => i.id === id);
@@ -1689,625 +2093,275 @@
           existing.title = title;
           existing.description = description;
           existing.nodalId = nodalId;
-          existing.status = status;
+          existing.status = requestedStatus;
           existing.dueDate = dueDate;
+          existing.lastChanged = nowStr;
           existing.documents = [...state.modalDocuments];
-          existing.lastChanged = nowTimestamp();
           existing.history = existing.history || [];
-          existing.history.unshift({ timestamp: nowTimestamp(), action: 'Updated details', by: user.name });
+          existing.history.unshift({ timestamp: nowStr, action: 'Updated details', by: user.name });
         }
-        showToast(`${type} updated successfully.`);
+        showToast(`${type} updated.`);
       } else {
-        const newItem = {
+        const finalStatus = caps.canDirectCreate ? requestedStatus : 'Pending Approval';
+        state.items.unshift({
           id: `${type === 'Project' ? 'prj' : 'tsk'}-${Date.now()}`,
           type,
           title,
           description,
           nodalId,
-          status,
+          status: finalStatus,
           dueDate,
-          lastChanged: nowTimestamp(),
+          lastChanged: nowStr,
           documents: [...state.modalDocuments],
-          history: [{ timestamp: nowTimestamp(), action: `${type} Created`, by: user.name }]
-        };
-        state.items.unshift(newItem);
-        showToast(`${type} created successfully.`);
+          history: [{ timestamp: nowStr, action: `${type} Created (${finalStatus})`, by: user.name }]
+        });
+        showToast(caps.canDirectCreate ? `${type} created.` : `${type} submitted for Admin approval.`);
       }
 
       closeItemModal();
-      persistWorkspaceToCloud();
+      persistWorkspaceState();
       renderAll();
     };
 
-    window.approveItemById = function (itemId) {
+    window.approvePendingItem = function (itemId) {
+      const caps = getRoleCapabilities();
+      if (!caps.canApprove) return;
       const item = state.items.find(i => i.id === itemId);
-      if (!item || !getCurrentPermissions().canApprove) return;
+      if (!item) return;
+      const nowStr = formatNowTimestamp();
       item.status = 'In Progress';
-      item.lastChanged = nowTimestamp();
+      item.lastChanged = nowStr;
       item.history = item.history || [];
-      item.history.unshift({ timestamp: nowTimestamp(), action: 'Approved by Admin', by: getCurrentUser().name });
-      persistWorkspaceToCloud();
+      item.history.unshift({ timestamp: nowStr, action: 'Approved by Admin', by: getCurrentUser().name });
+      persistWorkspaceState();
       renderAll();
       showToast(`Approved "${item.title}".`);
     };
 
-    window.convertTaskToProject = function (taskId) {
-      const item = state.items.find(i => i.id === taskId);
+    window.convertTaskToProject = function (itemId) {
+      const item = state.items.find(i => i.id === itemId);
       if (!item || item.type !== 'Task') return;
+      const nowStr = formatNowTimestamp();
       item.type = 'Project';
-      item.lastChanged = nowTimestamp();
+      item.lastChanged = nowStr;
       item.history = item.history || [];
-      item.history.unshift({ timestamp: nowTimestamp(), action: 'Converted from Task to Project', by: getCurrentUser().name });
-      persistWorkspaceToCloud();
+      item.history.unshift({ timestamp: nowStr, action: 'Converted from Task to Project', by: getCurrentUser().name });
+      persistWorkspaceState();
       renderAll();
-      showToast(`Converted "${item.title}" into a formal Project.`);
+      showToast(`Converted "${item.title}" into a Project.`);
     };
 
-    window.deleteItemById = function (itemId) {
-      if (!getCurrentPermissions().canDelete) {
-        showToast('Only an Admin can delete records.');
-        return;
-      }
+    window.deleteItem = function (itemId) {
+      const caps = getRoleCapabilities();
+      if (!caps.canDelete) return;
+      const item = state.items.find(i => i.id === itemId);
+      if (!item) return;
       state.items = state.items.filter(i => i.id !== itemId);
       if (state.selectedItemId === itemId) {
         state.selectedItemId = null;
         switchTab('overview');
       }
-      persistWorkspaceToCloud();
+      persistWorkspaceState();
       renderAll();
-      showToast('Record deleted.');
+      showToast(`Deleted "${item.title}".`);
     };
 
-    /* USERS & PERMISSIONS */
-    window.renderNodalsTable = function () {
-      const tbody = document.getElementById('nodals-table-body');
-      if (!tbody) return;
-      const q = (document.getElementById('user-search-input')?.value || '').toLowerCase().trim();
-      const perms = getCurrentPermissions();
-
-      const addCard = document.getElementById('add-user-card');
-      if (addCard) addCard.classList.toggle('hidden', !perms.canManageUsers);
-
-      const rolePriority = (u) => {
-        const r = normalizeRole(u.permission);
-        if (r === 'Super Admin') return 0;
-        if (r === 'Admin') return 1;
-        return 2;
-      };
-
-      const filtered = state.nodals
-        .filter(n => !q || n.name.toLowerCase().includes(q) || n.email.toLowerCase().includes(q))
-        .slice()
-        .sort((a, b) => {
-          const prioDiff = rolePriority(a) - rolePriority(b);
-          if (prioDiff !== 0) return prioDiff;
-          return (a.name || '').localeCompare(b.name || '', undefined, { sensitivity: 'base' });
-        });
-
-      const pagedUsers = paginateRows(filtered, 'nodals');
-
-      const activeRowsHtml = pagedUsers.map(n => {
-        const assignedCount = state.items.filter(i => i.nodalId === n.id).length;
-        const rawRole = normalizeRole(n.permission);
-        const isSuper = rawRole === 'Super Admin';
-        return `
-          <tr class="hover:bg-slate-50">
-            <td class="px-4 py-3.5 font-bold text-slate-900">${escapeHtml(n.name)}</td>
-            <td class="px-4 py-3.5 text-xs text-slate-600">${escapeHtml(n.email)}</td>
-            <td class="px-4 py-3.5">
-              ${isSuper
-                ? `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-indigo-50 text-indigo-700 border border-indigo-200">Super Admin</span>`
-                : `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold ${rawRole === 'Admin' ? 'bg-indigo-50 text-indigo-700 border border-indigo-200' : 'bg-slate-100 text-slate-700 border border-slate-200'}">${rawRole === 'Admin' ? 'Admin' : 'Users'}</span>`
-              }
-            </td>
-            <td class="px-4 py-3.5 text-xs font-semibold text-slate-700">${assignedCount} assigned</td>
-            <td class="px-4 py-3.5 text-right whitespace-nowrap">
-              <div class="inline-flex items-center gap-2.5">
-                <button type="button" onclick="openWelcomeEmailModal('${escapeHtml(n.id)}')" class="text-xs font-semibold text-indigo-600 hover:text-indigo-800">Resend Welcome Email</button>
-                ${perms.canManageUsers && !isSuper ? `
-                  <button type="button" onclick="initiateDeleteUser('${escapeHtml(n.id)}')" class="text-xs font-semibold text-rose-600 hover:text-rose-800">Remove</button>
-                ` : ''}
-                <button type="button" onclick="openEditUserModal('${escapeHtml(n.id)}')" title="Edit user details" class="p-1.5 rounded-lg text-slate-600 hover:text-indigo-600 hover:bg-indigo-50 transition-colors" aria-label="Edit user details">
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
-                </button>
-              </div>
-            </td>
-          </tr>
-        `;
-      }).join('');
-
-      const filteredDeleted = (state.deletedNodals || [])
-        .filter(n => !q || n.name.toLowerCase().includes(q) || n.email.toLowerCase().includes(q))
-        .slice()
-        .sort((a, b) => (a.name || '').localeCompare(b.name || '', undefined, { sensitivity: 'base' }));
-
-      const deletedSectionHtml = filteredDeleted.length ? `
-        <tr class="bg-rose-50/80 border-t-2 border-rose-200">
-          <td colspan="5" class="px-4 py-2 text-[11px] font-extrabold uppercase tracking-wider text-rose-700">
-            Deleted
-          </td>
-        </tr>
-        ${filteredDeleted.map(d => {
-          const rawRole = normalizeRole(d.permission);
-          return `
-            <tr class="bg-slate-50/70 text-slate-500">
-              <td class="px-4 py-3 font-semibold text-slate-600 line-through">${escapeHtml(d.name)}</td>
-              <td class="px-4 py-3 text-xs text-slate-500">${escapeHtml(d.email)}</td>
-              <td class="px-4 py-3">
-                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-rose-50 text-rose-700 border border-rose-200">
-                  Deleted (${rawRole === 'Admin' ? 'Admin' : 'Users'})
-                </span>
-              </td>
-              <td class="px-4 py-3 text-xs text-slate-400">0 assigned</td>
-              <td class="px-4 py-3 text-right whitespace-nowrap">
-                ${perms.canManageUsers ? `
-                  <button type="button" onclick="restoreDeletedUser('${escapeHtml(d.id)}')" class="text-xs font-semibold text-indigo-600 hover:text-indigo-800">Restore</button>
-                ` : '<span class="text-xs text-slate-400">—</span>'}
-              </td>
-            </tr>
-          `;
-        }).join('')}
-      ` : '';
-
-      tbody.innerHTML = activeRowsHtml + deletedSectionHtml;
-    };
-
-    window.openEditUserModal = function (userId) {
-      if (!getCurrentPermissions().canManageUsers) {
-        showToast('Sign in as an Admin to edit user details.');
-        return;
-      }
-      const u = state.nodals.find(n => n.id === userId);
-      if (!u) return;
-      document.getElementById('edit-user-error').classList.add('hidden');
-      document.getElementById('edit-user-id').value = u.id;
-      document.getElementById('edit-user-name').value = u.name;
-      document.getElementById('edit-user-email').value = u.email;
-      const rawRole = normalizeRole(u.permission);
-      const roleWrapper = document.getElementById('edit-user-role-wrapper');
-      if (rawRole === 'Super Admin') {
-        roleWrapper.classList.add('hidden');
-      } else {
-        roleWrapper.classList.remove('hidden');
-        document.getElementById('edit-user-permission').value = rawRole;
-      }
-      document.getElementById('edit-user-modal').classList.remove('hidden');
-    };
-
-    window.closeEditUserModal = function () {
-      document.getElementById('edit-user-modal')?.classList.add('hidden');
-    };
-
-    window.closeConfirmUserEditModal = function () {
-      document.getElementById('confirm-user-edit-modal')?.classList.add('hidden');
-      state.pendingUserEdit = null;
-    };
-
-    window.handleSaveEditedUser = function (e) {
-      e.preventDefault();
-      if (!getCurrentPermissions().canManageUsers) return;
-      const errBox = document.getElementById('edit-user-error');
-      errBox.classList.add('hidden');
-
-      const userId = document.getElementById('edit-user-id').value;
-      const u = state.nodals.find(n => n.id === userId);
-      if (!u) return;
-
-      const name = document.getElementById('edit-user-name').value.trim();
-      const email = document.getElementById('edit-user-email').value.trim().toLowerCase();
-      const isSuper = normalizeRole(u.permission) === 'Super Admin';
-      const nextPermission = isSuper
-        ? 'Super Admin'
-        : normalizeRole(document.getElementById('edit-user-permission').value);
-
-      if (state.nodals.some(n => n.id !== userId && n.email.toLowerCase() === email)) {
-        errBox.textContent = 'Another user already uses this Google email address.';
-        errBox.classList.remove('hidden');
-        return;
-      }
-
-      const prevRole = normalizeRole(u.permission);
-      const changes = [];
-      if (name !== u.name) changes.push(`<div><span class="font-bold">Name:</span> ${escapeHtml(u.name)} → <span class="font-bold text-indigo-700">${escapeHtml(name)}</span></div>`);
-      if (email !== (u.email || '').trim().toLowerCase()) changes.push(`<div><span class="font-bold">Google Email:</span> ${escapeHtml(u.email)} → <span class="font-bold text-indigo-700">${escapeHtml(email)}</span></div>`);
-      if (nextPermission !== prevRole) changes.push(`<div><span class="font-bold">Permission Role:</span> ${escapeHtml(prevRole === 'User' ? 'Users' : prevRole)} → <span class="font-bold text-indigo-700">${escapeHtml(nextPermission === 'User' ? 'Users' : nextPermission)}</span></div>`);
-
-      if (!changes.length) {
-        closeEditUserModal();
-        showToast('No changes detected.');
-        return;
-      }
-
-      state.pendingUserEdit = {
-        userId,
-        name,
-        email,
-        nextPermission,
-        emailChanged: email !== (u.email || '').trim().toLowerCase()
-      };
-
-      document.getElementById('confirm-user-edit-summary').textContent =
-        `Warning: You are about to modify workspace account details for ${u.name}. Please confirm the updates below:`;
-      document.getElementById('confirm-user-edit-changes').innerHTML = changes.join('');
-      document.getElementById('confirm-user-edit-modal').classList.remove('hidden');
-    };
-
-    window.commitSavedUserEdit = function () {
-      const pending = state.pendingUserEdit;
-      if (!pending || !getCurrentPermissions().canManageUsers) return;
-      const u = state.nodals.find(n => n.id === pending.userId);
-      if (!u) {
-        closeConfirmUserEditModal();
-        return;
-      }
-
-      u.name = pending.name;
-      u.email = pending.email;
-      if (normalizeRole(u.permission) !== 'Super Admin') {
-        u.permission = pending.nextPermission;
-      }
-
-      const shouldPromptWelcome = pending.emailChanged;
-      const targetId = u.id;
-      const targetName = u.name;
-
-      closeConfirmUserEditModal();
-      closeEditUserModal();
-      persistWorkspaceToCloud();
-      renderAll();
-
-      if (shouldPromptWelcome) {
-        showToast(`Updated email for ${targetName}. Please send welcome email to the new address.`);
-        openWelcomeEmailModal(targetId);
-      } else {
-        showToast(`Updated details for ${targetName}.`);
-      }
-    };
-
-    window.handleAddNodalUser = function (e) {
-      e.preventDefault();
-      const errBox = document.getElementById('add-user-error');
-      errBox.classList.add('hidden');
-      if (!getCurrentPermissions().canManageUsers) return;
-
-      const name = document.getElementById('new-user-name').value.trim();
-      const email = document.getElementById('new-user-email').value.trim().toLowerCase();
-      const permission = normalizeRole(document.getElementById('new-user-permission').value);
-
-      if (state.nodals.some(n => n.email.toLowerCase() === email)) {
-        errBox.textContent = 'A user with this Google email address already exists.';
-        errBox.classList.remove('hidden');
-        return;
-      }
-
-      const newUser = { id: `usr-${Date.now()}`, name, email, permission };
-      state.nodals.push(newUser);
-      e.target.reset();
-      persistWorkspaceToCloud();
-      renderAll();
-      openWelcomeEmailModal(newUser.id);
-    };
-
-    window.updateUserPermission = function (userId, newPerm) {
-      const u = state.nodals.find(n => n.id === userId);
-      if (!u || !getCurrentPermissions().canManageUsers) return;
-      u.permission = normalizeRole(newPerm);
-      persistWorkspaceToCloud();
-      renderAll();
-      showToast(`Updated ${u.name}'s role to ${u.permission}.`);
-    };
-
-    window.initiateDeleteUser = function (userId) {
-      if (!getCurrentPermissions().canManageUsers) return;
-      if (state.nodals.length <= 1) {
-        showToast('At least one workspace user must remain.');
-        return;
-      }
-      const user = state.nodals.find(n => n.id === userId);
-      if (!user) return;
-      const assignedItems = state.items.filter(i => i.nodalId === userId);
-      if (!assignedItems.length) {
-        state.nodals = state.nodals.filter(n => n.id !== userId);
-        state.deletedNodals = state.deletedNodals || [];
-        state.deletedNodals.push({ ...user, deletedAt: nowTimestamp() });
-        persistWorkspaceToCloud();
-        renderAll();
-        showToast(`Removed ${user.name}.`);
-        return;
-      }
-
-      state.reassignTargetUserId = userId;
-      const candidates = state.nodals.filter(n => n.id !== userId);
-      const optionsHtml = candidates.map(c => `<option value="${escapeHtml(c.id)}">${escapeHtml(c.name)} (${escapeHtml(c.email)})</option>`).join('');
-
-      document.getElementById('reassign-modal-subtitle').textContent =
-        `${user.name} is currently tagged as Nodal on ${assignedItems.length} item(s). Reassign them before removal:`;
-      document.getElementById('bulk-reassign-select').innerHTML = optionsHtml;
-      document.getElementById('reassign-items-list').innerHTML = assignedItems.map(item => `
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-3 rounded-xl bg-slate-50 border border-slate-200">
-          <div class="min-w-0">
-            <div class="text-xs font-bold text-slate-900 truncate">${escapeHtml(item.title)}</div>
-            <div class="text-[11px] text-slate-500">${escapeHtml(item.type)} · ${escapeHtml(item.status)}</div>
-          </div>
-          <select data-reassign-item-id="${escapeHtml(item.id)}" class="reassign-item-select px-3 py-1.5 text-xs font-semibold bg-white border border-slate-300 rounded-xl">
-            ${optionsHtml}
-          </select>
-        </div>
-      `).join('');
-
-      document.getElementById('reassign-modal').classList.remove('hidden');
-    };
-
-    window.applyBulkReassign = function () {
-      const targetId = document.getElementById('bulk-reassign-select').value;
-      document.querySelectorAll('.reassign-item-select').forEach(sel => {
-        sel.value = targetId;
-      });
-    };
-
-    window.confirmReassignAndDeleteUser = function () {
-      const userId = state.reassignTargetUserId;
-      if (!userId) return;
-      const removedUser = state.nodals.find(n => n.id === userId);
-      document.querySelectorAll('.reassign-item-select').forEach(sel => {
-        const itemId = sel.getAttribute('data-reassign-item-id');
-        const item = state.items.find(i => i.id === itemId);
-        if (item) {
-          item.nodalId = sel.value;
-          item.lastChanged = nowTimestamp();
-        }
-      });
-      state.nodals = state.nodals.filter(n => n.id !== userId);
-      if (removedUser) {
-        state.deletedNodals = state.deletedNodals || [];
-        state.deletedNodals.push({ ...removedUser, deletedAt: nowTimestamp() });
-      }
-      closeReassignModal();
-      persistWorkspaceToCloud();
-      renderAll();
-      showToast('Reassigned items and removed user.');
-    };
-
-    window.restoreDeletedUser = function (userId) {
-      if (!getCurrentPermissions().canManageUsers) return;
-      const idx = (state.deletedNodals || []).findIndex(d => d.id === userId);
-      if (idx === -1) return;
-      const [restored] = state.deletedNodals.splice(idx, 1);
-      delete restored.deletedAt;
-      state.nodals.push(restored);
-      persistWorkspaceToCloud();
-      renderAll();
-      showToast(`Restored ${restored.name}.`);
-    };
-
-    window.closeReassignModal = function () {
-      document.getElementById('reassign-modal')?.classList.add('hidden');
-      state.reassignTargetUserId = null;
-    };
-
-    /* WELCOME EMAIL MODAL */
-    window.openWelcomeEmailModal = function (userId) {
-      const u = getNodalById(userId);
-      state.welcomeTargetUser = u;
-      document.getElementById('welcome-modal-recipient').textContent = `To: ${u.name} <${u.email}>`;
-      document.getElementById('welcome-email-preview').value =
-        `Dear ${u.name},\n\nYou have been onboarded to the SPM-NIWAS Task & Project Management Portal (${window.location.href}) with ${normalizeRole(u.permission)} access.\n\nPlease sign in using your Google account (${u.email}) to view assigned Projects and Tasks.\n\nRegards,\nSPM-NIWAS Project Coordination Team`;
-      document.getElementById('welcome-email-modal').classList.remove('hidden');
-    };
-
-    window.closeWelcomeEmailModal = function () {
-      document.getElementById('welcome-email-modal')?.classList.add('hidden');
-    };
-
-    window.copyWelcomeEmailText = function () {
-      const ta = document.getElementById('welcome-email-preview');
-      ta.select();
-      document.execCommand('copy');
-      showToast('Welcome email copied to clipboard.');
-    };
-
-    window.launchOneClickGmailWelcome = function () {
-      const u = state.welcomeTargetUser;
-      if (!u) return;
-      const subject = encodeURIComponent('Welcome to SPM-NIWAS Task & Project Management Portal');
-      const body = encodeURIComponent(document.getElementById('welcome-email-preview').value);
-      window.open(`https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(u.email)}&su=${subject}&body=${body}`, '_blank');
-    };
-
-    /* EMAIL & AI INBOX */
-    function renderEmailSettings() {
+    function renderEmailInboxView() {
       const inboxesEl = document.getElementById('connected-inboxes-list');
+      const proposalsEl = document.getElementById('email-proposals-list');
+      const badgeEl = document.getElementById('sidebar-badge-email-proposals');
+
+      if (badgeEl) {
+        badgeEl.textContent = String(state.emailProposals.length);
+        badgeEl.classList.toggle('hidden', state.emailProposals.length === 0);
+      }
+
       if (inboxesEl) {
-        inboxesEl.innerHTML = state.connectedInboxes.map((ib, idx) => `
+        inboxesEl.innerHTML = state.connectedInboxes.map(box => `
           <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 flex items-center justify-between gap-3">
-            <div class="min-w-0">
-              <div class="text-sm font-bold text-slate-900 truncate">${escapeHtml(ib.email)}</div>
-              <div class="text-xs text-slate-500">${escapeHtml(ib.provider)} · Last scan: ${escapeHtml(ib.lastScan)}</div>
+            <div>
+              <div class="text-sm font-bold text-slate-900">${escapeHtml(box.email)}</div>
+              <div class="text-xs text-slate-500 mt-0.5">${escapeHtml(box.provider)} • Last scan: ${escapeHtml(box.lastScan)}</div>
             </div>
-            <button type="button" onclick="disconnectInbox(${idx})" class="text-xs font-semibold text-rose-600 hover:text-rose-800">Disconnect</button>
+            <span class="px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 text-[11px] font-bold">${escapeHtml(box.status)}</span>
           </div>
         `).join('');
       }
 
-      const proposalsEl = document.getElementById('email-proposals-list');
       if (proposalsEl) {
-        proposalsEl.innerHTML = state.emailProposals.length
-          ? state.emailProposals.map(p => {
-              const target = state.items.find(i => i.id === p.targetItemId);
-              return `
-                <div class="p-4 rounded-2xl bg-amber-50/60 border border-amber-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                  <div class="space-y-1">
-                    <div class="text-xs font-bold text-amber-900">${escapeHtml(p.subject)} <span class="font-normal text-amber-700">from ${escapeHtml(p.sender)}</span></div>
-                    <div class="text-xs text-slate-700">${escapeHtml(p.proposedSummary)}</div>
-                    ${target ? `<div class="text-[11px] font-semibold text-indigo-700">Matched Record: ${escapeHtml(target.title)}</div>` : ''}
-                  </div>
-                  <div class="flex items-center gap-2 whitespace-nowrap">
-                    <button type="button" onclick="approveEmailProposal('${escapeHtml(p.id)}')" class="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold">Approve &amp; Import</button>
-                    <button type="button" onclick="dismissEmailProposal('${escapeHtml(p.id)}')" class="px-3 py-1.5 rounded-xl bg-white border border-slate-300 text-slate-700 text-xs font-semibold">Dismiss</button>
-                  </div>
-                </div>
-              `;
-            }).join('')
-          : `<div class="text-xs text-slate-400 py-3">No pending AI email proposals right now.</div>`;
+        if (state.emailProposals.length === 0) {
+          proposalsEl.innerHTML = `<div class="text-xs text-slate-400 py-4">No pending email import proposals.</div>`;
+        } else {
+          proposalsEl.innerHTML = state.emailProposals.map(prop => `
+            <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 flex flex-wrap items-center justify-between gap-3">
+              <div class="space-y-1 max-w-2xl">
+                <div class="text-xs font-bold text-indigo-600">From: ${escapeHtml(prop.sender)}</div>
+                <div class="text-sm font-extrabold text-slate-900">${escapeHtml(prop.subject)}</div>
+                <div class="text-xs text-slate-600">${escapeHtml(prop.proposedSummary)}</div>
+              </div>
+              <div class="flex items-center gap-2">
+                <button type="button" onclick="applyEmailProposal('${prop.id}')" class="px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold">Import to Workspace</button>
+                <button type="button" onclick="dismissEmailProposal('${prop.id}')" class="px-3 py-2 rounded-xl border border-slate-300 bg-white hover:bg-slate-100 text-xs font-semibold text-slate-700">Dismiss</button>
+              </div>
+            </div>
+          `).join('');
+        }
       }
     }
 
     window.connectGmailInboxPrompt = function () {
-      const email = getCurrentUser().isSignedIn ? getCurrentUser().email : 'nodal.desk@spmniwas.in';
-      if (!state.connectedInboxes.some(i => i.email === email)) {
-        state.connectedInboxes.push({ email, provider: 'Connected Gmail', status: 'Connected', lastScan: 'Just now' });
-        persistWorkspaceToCloud();
-        renderEmailSettings();
-      }
-      showToast(`Connected inbox ${email}.`);
-    };
-
-    window.disconnectInbox = function (idx) {
-      state.connectedInboxes.splice(idx, 1);
-      persistWorkspaceToCloud();
-      renderEmailSettings();
+      const email = `desk.${state.connectedInboxes.length + 1}@spmniwas.in`;
+      state.connectedInboxes.push({
+        email,
+        provider: 'Google Workspace',
+        status: 'Connected',
+        lastScan: 'Just now'
+      });
+      persistWorkspaceState();
+      renderEmailInboxView();
+      showToast(`Connected ${email}.`);
     };
 
     window.scanConnectedInboxes = function () {
-      state.connectedInboxes.forEach(i => { i.lastScan = nowTimestamp(); });
-      persistWorkspaceToCloud();
-      renderEmailSettings();
-      showToast('Scanned connected Gmail inboxes for new project updates.');
+      state.connectedInboxes.forEach(b => { b.lastScan = 'Just now'; });
+      persistWorkspaceState();
+      renderEmailInboxView();
+      showToast('Scanned all connected Gmail inboxes.');
     };
 
     window.analyzeEmailWithAI = function () {
-      const sender = document.getElementById('intake-email-sender').value.trim() || 'external@spmniwas.in';
+      const sender = document.getElementById('intake-email-sender').value.trim() || 'nodal@spmniwas.in';
       const subject = document.getElementById('intake-email-subject').value.trim();
       const body = document.getElementById('intake-email-body').value.trim();
       if (!subject && !body) {
-        showToast('Enter an email subject or body to analyze.');
+        showToast('Enter an email subject or body first.');
         return;
       }
-      const matched = state.items.find(i =>
-        subject.toLowerCase().includes(i.title.toLowerCase().slice(0, 12))
-      ) || state.items[0];
-
       state.emailProposals.unshift({
         id: `prop-${Date.now()}`,
         sender,
-        subject: subject || 'Untitled Email Thread',
-        targetItemId: matched ? matched.id : '',
-        proposedSummary: body.slice(0, 160) || 'Extracted action update from email thread.',
+        subject: subject || 'Extracted Email Action Item',
+        targetItemId: null,
+        proposedSummary: body || subject,
         proposedDocs: []
       });
-
-      document.getElementById('intake-email-sender').value = '';
       document.getElementById('intake-email-subject').value = '';
       document.getElementById('intake-email-body').value = '';
-      persistWorkspaceToCloud();
-      renderAll();
-      showToast('AI queued a new import proposal for review.');
+      persistWorkspaceState();
+      renderEmailInboxView();
+      showToast('AI extracted a new workspace proposal.');
     };
 
-    window.approveEmailProposal = function (propId) {
+    window.applyEmailProposal = function (propId) {
       const idx = state.emailProposals.findIndex(p => p.id === propId);
       if (idx === -1) return;
-      const prop = state.emailProposals[idx];
-      const target = state.items.find(i => i.id === prop.targetItemId);
-      if (target) {
-        (prop.proposedDocs || []).forEach(docName => {
+      const [prop] = state.emailProposals.splice(idx, 1);
+      const nowStr = formatNowTimestamp();
+
+      if (prop.targetItemId) {
+        const target = state.items.find(i => i.id === prop.targetItemId);
+        if (target) {
+          target.lastChanged = nowStr;
           target.documents = target.documents || [];
-          target.documents.push({ name: docName, addedAt: todayDateStr(), source: 'Gmail AI' });
+          (prop.proposedDocs || []).forEach(docName => {
+            target.documents.push({ name: docName, addedAt: nowStr.split(' ')[0], source: 'Email' });
+          });
+          target.history = target.history || [];
+          target.history.unshift({ timestamp: nowStr, action: `Imported update from ${prop.sender}`, by: 'AI Inbox' });
+        }
+      } else {
+        state.items.unshift({
+          id: `tsk-${Date.now()}`,
+          type: 'Task',
+          title: prop.subject,
+          description: prop.proposedSummary,
+          nodalId: state.nodals[0]?.id || 'usr-1',
+          status: 'Not Started',
+          dueDate: '',
+          lastChanged: nowStr,
+          documents: [],
+          history: [{ timestamp: nowStr, action: `Created from email (${prop.sender})`, by: 'AI Inbox' }]
         });
-        target.lastChanged = nowTimestamp();
-        target.history = target.history || [];
-        target.history.unshift({ timestamp: nowTimestamp(), action: `Imported email update: ${prop.subject}`, by: getCurrentUser().name });
       }
-      state.emailProposals.splice(idx, 1);
-      persistWorkspaceToCloud();
+
+      persistWorkspaceState();
       renderAll();
-      showToast('Approved and imported email update.');
+      showToast('Proposal imported into workspace.');
     };
 
     window.dismissEmailProposal = function (propId) {
       state.emailProposals = state.emailProposals.filter(p => p.id !== propId);
-      persistWorkspaceToCloud();
-      renderAll();
+      persistWorkspaceState();
+      renderEmailInboxView();
+      showToast('Proposal dismissed.');
     };
 
-    window.proposeTitleAndDescriptionWithAI = function () {
-      const titleInput = document.getElementById('item-title');
-      const descInput = document.getElementById('item-description');
-      const type = document.getElementById('item-type').value;
-      if (!titleInput.value.trim() && state.modalDocuments.length) {
-        titleInput.value = state.modalDocuments[0].name.replace(/\.[^.]+$/, '').replace(/[_-]+/g, ' ');
-      }
-      if (titleInput.value.trim()) {
-        descInput.value = `Structured ${type.toLowerCase()} execution plan for "${titleInput.value.trim()}" at SPM-NIWAS, covering stakeholder coordination, milestone tracking, and documentation compliance.`;
-        showToast('Drafted description from title and attached files.');
-      } else {
-        showToast('Enter a title or upload a file first so AI can draft a summary.');
-      }
-    };
-
-    /* COLUMN RESIZING */
-    window.startColumnResize = function (e, tableKey, colIndex) {
-      e.preventDefault();
+    window.startColumnResize = function (event, tableKey, colIndex) {
+      event.preventDefault();
+      event.stopPropagation();
       const colgroup = document.getElementById(`colgroup-${tableKey}`);
       const table = document.getElementById(`table-${tableKey}`);
       if (!colgroup || !table) return;
-      const cols = Array.from(colgroup.querySelectorAll('col'));
-      const currentCol = cols[colIndex];
-      const nextCol = cols[colIndex + 1];
-      if (!currentCol || !nextCol) return;
 
-      const startX = e.clientX;
-      const tableWidth = table.getBoundingClientRect().width || 1000;
-      const startW1 = parseFloat(currentCol.style.width) || 15;
-      const startW2 = parseFloat(nextCol.style.width) || 15;
+      const cols = colgroup.querySelectorAll('col');
+      const targetCol = cols[colIndex];
+      if (!targetCol) return;
 
-      function onMove(ev) {
-        const deltaPct = ((ev.clientX - startX) / tableWidth) * 100;
-        const newW1 = Math.max(6, Math.min(startW1 + startW2 - 6, startW1 + deltaPct));
-        const newW2 = startW1 + startW2 - newW1;
-        currentCol.style.width = `${newW1.toFixed(2)}%`;
-        nextCol.style.width = `${newW2.toFixed(2)}%`;
+      const startX = event.clientX;
+      const tableWidth = table.getBoundingClientRect().width || 1;
+      const startPercent = parseFloat(targetCol.style.width) || (100 / cols.length);
+      const resizer = event.target;
+      resizer.classList.add('active');
+
+      function onMouseMove(moveEvent) {
+        const deltaPx = moveEvent.clientX - startX;
+        const deltaPercent = (deltaPx / tableWidth) * 100;
+        const clamped = Math.min(45, Math.max(7, startPercent + deltaPercent));
+        targetCol.style.width = `${clamped.toFixed(2)}%`;
       }
 
-      function onUp() {
-        document.removeEventListener('mousemove', onMove);
-        document.removeEventListener('mouseup', onUp);
+      function onMouseUp() {
+        resizer.classList.remove('active');
+        document.removeEventListener('mousemove', onMouseMove);
+        document.removeEventListener('mouseup', onMouseUp);
       }
 
-      document.addEventListener('mousemove', onMove);
-      document.addEventListener('mouseup', onUp);
+      document.addEventListener('mousemove', onMouseMove);
+      document.addEventListener('mouseup', onMouseUp);
     };
 
-    /* MASTER RENDER */
     function renderAll() {
-      const activeItems = state.items.filter(i => i.status !== 'Archived');
-      const projects = activeItems.filter(i => i.type === 'Project');
-      const tasks = activeItems.filter(i => i.type === 'Task');
-      const eligibleTasks = tasks.filter(isTaskReadyForProject);
+      const visibleItems = state.items.filter(i => i.status !== 'Archived');
+      const projects = visibleItems.filter(i => i.type === 'Project');
+      const tasks = visibleItems.filter(i => i.type === 'Task');
+      const readyTasks = tasks.filter(isTaskReadyForProject);
 
-      document.getElementById('badge-overview').textContent = activeItems.length;
-      document.getElementById('badge-projects').textContent = projects.length;
-      document.getElementById('badge-tasks').textContent = tasks.length;
+      document.getElementById('badge-overview').textContent = String(visibleItems.length);
+      document.getElementById('badge-projects').textContent = String(projects.length);
+      document.getElementById('badge-tasks').textContent = String(tasks.length);
 
-      const propBadge = document.getElementById('sidebar-badge-email-proposals');
-      if (propBadge) {
-        propBadge.textContent = state.emailProposals.length;
-        propBadge.classList.toggle('hidden', state.emailProposals.length === 0);
+      document.getElementById('kpi-total-projects').textContent = String(projects.length);
+      document.getElementById('kpi-projects-sub').textContent = `${projects.filter(p => p.status === 'In Progress').length} active in progress`;
+
+      document.getElementById('kpi-total-tasks').textContent = String(tasks.length);
+      document.getElementById('kpi-tasks-sub').textContent = `${tasks.filter(t => t.status === 'Completed').length} completed`;
+
+      document.getElementById('kpi-ready-convert').textContent = String(readyTasks.length);
+
+      const readyBanner = document.getElementById('tasks-ready-filter-banner');
+      if (readyBanner) {
+        readyBanner.classList.toggle('hidden', !state.tasksReadyOnly);
       }
 
-      document.getElementById('kpi-total-projects').textContent = projects.length;
-      document.getElementById('kpi-projects-sub').textContent = `${projects.filter(p => p.status === 'In Progress').length} active in progress`;
-      document.getElementById('kpi-total-tasks').textContent = tasks.length;
-      document.getElementById('kpi-tasks-sub').textContent = `${tasks.filter(t => t.status === 'Completed').length} completed`;
-      document.getElementById('kpi-ready-convert').textContent = eligibleTasks.length;
-
-      renderGearMenuDropdowns();
-      renderOverviewUnifiedTable();
-      renderCards('Project');
-      renderCards('Task');
-      renderDetailsPage();
+      renderItemsTable('overview', filterItemsForView('overview', null));
+      renderItemsTable('projects', filterItemsForView('projects', 'Project'));
+      renderItemsTable('tasks', filterItemsForView('tasks', 'Task'));
       renderNodalsTable();
-      renderEmailSettings();
+      renderEmailInboxView();
+
+      if (state.activeTab === 'details') {
+        renderItemDetailsView();
+      }
     }
 
     renderAll();
