@@ -166,6 +166,13 @@
               </span>
               <span id="sidebar-badge-email-proposals" class="hidden ml-2 px-2 py-0.5 text-xs font-bold rounded-full bg-amber-500 text-slate-950">0</span>
             </button>
+
+            <button type="button" id="nav-email-templates" onclick="switchTab('email-templates')" class="nav-btn flex items-center justify-between px-3.5 py-2.5 lg:pl-6 rounded-xl text-sm font-semibold transition-all text-slate-300 hover:bg-slate-800 whitespace-nowrap">
+              <span class="flex items-center gap-2.5">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                Email Templates
+              </span>
+            </button>
           </div>
         </nav>
       </div>
@@ -544,6 +551,58 @@
             <div id="email-proposals-list" class="space-y-3"></div>
           </div>
         </section>
+
+        <!-- VIEW 7: EMAIL TEMPLATES (TWO-PANE EDITOR) -->
+        <section id="view-email-templates" class="hidden">
+          <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden grid grid-cols-1 lg:grid-cols-12 min-h-[520px]">
+            <!-- Left Pane: Template Names -->
+            <div class="lg:col-span-4 border-b lg:border-b-0 lg:border-r border-slate-200 bg-slate-50/70 flex flex-col">
+              <div class="p-4 border-b border-slate-200 flex items-center justify-between gap-2">
+                <h3 class="text-sm font-extrabold text-slate-900">Templates</h3>
+                <button type="button" onclick="createNewEmailTemplate()" class="px-3 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold transition-colors">
+                  + New Template
+                </button>
+              </div>
+              <div id="email-templates-list" class="p-2.5 space-y-1.5 flex-1 overflow-y-auto custom-scrollbar"></div>
+            </div>
+
+            <!-- Right Pane: Live Template Editor -->
+            <div class="lg:col-span-8 p-5 sm:p-6 flex flex-col justify-between space-y-4">
+              <div class="space-y-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label for="template-editor-name" class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">Template Name</label>
+                    <input type="text" id="template-editor-name" oninput="handleTemplateFieldInput()" placeholder="e.g., Welcome Email" class="w-full px-3.5 py-2.5 text-sm font-semibold bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+                  </div>
+                  <div>
+                    <label for="template-editor-subject" class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">Email Subject</label>
+                    <input type="text" id="template-editor-subject" oninput="handleTemplateFieldInput()" placeholder="Email subject line..." class="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+                  </div>
+                </div>
+
+                <div>
+                  <div class="flex flex-wrap items-center justify-between gap-2 mb-1.5">
+                    <label for="template-editor-body" class="block text-xs font-bold uppercase tracking-wider text-slate-500">Template Text</label>
+                    <span class="text-[11px] text-slate-400 font-medium">Placeholders: <code class="text-slate-600">{{name}}</code>, <code class="text-slate-600">{{email}}</code>, <code class="text-slate-600">{{role}}</code>, <code class="text-slate-600">{{loginUrl}}</code>, <code class="text-slate-600">{{title}}</code></span>
+                  </div>
+                  <textarea id="template-editor-body" rows="12" oninput="handleTemplateFieldInput()" placeholder="Write email template body here..." class="w-full px-4 py-3 text-xs sm:text-sm leading-relaxed bg-slate-50 border border-slate-200 rounded-2xl text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 font-mono"></textarea>
+                </div>
+              </div>
+
+              <div class="pt-3 border-t border-slate-100 flex flex-wrap items-center justify-between gap-2">
+                <span id="template-editor-status" class="text-xs font-medium text-emerald-600">All changes saved</span>
+                <div class="flex items-center gap-2">
+                  <button type="button" id="btn-delete-template" onclick="deleteSelectedEmailTemplate()" class="px-3.5 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-bold transition-colors">
+                    Delete Template
+                  </button>
+                  <button type="button" onclick="saveSelectedEmailTemplate()" class="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold transition-colors">
+                    Save Template
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
       </div>
     </main>
   </div>
@@ -833,6 +892,30 @@
       { id: 'usr-2', name: 'Director SPM-NIWAS', email: 'director@spmniwas.in', permission: 'Super Admin', isSuperAdmin: true }
     ];
 
+    const INITIAL_EMAIL_TEMPLATES = [
+      {
+        id: 'tpl-welcome',
+        name: 'Welcome Email',
+        subject: 'Welcome to SPM-NIWAS Task & Project Management Portal',
+        body: 'Dear {{name}},\n\nYou have been added to the SPM-NIWAS Task & Project Management Portal with "{{role}}" access.\n\nLogin URL: {{loginUrl}}\n\nPlease sign in at the link above using your Google account ({{email}}) to review your assigned tasks and projects.\n\nRegards,\nSPM-NIWAS Coordination Desk',
+        isSystem: true
+      },
+      {
+        id: 'tpl-assignment',
+        name: 'Task / Project Assignment',
+        subject: 'New Assignment: {{title}} — SPM-NIWAS',
+        body: 'Dear {{name}},\n\nYou have been designated as the Nodal Officer for "{{title}}".\n\nPlease log in to review scope details, target dates, and supporting documents:\n{{loginUrl}}\n\nRegards,\nSPM-NIWAS Coordination Desk',
+        isSystem: false
+      },
+      {
+        id: 'tpl-reminder',
+        name: 'Status Update Reminder',
+        subject: 'Action Required: Status Update for {{title}}',
+        body: 'Dear {{name}},\n\nThis is a gentle reminder to update the progress status and upload any latest supporting documents for "{{title}}" on the SPM-NIWAS portal.\n\nPortal Link: {{loginUrl}}\n\nRegards,\nSPM-NIWAS Coordination Desk',
+        isSystem: false
+      }
+    ];
+
     const INITIAL_ITEMS = [
       {
         id: 'prj-101',
@@ -937,7 +1020,9 @@
           proposedSummary: 'Add confirmed keynote speaker list and update NWC 2027 session timeline.',
           proposedDocs: ['NWC_2027_Keynote_Lineup.pdf']
         }
-      ]
+      ],
+      emailTemplates: JSON.parse(JSON.stringify(INITIAL_EMAIL_TEMPLATES)),
+      selectedTemplateId: 'tpl-welcome'
     };
 
     let db = null;
@@ -1087,6 +1172,7 @@
           id: '',
           name: '',
           email: '',
+          photoURL: '',
           roleLabel: 'Users',
           permission: 'User'
         };
@@ -1096,11 +1182,15 @@
       const matched = findRegisteredWorkspaceUser(email);
       const isSuperAdmin = Boolean(matched && (matched.isSuperAdmin || matched.permission === 'Super Admin'));
       const isAdmin = Boolean(matched && (isSuperAdmin || matched.permission === 'Admin'));
+      const providerPhoto = Array.isArray(state.authUser.providerData)
+        ? (state.authUser.providerData.find(p => p && p.photoURL)?.photoURL || '')
+        : '';
       return {
         isSignedIn: true,
         id: matched ? matched.id : state.authUser.uid,
         name: matched ? matched.name : (state.authUser.displayName || email.split('@')[0]),
         email: state.authUser.email,
+        photoURL: state.authUser.photoURL || providerPhoto || '',
         roleLabel: isSuperAdmin ? 'Super Admin' : (isAdmin ? 'Admin' : 'Users'),
         permission: isAdmin ? 'Admin' : 'User'
       };
@@ -1129,6 +1219,7 @@
           deletedNodals: state.deletedNodals,
           connectedInboxes: state.connectedInboxes,
           emailProposals: state.emailProposals,
+          emailTemplates: state.emailTemplates,
           updatedAt: new Date().toISOString()
         });
       } catch (err) {
@@ -1203,6 +1294,7 @@
                 if (Array.isArray(data.deletedNodals)) state.deletedNodals = data.deletedNodals;
                 if (Array.isArray(data.connectedInboxes)) state.connectedInboxes = data.connectedInboxes;
                 if (Array.isArray(data.emailProposals)) state.emailProposals = data.emailProposals;
+                if (Array.isArray(data.emailTemplates) && data.emailTemplates.length > 0) state.emailTemplates = data.emailTemplates;
 
                 if (state.authUser && !findRegisteredWorkspaceUser(state.authUser.email)) {
                   state.authUser = null;
@@ -1304,28 +1396,22 @@
     function buildSettingsDropdownHtml() {
       const user = getCurrentUser();
       const initial = (user.name || 'U').charAt(0).toUpperCase();
-      const badgeCls = user.roleLabel === 'Super Admin'
-        ? 'bg-indigo-100 text-indigo-800 border-indigo-200'
-        : (user.roleLabel === 'Admin'
-          ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
-          : 'bg-slate-100 text-slate-700 border-slate-200');
+      const avatarHtml = user.photoURL
+        ? `<div class="w-10 h-10 rounded-full overflow-hidden bg-indigo-600 text-white font-extrabold text-sm flex items-center justify-center flex-shrink-0 border border-slate-200">
+            <img src="${escapeHtml(user.photoURL)}" alt="${escapeHtml(user.name)}" referrerpolicy="no-referrer" class="w-full h-full object-cover" onerror="this.parentElement.innerHTML='${escapeHtml(initial)}'" />
+          </div>`
+        : `<div class="w-10 h-10 rounded-full bg-indigo-600 text-white font-extrabold text-sm flex items-center justify-center flex-shrink-0">
+            ${escapeHtml(initial)}
+          </div>`;
 
       return `
-        <div class="flex items-center gap-3 pb-3 border-b border-slate-100">
-          <div class="w-10 h-10 rounded-full bg-indigo-600 text-white font-extrabold text-sm flex items-center justify-center flex-shrink-0">
-            ${escapeHtml(initial)}
-          </div>
+        <div class="flex items-start gap-3">
+          ${avatarHtml}
           <div class="min-w-0 flex-1">
             <div class="text-sm font-bold text-slate-900 truncate">${escapeHtml(user.name)}</div>
             <div class="text-xs text-slate-500 truncate">${escapeHtml(user.email)}</div>
+            <div class="text-xs text-slate-500 truncate">Role: ${escapeHtml(user.roleLabel)}</div>
           </div>
-        </div>
-
-        <div class="flex items-center justify-between">
-          <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Role</span>
-          <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold border ${badgeCls}">
-            ${escapeHtml(user.roleLabel)}
-          </span>
         </div>
 
         <div class="pt-2 border-t border-slate-100">
@@ -1379,7 +1465,7 @@
         activeNav.classList.remove('text-slate-300', 'hover:bg-slate-800');
       }
 
-      const views = ['overview', 'projects', 'tasks', 'details', 'nodals', 'email-settings'];
+      const views = ['overview', 'projects', 'tasks', 'details', 'nodals', 'email-settings', 'email-templates'];
       views.forEach(v => {
         const el = document.getElementById(`view-${v}`);
         if (el) el.classList.toggle('hidden', v !== tabName);
@@ -1409,7 +1495,8 @@
           state.tasksReadyOnly ? 'Tasks eligible for conversion into full SPM-NIWAS Projects.' : 'Track operational tasks, action items, and project conversion candidates.'
         ],
         'nodals': ['Users & Permissions', 'Manage Users and their Permissions.'],
-        'email-settings': ['Email & AI Inbox', 'Connect Gmail inboxes and review AI-extracted task/project proposals.']
+        'email-settings': ['Email & AI Inbox', 'Connect Gmail inboxes and review AI-extracted task/project proposals.'],
+        'email-templates': ['Email Templates', 'Customize email templates used for user onboarding and notifications.']
       };
 
       if (titles[tabName]) {
@@ -2083,16 +2170,31 @@
       state.nodals.push(restored);
       persistWorkspaceState();
       renderAll();
-      showToast(`Restored ${restored.name} to active users.`);
+      showToast(`Restored ${restored.name}.`);
     };
+
+    function renderTemplatePlaceholders(text, vars) {
+      return String(text || '')
+        .replace(/\{\{\s*name\s*\}\}/gi, vars.name || '')
+        .replace(/\{\{\s*email\s*\}\}/gi, vars.email || '')
+        .replace(/\{\{\s*role\s*\}\}/gi, vars.role || '')
+        .replace(/\{\{\s*loginUrl\s*\}\}/gi, vars.loginUrl || '')
+        .replace(/\{\{\s*title\s*\}\}/gi, vars.title || '');
+    }
 
     window.openWelcomeEmailModal = function (userId) {
       const user = state.nodals.find(u => u.id === userId);
       if (!user) return;
       state.welcomeTargetUser = user;
+      const loginUrl = window.location.href.split('#')[0];
+      const welcomeTpl = state.emailTemplates.find(t => t.id === 'tpl-welcome') || INITIAL_EMAIL_TEMPLATES[0];
       document.getElementById('welcome-modal-recipient').textContent = `Recipient: ${user.name} <${user.email}>`;
-      document.getElementById('welcome-email-preview').value =
-        `Dear ${user.name},\n\nYou have been added to the SPM-NIWAS Task & Project Management Portal with "${user.permission}" access.\n\nPlease sign in using your Google account (${user.email}) to review your assigned tasks and projects.\n\nRegards,\nSPM-NIWAS Coordination Desk`;
+      document.getElementById('welcome-email-preview').value = renderTemplatePlaceholders(welcomeTpl.body, {
+        name: user.name,
+        email: user.email,
+        role: user.permission,
+        loginUrl
+      });
       document.getElementById('welcome-email-modal')?.classList.remove('hidden');
     };
 
@@ -2113,7 +2215,14 @@
       const user = state.welcomeTargetUser;
       const body = document.getElementById('welcome-email-preview')?.value || '';
       if (!user) return;
-      const subject = encodeURIComponent('Welcome to SPM-NIWAS Task & Project Management Portal');
+      const welcomeTpl = state.emailTemplates.find(t => t.id === 'tpl-welcome') || INITIAL_EMAIL_TEMPLATES[0];
+      const subjectText = renderTemplatePlaceholders(welcomeTpl.subject, {
+        name: user.name,
+        email: user.email,
+        role: user.permission,
+        loginUrl: window.location.href.split('#')[0]
+      });
+      const subject = encodeURIComponent(subjectText);
       const encodedBody = encodeURIComponent(body);
       const to = encodeURIComponent(user.email);
       window.open(`https://mail.google.com/mail/?view=cm&fs=1&to=${to}&su=${subject}&body=${encodedBody}`, '_blank', 'noopener');
@@ -2414,6 +2523,103 @@
       showToast('Proposal dismissed.');
     };
 
+    function renderEmailTemplatesView() {
+      const listEl = document.getElementById('email-templates-list');
+      const nameInput = document.getElementById('template-editor-name');
+      const subjectInput = document.getElementById('template-editor-subject');
+      const bodyInput = document.getElementById('template-editor-body');
+      const deleteBtn = document.getElementById('btn-delete-template');
+      if (!listEl || !nameInput || !subjectInput || !bodyInput) return;
+
+      if (!state.emailTemplates.some(t => t.id === state.selectedTemplateId) && state.emailTemplates.length > 0) {
+        state.selectedTemplateId = state.emailTemplates[0].id;
+      }
+
+      const activeTpl = state.emailTemplates.find(t => t.id === state.selectedTemplateId);
+
+      listEl.innerHTML = state.emailTemplates.map(tpl => {
+        const isSelected = tpl.id === state.selectedTemplateId;
+        const btnCls = isSelected
+          ? 'bg-indigo-600 text-white shadow-xs'
+          : 'bg-white text-slate-800 hover:bg-slate-100 border border-slate-200/80';
+        const subCls = isSelected ? 'text-indigo-100' : 'text-slate-400';
+        return `
+          <button type="button" onclick="selectEmailTemplate('${tpl.id}')" class="w-full text-left px-3.5 py-3 rounded-xl transition-all ${btnCls}">
+            <div class="text-xs sm:text-sm font-bold truncate">${escapeHtml(tpl.name || 'Untitled Template')}</div>
+            <div class="text-[11px] truncate mt-0.5 ${subCls}">${escapeHtml(tpl.subject || 'No subject')}</div>
+          </button>
+        `;
+      }).join('');
+
+      if (activeTpl) {
+        if (document.activeElement !== nameInput) nameInput.value = activeTpl.name || '';
+        if (document.activeElement !== subjectInput) subjectInput.value = activeTpl.subject || '';
+        if (document.activeElement !== bodyInput) bodyInput.value = activeTpl.body || '';
+        if (deleteBtn) {
+          deleteBtn.classList.toggle('hidden', Boolean(activeTpl.isSystem));
+        }
+      }
+    }
+
+    window.selectEmailTemplate = function (templateId) {
+      state.selectedTemplateId = templateId;
+      const statusEl = document.getElementById('template-editor-status');
+      if (statusEl) statusEl.textContent = 'All changes saved';
+      renderEmailTemplatesView();
+    };
+
+    window.handleTemplateFieldInput = function () {
+      const activeTpl = state.emailTemplates.find(t => t.id === state.selectedTemplateId);
+      if (!activeTpl) return;
+      activeTpl.name = document.getElementById('template-editor-name')?.value || '';
+      activeTpl.subject = document.getElementById('template-editor-subject')?.value || '';
+      activeTpl.body = document.getElementById('template-editor-body')?.value || '';
+
+      const statusEl = document.getElementById('template-editor-status');
+      if (statusEl) statusEl.textContent = 'Saving...';
+
+      clearTimeout(window.__templateSaveTimer);
+      window.__templateSaveTimer = setTimeout(() => {
+        persistWorkspaceState();
+        renderEmailTemplatesView();
+        if (statusEl) statusEl.textContent = 'All changes saved';
+      }, 300);
+    };
+
+    window.saveSelectedEmailTemplate = function () {
+      handleTemplateFieldInput();
+      persistWorkspaceState();
+      renderEmailTemplatesView();
+      const statusEl = document.getElementById('template-editor-status');
+      if (statusEl) statusEl.textContent = 'All changes saved';
+      showToast('Email template saved.');
+    };
+
+    window.createNewEmailTemplate = function () {
+      const newTpl = {
+        id: `tpl-${Date.now()}`,
+        name: `Custom Template ${state.emailTemplates.length + 1}`,
+        subject: 'SPM-NIWAS Notification: {{title}}',
+        body: 'Dear {{name}},\n\nPlease find the update regarding {{title}}.\n\nLogin URL: {{loginUrl}}\n\nRegards,\nSPM-NIWAS Coordination Desk',
+        isSystem: false
+      };
+      state.emailTemplates.push(newTpl);
+      state.selectedTemplateId = newTpl.id;
+      persistWorkspaceState();
+      renderEmailTemplatesView();
+      showToast('New template created.');
+    };
+
+    window.deleteSelectedEmailTemplate = function () {
+      const activeTpl = state.emailTemplates.find(t => t.id === state.selectedTemplateId);
+      if (!activeTpl || activeTpl.isSystem) return;
+      state.emailTemplates = state.emailTemplates.filter(t => t.id !== activeTpl.id);
+      state.selectedTemplateId = state.emailTemplates[0]?.id || null;
+      persistWorkspaceState();
+      renderEmailTemplatesView();
+      showToast(`Deleted "${activeTpl.name}".`);
+    };
+
     window.startColumnResize = function (event, tableKey, colIndex) {
       event.preventDefault();
       event.stopPropagation();
@@ -2479,6 +2685,7 @@
       renderItemsTable('tasks', filterItemsForView('tasks', 'Task'));
       renderNodalsTable();
       renderEmailInboxView();
+      renderEmailTemplatesView();
 
       if (state.activeTab === 'details') {
         renderItemDetailsView();
