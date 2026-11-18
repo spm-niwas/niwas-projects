@@ -55,7 +55,50 @@
   </style>
 </head>
 <body class="bg-slate-50 text-slate-800 antialiased selection:bg-indigo-100 selection:text-indigo-900">
-  <div class="min-h-screen flex flex-col lg:flex-row">
+  <!-- FULL-SCREEN LOGIN GATE (SHOWN WHEN NOT LOGGED IN) -->
+  <div id="login-gate-screen" class="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-slate-900 via-slate-800 to-indigo-950">
+    <div class="bg-white rounded-3xl max-w-md w-full p-7 sm:p-8 shadow-2xl border border-slate-200/80 space-y-6 text-center">
+      <div class="w-16 h-16 rounded-2xl bg-sky-50 border border-sky-200 flex items-center justify-center mx-auto">
+        <svg viewBox="0 0 64 64" class="w-12 h-12" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="SPM NIWAS Logo">
+          <path d="M32 6C32 6 14 25.5 14 39C14 48.9411 22.0589 57 32 57C41.9411 57 50 48.9411 50 39C50 25.5 32 6 32 6Z" fill="#0284C7"/>
+          <path d="M18 39C18 46.732 24.268 53 32 53C39.732 53 46 46.732 46 39C46 34.5 43.2 29.2 39.8 24.6C37.5 31.2 31.5 36.2 24.5 36.2C21.8 36.2 19.6 37.3 18 39Z" fill="#16A34A"/>
+          <path d="M23 41C23 36.5 26.8 33.5 31.5 33.5C34.2 33.5 36.5 31.8 36.5 29.2C36.5 27.6 35.4 26.4 34 26.4C32.9 26.4 32.1 27.1 32.1 28.1C32.1 28.8 32.6 29.3 33.2 29.3C31.2 29.8 29.6 28.4 29.6 26.4C29.6 24.1 31.6 22.3 34.1 22.3C37.3 22.3 39.8 24.9 39.8 28.3C39.8 32.5 36.7 35.8 32.8 36.6C36.8 37.1 40.2 39.6 41.2 43.2C36.5 45.6 27.8 45.5 23 41Z" fill="#FFFFFF"/>
+        </svg>
+      </div>
+
+      <div class="space-y-1.5">
+        <h1 class="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight">NIWAS Projects</h1>
+        <p class="text-xs sm:text-sm text-slate-500">Sign in with your authorized Google account to access SPM-NIWAS Tasks &amp; Projects.</p>
+      </div>
+
+      <div id="login-gate-error" class="hidden bg-rose-50 border border-rose-200 text-rose-700 text-xs font-bold px-4 py-3 rounded-2xl">
+        Only registered users can log in.
+      </div>
+
+      <button type="button" id="btn-google-login-gate" onclick="signInWithGoogleAccount()" class="w-full py-3.5 px-5 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold shadow-lg shadow-indigo-600/20 flex items-center justify-center gap-3 transition-all">
+        <svg class="w-5 h-5 bg-white rounded-full p-0.5" viewBox="0 0 24 24">
+          <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.665-5.17 3.665-9.17z"/>
+          <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.11-6.72-4.96H1.29v3.14C3.26 21.3 7.31 24 12 24z"/>
+          <path fill="#FBBC05" d="M5.28 14.24c-.24-.72-.38-1.49-.38-2.24s.14-1.52.38-2.24V6.62H1.29C.47 8.24 0 10.06 0 12s.47 3.76 1.29 5.38l3.99-3.14z"/>
+          <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.31 0 3.26 2.7 1.29 6.62l3.99 3.14c.95-2.85 3.6-4.96 6.72-4.96z"/>
+        </svg>
+        <span>Sign in with Google</span>
+      </button>
+
+      <div id="login-preview-fallback" class="pt-2 border-t border-slate-100">
+        <button type="button" onclick="signInPreviewSuperAdmin()" class="w-full py-2.5 px-4 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition-colors">
+          Continue as Super Admin (Design Console Preview)
+        </button>
+      </div>
+
+      <p class="text-[11px] text-slate-400">
+        Authorized Google / Gmail accounts only • Session stays active for 7 days
+      </p>
+    </div>
+  </div>
+
+  <!-- AUTHENTICATED WORKSPACE SHELL (HIDDEN UNTIL SIGNED IN) -->
+  <div id="app-shell" class="hidden min-h-screen flex flex-col lg:flex-row">
     <!-- Left Sidebar -->
     <aside class="w-full lg:w-64 bg-slate-900 text-slate-200 flex-shrink-0 flex flex-col justify-between">
       <div>
@@ -766,8 +809,11 @@
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-    import { getAuth, signInAnonymously, signInWithCustomToken, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { getAuth, setPersistence, browserLocalPersistence, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
     import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+    const SESSION_MAX_AGE_MS = 7 * 24 * 60 * 60 * 1000;
+    const SESSION_TIMESTAMP_KEY = 'niwas_google_auth_login_ts';
 
     const ROLE_PERMISSIONS = {
       'Admin': { canApprove: true, canManageUsers: true, canDirectCreate: true, canDelete: true },
@@ -862,7 +908,6 @@
       selectedItemId: null,
       tasksReadyOnly: false,
       authUser: null,
-      roleOverride: null,
       nodals: JSON.parse(JSON.stringify(INITIAL_NODALS)),
       deletedNodals: [],
       items: JSON.parse(JSON.stringify(INITIAL_ITEMS)),
@@ -965,54 +1010,81 @@
       return providers.some(p => p && p.providerId === 'google.com');
     }
 
-    window.showUnauthorizedLoginModal = function () {
-      document.getElementById('unauthorized-login-modal')?.classList.remove('hidden');
-    };
+    function isEmbeddedDesignPreview() {
+      try {
+        return window.self !== window.top;
+      } catch (_) {
+        return true;
+      }
+    }
 
-    window.closeUnauthorizedLoginModal = function () {
-      document.getElementById('unauthorized-login-modal')?.classList.add('hidden');
-    };
+    function updateAuthGateVisibility() {
+      const loginGate = document.getElementById('login-gate-screen');
+      const appShell = document.getElementById('app-shell');
+      const previewFallback = document.getElementById('login-preview-fallback');
+      const isAuthenticated = Boolean(state.authUser);
+
+      if (loginGate) loginGate.classList.toggle('hidden', isAuthenticated);
+      if (appShell) appShell.classList.toggle('hidden', !isAuthenticated);
+      if (previewFallback) {
+        previewFallback.classList.toggle('hidden', Boolean(auth) && !isEmbeddedDesignPreview());
+      }
+    }
+
+    function isSessionExpiredBySevenDayPolicy(firebaseUser) {
+      const lastSignInMs = firebaseUser?.metadata?.lastSignInTime
+        ? new Date(firebaseUser.metadata.lastSignInTime).getTime()
+        : 0;
+      let storedLoginMs = 0;
+      try {
+        storedLoginMs = Number(window.localStorage?.getItem(SESSION_TIMESTAMP_KEY) || 0);
+      } catch (_) {}
+
+      const effectiveLoginMs = Math.max(lastSignInMs || 0, storedLoginMs || 0);
+      if (!effectiveLoginMs) {
+        try {
+          window.localStorage?.setItem(SESSION_TIMESTAMP_KEY, String(Date.now()));
+        } catch (_) {}
+        return false;
+      }
+      return (Date.now() - effectiveLoginMs) > SESSION_MAX_AGE_MS;
+    }
+
+    function recordFreshSevenDaySession() {
+      try {
+        window.localStorage?.setItem(SESSION_TIMESTAMP_KEY, String(Date.now()));
+      } catch (_) {}
+    }
+
+    function clearSevenDaySessionTimestamp() {
+      try {
+        window.localStorage?.removeItem(SESSION_TIMESTAMP_KEY);
+      } catch (_) {}
+    }
 
     function getCurrentUser() {
-      if (!isFirebaseConfigured) {
-        const previewSuperAdmin = BUILTIN_SUPER_ADMINS[0];
-        const effectivePermission = state.roleOverride || 'Admin';
-        return {
-          isSignedIn: true,
-          isPreviewMode: true,
-          id: previewSuperAdmin.id,
-          name: `${previewSuperAdmin.name} (Design Preview)`,
-          email: previewSuperAdmin.email,
-          basePermission: 'Admin',
-          permission: effectivePermission
-        };
-      }
-
       if (!state.authUser) {
         return {
           isSignedIn: false,
-          isPreviewMode: false,
-          id: 'guest',
-          name: 'Guest Visitor',
-          email: 'Not signed in',
-          basePermission: 'User',
+          id: '',
+          name: '',
+          email: '',
+          roleLabel: 'Users',
           permission: 'User'
         };
       }
 
       const email = (state.authUser.email || '').toLowerCase();
       const matched = findRegisteredWorkspaceUser(email);
-      const isSuperOrAdmin = matched && (matched.isSuperAdmin || matched.permission === 'Super Admin' || matched.permission === 'Admin');
-      const basePermission = isSuperOrAdmin ? 'Admin' : 'User';
-      const effectivePermission = (basePermission === 'Admin' && state.roleOverride) ? state.roleOverride : basePermission;
+      const isSuperAdmin = Boolean(matched && (matched.isSuperAdmin || matched.permission === 'Super Admin'));
+      const isAdmin = Boolean(matched && (isSuperAdmin || matched.permission === 'Admin'));
       return {
         isSignedIn: true,
-        isPreviewMode: false,
         id: matched ? matched.id : state.authUser.uid,
         name: matched ? matched.name : (state.authUser.displayName || email.split('@')[0]),
         email: state.authUser.email,
-        basePermission,
-        permission: effectivePermission
+        roleLabel: isSuperAdmin ? 'Super Admin' : (isAdmin ? 'Admin' : 'Users'),
+        permission: isAdmin ? 'Admin' : 'User'
       };
     }
 
@@ -1048,35 +1120,48 @@
 
     async function initFirebaseCloud() {
       try {
-        if (!isFirebaseConfigured) return;
+        if (!isFirebaseConfigured) {
+          updateAuthGateVisibility();
+          return;
+        }
         const firebaseConfig = JSON.parse(__firebase_config);
         const app = initializeApp(firebaseConfig);
         auth = getAuth(app);
         db = getFirestore(app);
 
-        if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-          await signInWithCustomToken(auth, __initial_auth_token);
-        } else {
-          await signInAnonymously(auth);
-        }
+        try {
+          await setPersistence(auth, browserLocalPersistence);
+        } catch (_) {}
 
         onAuthStateChanged(auth, async (user) => {
           if (user && !user.isAnonymous) {
-            const registeredUser = findRegisteredWorkspaceUser(user.email);
-            if (!isGoogleAuthenticatedUser(user) || !registeredUser) {
+            if (isSessionExpiredBySevenDayPolicy(user)) {
               state.authUser = null;
-              state.roleOverride = null;
+              clearSevenDaySessionTimestamp();
               try {
                 await signOut(auth);
               } catch (_) {}
               renderAll();
+              showToast('Your 7-day session expired. Please sign in again with Google.');
+              return;
+            }
+
+            const registeredUser = findRegisteredWorkspaceUser(user.email);
+            if (!isGoogleAuthenticatedUser(user) || !registeredUser) {
+              state.authUser = null;
+              clearSevenDaySessionTimestamp();
+              try {
+                await signOut(auth);
+              } catch (_) {}
+              document.getElementById('login-gate-error')?.classList.remove('hidden');
+              renderAll();
               showUnauthorizedLoginModal();
               return;
             }
+            document.getElementById('login-gate-error')?.classList.add('hidden');
             state.authUser = user;
           } else {
             state.authUser = null;
-            state.roleOverride = null;
           }
           renderAll();
         });
@@ -1096,10 +1181,11 @@
 
               if (state.authUser && !findRegisteredWorkspaceUser(state.authUser.email)) {
                 state.authUser = null;
-                state.roleOverride = null;
+                clearSevenDaySessionTimestamp();
                 try {
                   await signOut(auth);
                 } catch (_) {}
+                document.getElementById('login-gate-error')?.classList.remove('hidden');
                 showUnauthorizedLoginModal();
               }
               renderAll();
@@ -1114,16 +1200,33 @@
         );
       } catch (err) {
         isCloudReady = false;
+        updateAuthGateVisibility();
         console.warn('Running in local mode:', err);
       }
     }
 
+    window.signInPreviewSuperAdmin = function () {
+      const superAdmin = BUILTIN_SUPER_ADMINS[0];
+      recordFreshSevenDaySession();
+      state.authUser = {
+        uid: superAdmin.id,
+        email: superAdmin.email,
+        displayName: superAdmin.name,
+        isAnonymous: false,
+        providerData: [{ providerId: 'google.com' }]
+      };
+      document.getElementById('login-gate-error')?.classList.add('hidden');
+      renderAll();
+      showToast(`Signed in as ${superAdmin.name}`);
+    };
+
     window.signInWithGoogleAccount = async function () {
       if (!auth) {
-        showToast('Preview Admin Mode is already active in this design console.');
+        signInPreviewSuperAdmin();
         return;
       }
       try {
+        await setPersistence(auth, browserLocalPersistence);
         const provider = new GoogleAuthProvider();
         provider.setCustomParameters({ prompt: 'select_account' });
         const result = await signInWithPopup(auth, provider);
@@ -1132,21 +1235,27 @@
 
         if (!isGoogleAuthenticatedUser(result.user) || !registeredUser) {
           state.authUser = null;
-          state.roleOverride = null;
+          clearSevenDaySessionTimestamp();
           try {
             await signOut(auth);
           } catch (_) {}
+          document.getElementById('login-gate-error')?.classList.remove('hidden');
           renderAll();
           showUnauthorizedLoginModal();
           return;
         }
 
+        recordFreshSevenDaySession();
+        document.getElementById('login-gate-error')?.classList.add('hidden');
         state.authUser = result.user;
-        state.roleOverride = null;
         closeSettingsMenu();
         renderAll();
         showToast(`Signed in as ${registeredUser.name} (${signedInEmail})`);
       } catch (err) {
+        if (!isFirebaseConfigured || isEmbeddedDesignPreview()) {
+          signInPreviewSuperAdmin();
+          return;
+        }
         showToast('Google Sign-In cancelled or blocked by browser popup settings.');
       }
     };
@@ -1156,64 +1265,43 @@
         if (auth) await signOut(auth);
       } catch (_) {}
       state.authUser = null;
-      state.roleOverride = null;
+      clearSevenDaySessionTimestamp();
       closeSettingsMenu();
       renderAll();
       showToast('Signed out.');
     };
 
-    window.switchRoleOverride = function (newRole) {
-      const user = getCurrentUser();
-      if (user.basePermission !== 'Admin') return;
-      state.roleOverride = newRole === 'Admin' ? null : 'User';
-      renderAll();
-      showToast(`Switched active view role to ${newRole}.`);
-    };
-
     function buildSettingsDropdownHtml() {
       const user = getCurrentUser();
-      const isBaseAdmin = user.basePermission === 'Admin';
-      const initial = (user.name || 'G').charAt(0).toUpperCase();
+      const initial = (user.name || 'U').charAt(0).toUpperCase();
+      const badgeCls = user.roleLabel === 'Super Admin'
+        ? 'bg-indigo-100 text-indigo-800 border-indigo-200'
+        : (user.roleLabel === 'Admin'
+          ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+          : 'bg-slate-100 text-slate-700 border-slate-200');
 
       return `
         <div class="flex items-center gap-3 pb-3 border-b border-slate-100">
           <div class="w-10 h-10 rounded-full bg-indigo-600 text-white font-extrabold text-sm flex items-center justify-center flex-shrink-0">
             ${escapeHtml(initial)}
           </div>
-          <div class="min-w-0">
+          <div class="min-w-0 flex-1">
             <div class="text-sm font-bold text-slate-900 truncate">${escapeHtml(user.name)}</div>
             <div class="text-xs text-slate-500 truncate">${escapeHtml(user.email)}</div>
           </div>
         </div>
 
-        <div class="space-y-1.5">
-          <div class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Workspace Role</div>
-          ${isBaseAdmin ? `
-            <select onchange="switchRoleOverride(this.value)" class="w-full px-3 py-2 text-xs font-bold bg-slate-50 border border-slate-200 rounded-xl text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-              <option value="Admin" ${user.permission === 'Admin' ? 'selected' : ''}>Admin (Full Access)</option>
-              <option value="User" ${user.permission === 'User' ? 'selected' : ''}>User (Standard View)</option>
-            </select>
-          ` : `
-            <div class="px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs font-bold text-slate-700">
-              User (Approval Required for Changes)
-            </div>
-          `}
+        <div class="flex items-center justify-between">
+          <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Role</span>
+          <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold border ${badgeCls}">
+            ${escapeHtml(user.roleLabel)}
+          </span>
         </div>
 
         <div class="pt-2 border-t border-slate-100">
-          ${user.isPreviewMode ? `
-            <div class="px-3 py-2 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 text-[11px] font-semibold text-center">
-              Preview Admin Mode Active (Firebase Auth connects automatically when deployed)
-            </div>
-          ` : user.isSignedIn ? `
-            <button type="button" onclick="signOutGoogleAccount()" class="w-full px-3.5 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-bold transition-colors text-center">
-              Logout
-            </button>
-          ` : `
-            <button type="button" onclick="signInWithGoogleAccount()" class="w-full px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold transition-colors text-center">
-              Sign in with Google
-            </button>
-          `}
+          <button type="button" onclick="signOutGoogleAccount()" class="w-full px-3.5 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-bold transition-colors text-center">
+            Logout
+          </button>
         </div>
       `;
     }
@@ -2331,6 +2419,9 @@
     };
 
     function renderAll() {
+      updateAuthGateVisibility();
+      if (!state.authUser) return;
+
       const visibleItems = state.items.filter(i => i.status !== 'Archived');
       const projects = visibleItems.filter(i => i.type === 'Project');
       const tasks = visibleItems.filter(i => i.type === 'Task');
