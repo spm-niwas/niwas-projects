@@ -2478,6 +2478,9 @@
       const nodalSelect = document.getElementById('item-nodal');
       if (!modal || !nodalSelect) return;
 
+      const caps = getRoleCapabilities();
+      const canAssignNodal = Boolean(caps.canManageUsers);
+
       nodalSelect.innerHTML = state.nodals
         .map(n => `<option value="${n.id}">${escapeHtml(n.name)} (${escapeHtml(n.email)})</option>`)
         .join('');
@@ -2507,6 +2510,11 @@
         document.getElementById('item-due-date').value = '';
         state.modalDocuments = [];
       }
+
+      nodalSelect.disabled = !canAssignNodal;
+      nodalSelect.classList.toggle('opacity-60', !canAssignNodal);
+      nodalSelect.classList.toggle('cursor-not-allowed', !canAssignNodal);
+      nodalSelect.title = canAssignNodal ? '' : 'Only Admins can assign or change the Nodal Officer';
 
       renderModalDocumentsList();
       modal.classList.remove('hidden');
@@ -2608,11 +2616,12 @@
       const type = document.getElementById('item-type').value || 'Task';
       const title = document.getElementById('item-title').value.trim();
       const description = document.getElementById('item-description').value.trim();
-      const nodalId = document.getElementById('item-nodal').value;
+      const requestedNodalId = document.getElementById('item-nodal').value;
       const requestedStatus = document.getElementById('item-status').value;
       const dueDate = document.getElementById('item-due-date').value;
       const user = getCurrentUser();
       const caps = getRoleCapabilities();
+      const canAssignNodal = Boolean(caps.canManageUsers);
       const nowStr = formatNowTimestamp();
 
       if (!title || !description) return;
@@ -2631,7 +2640,9 @@
 
           existing.title = title;
           existing.description = description;
-          existing.nodalId = nodalId;
+          if (canAssignNodal) {
+            existing.nodalId = requestedNodalId;
+          }
           existing.status = requestedStatus;
           existing.dueDate = dueDate;
           existing.lastChanged = nowStr;
@@ -2642,13 +2653,15 @@
         showToast(`${type} updated.`);
       } else {
         const finalStatus = caps.canDirectCreate ? requestedStatus : 'Pending Approval';
+        const defaultNodal = state.nodals.find(n => n.id === user.id) || state.nodals[0];
+        const finalNodalId = canAssignNodal ? requestedNodalId : (defaultNodal ? defaultNodal.id : requestedNodalId);
         const cleanedDocs = state.modalDocuments.map(({ isNewUpload, ...rest }) => rest);
         state.items.unshift({
           id: `${type === 'Project' ? 'prj' : 'tsk'}-${Date.now()}`,
           type,
           title,
           description,
-          nodalId,
+          nodalId: finalNodalId,
           status: finalStatus,
           dueDate,
           lastChanged: nowStr,
