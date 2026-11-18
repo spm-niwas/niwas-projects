@@ -542,11 +542,17 @@
               <input type="text" id="tasklets-search" oninput="resetPageAndRender('tasklets')" placeholder="Search tasklets..." class="w-full pl-9 pr-3.5 py-2 text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500" />
             </div>
 
-            <select id="tasklets-status-filter" onchange="state.taskletAgeFilter='all'; state.taskletOldestId=null; resetPageAndRender('tasklets')" class="text-xs sm:text-sm font-medium bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 flex-shrink-0">
-              <option value="Active" selected>Active</option>
-              <option value="Completed">Completed</option>
-              <option value="Abandoned">Abandoned</option>
-            </select>
+            <div class="inline-flex items-center gap-1.5 bg-slate-100 p-1 rounded-xl flex-shrink-0" role="tablist" aria-label="Tasklet status tabs">
+              <button type="button" id="tasklets-tab-active" onclick="switchTaskletsStatusTab('Active')" role="tab" aria-selected="true" class="px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-extrabold bg-white text-slate-900 shadow-xs transition-all">
+                Active
+              </button>
+              <button type="button" id="tasklets-tab-completed" onclick="switchTaskletsStatusTab('Completed')" role="tab" aria-selected="false" class="px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-semibold text-slate-600 hover:text-slate-900 transition-all">
+                Completed
+              </button>
+              <button type="button" id="tasklets-tab-abandoned" onclick="switchTaskletsStatusTab('Abandoned')" role="tab" aria-selected="false" class="px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-semibold text-slate-600 hover:text-slate-900 transition-all">
+                Abandoned
+              </button>
+            </div>
           </div>
 
           <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden">
@@ -556,7 +562,7 @@
                   <div class="col-span-1">#</div>
                   <div class="col-span-3">Name</div>
                   <div class="col-span-3">Description</div>
-                  <div class="col-span-3">Latest Update</div>
+                  <div id="tasklets-col4-header" class="col-span-3">Latest Update</div>
                   <div class="col-span-2 text-right">Status</div>
                 </div>
                 <div id="tasklets-cards-grid" class="p-3 flex flex-col gap-2 w-full"></div>
@@ -1321,6 +1327,7 @@
       usersSubTab: 'all',
       selectedItemId: null,
       tasksReadyOnly: false,
+      taskletsStatusTab: 'Active',
       taskletAgeFilter: 'all',
       taskletOldestId: null,
       authUser: null,
@@ -2165,11 +2172,43 @@
 
     window.applyTaskletAgeFilter = function (mode) {
       state.taskletAgeFilter = mode || 'all';
-      const statusSel = document.getElementById('tasklets-status-filter');
-      if (statusSel) statusSel.value = 'Active';
+      state.taskletsStatusTab = 'Active';
       state.pages.tasklets = 1;
       renderAll();
     };
+
+    window.switchTaskletsStatusTab = function (statusTab) {
+      state.taskletsStatusTab = statusTab || 'Active';
+      state.taskletAgeFilter = 'all';
+      state.taskletOldestId = null;
+      state.pages.tasklets = 1;
+      renderAll();
+    };
+
+    function syncTaskletsTabUI() {
+      const currentTab = state.taskletsStatusTab || 'Active';
+      const tabMap = {
+        Active: document.getElementById('tasklets-tab-active'),
+        Completed: document.getElementById('tasklets-tab-completed'),
+        Abandoned: document.getElementById('tasklets-tab-abandoned')
+      };
+      Object.entries(tabMap).forEach(([tabName, btn]) => {
+        if (!btn) return;
+        const isSelected = tabName === currentTab;
+        btn.setAttribute('aria-selected', isSelected ? 'true' : 'false');
+        btn.classList.toggle('bg-white', isSelected);
+        btn.classList.toggle('text-slate-900', isSelected);
+        btn.classList.toggle('shadow-xs', isSelected);
+        btn.classList.toggle('font-extrabold', isSelected);
+        btn.classList.toggle('text-slate-600', !isSelected);
+        btn.classList.toggle('font-semibold', !isSelected);
+      });
+
+      const col4Header = document.getElementById('tasklets-col4-header');
+      if (col4Header) {
+        col4Header.textContent = currentTab === 'Abandoned' ? 'Reason' : 'Latest Update';
+      }
+    }
 
     function renderItemsTable(sectionKey, fixedType) {
       const tbody = document.getElementById(`${sectionKey}-table-body`);
@@ -2177,6 +2216,7 @@
       if (!tbody && !cardsGrid) return;
 
       if (sectionKey === 'tasklets') {
+        syncTaskletsTabUI();
         updateTaskletsDashboardCards();
         const ageBanner = document.getElementById('tasklets-age-filter-banner');
         const ageLabel = document.getElementById('tasklets-age-filter-label');
@@ -2194,7 +2234,9 @@
       }
 
       const searchVal = (document.getElementById(`${sectionKey}-search`)?.value || '').trim().toLowerCase();
-      const statusVal = document.getElementById(`${sectionKey}-status-filter`)?.value || 'All';
+      const statusVal = sectionKey === 'tasklets'
+        ? (state.taskletsStatusTab || 'Active')
+        : (document.getElementById(`${sectionKey}-status-filter`)?.value || 'All');
       const showArchived = Boolean(document.getElementById(`${sectionKey}-show-archived`)?.checked);
 
       let selectedType = fixedType || 'All';
@@ -2275,6 +2317,21 @@
           const updatesArr = Array.isArray(item.updates) ? item.updates : [];
           const latestUpdate = updatesArr.length > 0 ? updatesArr[updatesArr.length - 1] : null;
           const latestUpdateText = latestUpdate ? String(latestUpdate.text || '').trim() : '';
+          const activeStatusTab = state.taskletsStatusTab || 'Active';
+
+          let col4Html = '';
+          if (activeStatusTab === 'Abandoned') {
+            const reasonText = String(item.abandonReason || '').trim();
+            col4Html = reasonText
+              ? escapeHtml(reasonText)
+              : '<span class="italic text-slate-400">No reason recorded</span>';
+          } else if (activeStatusTab === 'Completed') {
+            col4Html = '<span class="font-medium text-emerald-700">This tasklet is complete</span>';
+          } else {
+            col4Html = latestUpdateText
+              ? escapeHtml(latestUpdateText)
+              : '<span class="italic text-slate-400">No updates yet</span>';
+          }
 
           return `
             <div role="button" tabindex="0" onclick="openItemDetails('${item.id}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openItemDetails('${item.id}');}" class="group w-full grid grid-cols-12 items-center gap-3 px-3.5 py-3 rounded-xl border border-slate-200/90 bg-white hover:bg-indigo-50/80 hover:border-indigo-300 hover:shadow-xs transition-all cursor-pointer">
@@ -2295,7 +2352,7 @@
               </div>
               <div class="col-span-3 min-w-0">
                 <div class="text-xs text-slate-600 truncate">
-                  ${latestUpdateText ? escapeHtml(latestUpdateText) : '<span class="italic text-slate-400">No updates yet</span>'}
+                  ${col4Html}
                 </div>
               </div>
               <div class="col-span-2 flex justify-end">
