@@ -1320,6 +1320,7 @@
       activeTab: 'overview',
       usersSubTab: 'all',
       selectedItemId: null,
+      showTaskletActivityHistory: false,
       tasksReadyOnly: false,
       taskletsStatusTab: 'Active',
       taskletAgeFilter: 'all',
@@ -2308,7 +2309,7 @@
 
         cardsGrid.innerHTML = pageItems.map(item => {
           const seqNumber = taskletNumberById.get(item.id) || 1;
-          const updatesArr = Array.isArray(item.updates) ? item.updates : [];
+          const updatesArr = (Array.isArray(item.updates) ? item.updates : []).filter(u => !u.isPrivateUserUpdate);
           const latestUpdate = updatesArr.length > 0 ? updatesArr[updatesArr.length - 1] : null;
           const latestUpdateText = latestUpdate ? String(latestUpdate.text || '').trim() : '';
           const activeStatusTab = state.taskletsStatusTab || 'Active';
@@ -2448,12 +2449,13 @@
     };
 
     function renderTaskletUpdatesDefaultPane(item) {
-      const updates = Array.isArray(item.updates) ? item.updates : [];
-      const isLocked = isTaskletLockedStatus(item);
-      const atMaxUpdates = updates.length >= TASKLET_MAX_UPDATES;
-      const numberedNewestFirst = updates
+      const allUpdates = Array.isArray(item.updates) ? item.updates : [];
+      const visibleUpdates = allUpdates
         .map((u, idx) => ({ ...u, seqNumber: idx + 1 }))
-        .reverse();
+        .filter(u => !u.isPrivateUserUpdate);
+      const isLocked = isTaskletLockedStatus(item);
+      const atMaxUpdates = allUpdates.length >= TASKLET_MAX_UPDATES;
+      const numberedNewestFirst = visibleUpdates.reverse();
 
       const cardsHtml = numberedNewestFirst.length === 0
         ? `<div class="rounded-2xl border border-dashed border-slate-200 bg-white p-6 text-center text-xs text-slate-400">
@@ -2462,10 +2464,15 @@
         : numberedNewestFirst.map(u => `
             <div class="bg-white rounded-2xl border border-slate-200/90 p-3.5 shadow-2xs space-y-1.5">
               <div class="flex items-center justify-between gap-2">
-                <span class="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-extrabold bg-indigo-50 text-indigo-700 border border-indigo-100">
-                  #${u.seqNumber}
-                </span>
-                <span class="text-[11px] font-medium text-slate-400">
+                <div class="flex items-center gap-2 min-w-0">
+                  <span class="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-extrabold bg-indigo-50 text-indigo-700 border border-indigo-100 flex-shrink-0">
+                    #${u.seqNumber}
+                  </span>
+                  <span class="text-xs font-bold text-slate-800 truncate">
+                    ${escapeHtml(u.by || 'Unknown User')}
+                  </span>
+                </div>
+                <span class="text-[11px] font-medium text-slate-400 flex-shrink-0">
                   ${escapeHtml(formatDateDDMMYY(u.timestamp || '', true))}
                 </span>
               </div>
@@ -2484,7 +2491,7 @@
           : `<div class="space-y-1.5">
               <div class="flex items-center justify-between gap-2">
                 <label for="tasklet-new-update-input" class="text-[11px] font-bold uppercase tracking-wider text-slate-500">
-                  Progress Updates (${updates.length}/${TASKLET_MAX_UPDATES})
+                  Progress Updates (${visibleUpdates.length}/${TASKLET_MAX_UPDATES})
                 </label>
                 <button type="button" onclick="addTaskletProgressUpdate('${item.id}')" class="px-3 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold transition-colors">
                   Update
@@ -2525,22 +2532,26 @@
         return;
       }
       const now = formatNowTimestamp();
+      const currentUser = getCurrentUser();
+      const isAdminUpdater = currentUser.permission === 'Admin' || currentUser.roleLabel === 'Super Admin';
       item.updates.push({
         text,
         timestamp: now,
-        by: getCurrentUser().name
+        by: currentUser.name,
+        authorRole: currentUser.roleLabel,
+        isPrivateUserUpdate: !isAdminUpdater
       });
       item.lastChanged = now;
       if (!Array.isArray(item.history)) item.history = [];
       item.history.push({
         timestamp: now,
-        action: `Added update #${item.updates.length}`,
-        by: getCurrentUser().name
+        action: isAdminUpdater ? `Added update #${item.updates.length}` : 'Submitted user note (not publicly visible)',
+        by: currentUser.name
       });
       persistWorkspaceState();
       renderItemDetailsView();
       renderAll();
-      showToast('Tasklet update added.');
+      showToast(isAdminUpdater ? 'Tasklet update added.' : 'Update recorded (visible only when posted by an Admin).');
     };
 
     window.openTaskletLifecycleModal = function (itemId, actionType) {
@@ -2699,7 +2710,13 @@
 
     window.openItemDetails = function (itemId) {
       state.selectedItemId = itemId;
+      state.showTaskletActivityHistory = false;
       switchTab('details');
+      renderItemDetailsView();
+    };
+
+    window.toggleTaskletActivityHistory = function () {
+      state.showTaskletActivityHistory = !state.showTaskletActivityHistory;
       renderItemDetailsView();
     };
 
@@ -2787,6 +2804,37 @@
             Click any attached document or URL on the left to preview it here.
           </div>`;
 
+      const activityHistorySectionHtml = isTasklet
+        ? `<div class="space-y-2 pt-2 border-t border-slate-100">
+            <div class="flex items-center justify-between gap-2">
+              <div class="text-xs font-bold uppercase tracking-wider text-slate-500">Activity History (${history.length})</div>
+              <button type="button" onclick="toggleTaskletActivityHistory()" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold transition-colors">
+                ${state.showTaskletActivityHistory ? 'Hide Activity History' : 'Show Activity History'}
+              </button>
+            </div>
+            ${state.showTaskletActivityHistory ? `
+              <div class="space-y-1.5 max-h-44 overflow-y-auto custom-scrollbar pt-1">
+                ${history.slice().reverse().map(h => `
+                  <div class="flex items-center justify-between gap-2 text-xs py-1 border-b border-slate-100/80">
+                    <span class="text-slate-700 font-medium">${escapeHtml(h.action)}</span>
+                    <span class="text-[11px] text-slate-400 whitespace-nowrap">${escapeHtml(h.by || '')} • ${escapeHtml(formatDateDDMMYY(h.timestamp || '', true))}</span>
+                  </div>
+                `).join('')}
+              </div>
+            ` : ''}
+          </div>`
+        : `<div class="space-y-2 pt-2 border-t border-slate-100">
+            <div class="text-xs font-bold uppercase tracking-wider text-slate-500">Activity History</div>
+            <div class="space-y-1.5 max-h-44 overflow-y-auto custom-scrollbar">
+              ${history.slice().reverse().map(h => `
+                <div class="flex items-center justify-between gap-2 text-xs py-1 border-b border-slate-100/80">
+                  <span class="text-slate-700 font-medium">${escapeHtml(h.action)}</span>
+                  <span class="text-[11px] text-slate-400 whitespace-nowrap">${escapeHtml(h.by || '')} • ${escapeHtml(formatDateDDMMYY(h.timestamp || '', true))}</span>
+                </div>
+              `).join('')}
+            </div>
+          </div>`;
+
       container.innerHTML = `
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
           <div class="lg:col-span-7 space-y-5">
@@ -2833,17 +2881,7 @@
               ${uploadControlsHtml}
             </div>
 
-            <div class="space-y-2 pt-2 border-t border-slate-100">
-              <div class="text-xs font-bold uppercase tracking-wider text-slate-500">Activity History</div>
-              <div class="space-y-1.5 max-h-44 overflow-y-auto custom-scrollbar">
-                ${history.slice().reverse().map(h => `
-                  <div class="flex items-center justify-between gap-2 text-xs py-1 border-b border-slate-100/80">
-                    <span class="text-slate-700 font-medium">${escapeHtml(h.action)}</span>
-                    <span class="text-[11px] text-slate-400 whitespace-nowrap">${escapeHtml(h.by || '')} • ${escapeHtml(formatDateDDMMYY(h.timestamp || '', true))}</span>
-                  </div>
-                `).join('')}
-              </div>
-            </div>
+            ${activityHistorySectionHtml}
           </div>
 
           <div class="lg:col-span-5 bg-slate-50/80 rounded-2xl border border-slate-200/90 p-4 sm:p-5 flex flex-col justify-between">
