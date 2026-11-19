@@ -1203,7 +1203,7 @@
     };
 
     const INITIAL_NODALS = [
-      { id: 'usr-1', name: 'Workspace Admin', email: 'admin@spmniwas.in', permission: 'Admin', canAccessTasklets: false, lastLogin: '2026-11-16', usageHours30d: 42.5 },
+      { id: 'usr-1', name: 'Workspace Admin', email: 'admin@spmniwas.in', permission: 'Admin', canAccessTasklets: true, lastLogin: '2026-11-16', usageHours30d: 42.5 },
       { id: 'usr-2', name: 'Director SPM-NIWAS', email: 'director@spmniwas.in', permission: 'Super Admin', isSuperAdmin: true, canAccessTasklets: true, lastLogin: '2026-11-18', usageHours30d: 58.0 },
       { id: 'usr-3', name: 'Nodal Officer 1', email: 'nodal1@spmniwas.in', permission: 'User', canAccessTasklets: false, lastLogin: '2026-11-06', usageHours30d: 26.5 },
       { id: 'usr-4', name: 'Nodal Officer 2', email: 'nodal2@spmniwas.in', permission: 'User', canAccessTasklets: false, lastLogin: '2026-11-12', usageHours30d: 31.0 }
@@ -1630,9 +1630,10 @@
       const user = getCurrentUser();
       const base = ROLE_PERMISSIONS[user.permission] || ROLE_PERMISSIONS['User'];
       const isSuperAdmin = user.roleLabel === 'Super Admin';
+      const isAdmin = user.permission === 'Admin' || isSuperAdmin;
       const normalizedEmail = String(user.email || '').trim().toLowerCase();
       const matchedRecord = state.nodals.find(n => (user.id && n.id === user.id) || (normalizedEmail && String(n.email || '').trim().toLowerCase() === normalizedEmail));
-      const canAccessTasklets = Boolean(isSuperAdmin || (matchedRecord && matchedRecord.canAccessTasklets === true));
+      const canAccessTasklets = Boolean(isAdmin || (matchedRecord && matchedRecord.canAccessTasklets === true));
       return {
         ...base,
         isSuperAdmin,
@@ -2080,6 +2081,7 @@
     function canUserDeleteItemDocuments(item) {
       const user = getCurrentUser();
       if (!user.isSignedIn) return false;
+      if (item && item.type === 'Tasklet' && getRoleCapabilities().canAccessTasklets) return true;
       if (getRoleCapabilities().canManageUsers) return true;
       return Boolean(item && item.nodalId && item.nodalId === user.id);
     }
@@ -2309,7 +2311,7 @@
 
         cardsGrid.innerHTML = pageItems.map(item => {
           const seqNumber = taskletNumberById.get(item.id) || 1;
-          const updatesArr = (Array.isArray(item.updates) ? item.updates : []).filter(u => !u.isPrivateUserUpdate);
+          const updatesArr = Array.isArray(item.updates) ? item.updates : [];
           const latestUpdate = updatesArr.length > 0 ? updatesArr[updatesArr.length - 1] : null;
           const latestUpdateText = latestUpdate ? String(latestUpdate.text || '').trim() : '';
           const activeStatusTab = state.taskletsStatusTab || 'Active';
@@ -2450,9 +2452,7 @@
 
     function renderTaskletUpdatesDefaultPane(item) {
       const allUpdates = Array.isArray(item.updates) ? item.updates : [];
-      const visibleUpdates = allUpdates
-        .map((u, idx) => ({ ...u, seqNumber: idx + 1 }))
-        .filter(u => !u.isPrivateUserUpdate);
+      const visibleUpdates = allUpdates.map((u, idx) => ({ ...u, seqNumber: idx + 1 }));
       const isLocked = isTaskletLockedStatus(item);
       const atMaxUpdates = allUpdates.length >= TASKLET_MAX_UPDATES;
       const numberedNewestFirst = visibleUpdates.reverse();
@@ -2533,25 +2533,23 @@
       }
       const now = formatNowTimestamp();
       const currentUser = getCurrentUser();
-      const isAdminUpdater = currentUser.permission === 'Admin' || currentUser.roleLabel === 'Super Admin';
       item.updates.push({
         text,
         timestamp: now,
         by: currentUser.name,
-        authorRole: currentUser.roleLabel,
-        isPrivateUserUpdate: !isAdminUpdater
+        authorRole: currentUser.roleLabel
       });
       item.lastChanged = now;
       if (!Array.isArray(item.history)) item.history = [];
       item.history.push({
         timestamp: now,
-        action: isAdminUpdater ? `Added update #${item.updates.length}` : 'Submitted user note (not publicly visible)',
+        action: `Added update #${item.updates.length}`,
         by: currentUser.name
       });
       persistWorkspaceState();
       renderItemDetailsView();
       renderAll();
-      showToast(isAdminUpdater ? 'Tasklet update added.' : 'Update recorded (visible only when posted by an Admin).');
+      showToast('Tasklet update added.');
     };
 
     window.openTaskletLifecycleModal = function (itemId, actionType) {
@@ -3762,12 +3760,13 @@
       if (!tbody) return;
       const search = (document.getElementById('tasklet-access-search')?.value || '').trim().toLowerCase();
       const filtered = state.nodals.filter(u => !search || `${u.name} ${u.email}`.toLowerCase().includes(search));
-      const enabledCount = state.nodals.filter(u => u.isSuperAdmin || u.permission === 'Super Admin' || u.canAccessTasklets).length;
+      const enabledCount = state.nodals.filter(u => u.isSuperAdmin || u.permission === 'Super Admin' || u.permission === 'Admin' || u.canAccessTasklets).length;
       if (countBadge) countBadge.textContent = `${enabledCount} enabled`;
 
       tbody.innerHTML = filtered.map(u => {
         const isSuper = Boolean(u.isSuperAdmin || u.permission === 'Super Admin');
-        const hasAccess = isSuper || Boolean(u.canAccessTasklets);
+        const isAdminRole = u.permission === 'Admin';
+        const hasAccess = isSuper || isAdminRole || Boolean(u.canAccessTasklets);
         return `
           <tr class="hover:bg-slate-50/80">
             <td class="px-4 py-3.5">
@@ -3781,7 +3780,7 @@
               </span>
             </td>
             <td class="px-4 py-3.5 text-right">
-              ${isSuper
+              ${(isSuper || isAdminRole)
                 ? `<span class="text-xs text-slate-400 italic">Always Enabled</span>`
                 : `<input type="checkbox" ${hasAccess ? 'checked' : ''} onchange="toggleUserTaskletAccess('${u.id}', this.checked)" class="rounded text-indigo-600 focus:ring-indigo-500 cursor-pointer" />`}
             </td>
