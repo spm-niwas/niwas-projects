@@ -1185,7 +1185,7 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
     import { getAuth, setPersistence, browserLocalPersistence, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-    import { getFirestore, doc, getDoc, setDoc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+    import { getFirestore, doc, getDoc, setDoc, deleteDoc, onSnapshot, collection } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
     const SESSION_MAX_AGE_MS = 7 * 24 * 60 * 60 * 1000;
     const SESSION_TIMESTAMP_KEY = 'niwas_google_auth_login_ts';
@@ -1320,7 +1320,6 @@
       activeTab: 'overview',
       usersSubTab: 'all',
       selectedItemId: null,
-      showTaskletActivityHistory: false,
       tasksReadyOnly: false,
       taskletsStatusTab: 'Active',
       taskletAgeFilter: 'all',
@@ -1403,6 +1402,7 @@
     let isFirebaseAuthListenerAttached = false;
     let hasPendingLocalWrite = false;
     let hasDirtyUnsyncedLocalChanges = false;
+    const deletedItemIds = new Set();
     const appId = typeof __app_id !== 'undefined' ? __app_id : 'niwas-pm';
 
     const DEFAULT_FIREBASE_CONFIG = {
@@ -1649,7 +1649,111 @@
       return item.type === 'Task' && item.status !== 'Pending Approval' && item.status !== 'Archived' && ((item.documents && item.documents.length >= 3) || (item.description && item.description.length >= 120));
     }
 
-    async function persistWorkspaceState() {
+    function normalizeItemRecord(item) {
+      if (!item || typeof item !== 'object') return item;
+      const normalizedStatus = (item.type === 'Tasklet' && item.status === 'Ongoing') ? 'Active' : item.status;
+      return {
+        ...item,
+        status: normalizedStatus,
+        documents: Array.isArray(item.documents) ? item.documents : [],
+        updates: Array.isArray(item.updates) ? item.updates : [],
+        history: Array.isArray(item.history) ? item.history : []
+      };
+    }
+
+    function mergeUniqueEntries(arrA, arrB, keyFn) {
+      const seen = new Set();
+      const merged = [];
+      [...(Array.isArray(arrA) ? arrA : []), ...(Array.isArray(arrB) ? arrB : [])].forEach(entry => {
+        if (!entry) return;
+        const k = keyFn(entry);
+        if (!seen.has(k)) {
+          seen.add(k);
+          merged.push(entry);
+        }
+      });
+      return merged;
+    }
+
+    function mergeSingleItem(localItem, cloudItem) {
+      const a = normalizeItemRecord(localItem);
+      const b = normalizeItemRecord(cloudItem);
+      if (!a) return b;
+      if (!b) return a;
+
+      const aTime = String(a.lastChanged || '');
+      const bTime = String(b.lastChanged || '');
+      const primary = aTime > bTime ? a : b;
+      const secondary = aTime > bTime ? b : a;
+
+      const mergedUpdates = mergeUniqueEntries(
+        secondary.updates,
+        primary.updates,
+        u => `${u.timestamp || ''}|${u.by || ''}|${u.text || ''}`
+      ).sort((x, y) => String(x.timestamp || '').localeCompare(String(y.timestamp || '')));
+
+      const mergedDocs = mergeUniqueEntries(
+        secondary.documents,
+        primary.documents,
+        d => `${d.name || ''}|${d.url || ''}|${d.addedAt || ''}`
+      );
+
+      const mergedHistory = mergeUniqueEntries(
+        secondary.history,
+        primary.history,
+        h => `${h.timestamp || ''}|${h.action || ''}|${h.by || ''}`
+      ).sort((x, y) => String(x.timestamp || '').localeCompare(String(y.timestamp || '')));
+
+      return {
+        ...secondary,
+        ...primary,
+        documents: mergedDocs,
+        updates: mergedUpdates,
+        history: mergedHistory
+      };
+    }
+
+    function mergeItemsCollection(localItems, cloudItems) {
+      const byId = new Map();
+      (Array.isArray(cloudItems) ? cloudItems : []).forEach(item => {
+        if (item && item.id && !deletedItemIds.has(item.id)) {
+          byId.set(item.id, normalizeItemRecord(item));
+        }
+      });
+      (Array.isArray(localItems) ? localItems : []).forEach(item => {
+        if (!item || !item.id || deletedItemIds.has(item.id)) return;
+        if (byId.has(item.id)) {
+          byId.set(item.id, mergeSingleItem(item, byId.get(item.id)));
+        } else {
+          byId.set(item.id, normalizeItemRecord(item));
+        }
+      });
+      return Array.from(byId.values());
+    }
+
+    function mergeNodalsCollection(localNodals, cloudNodals) {
+      const byId = new Map();
+      (Array.isArray(cloudNodals) ? cloudNodals : []).forEach(u => {
+        if (u && u.id) byId.set(u.id, { ...u });
+      });
+      (Array.isArray(localNodals) ? localNodals : []).forEach(u => {
+        if (!u || !u.id) return;
+        if (byId.has(u.id)) {
+          const remote = byId.get(u.id);
+          byId.set(u.id, {
+            ...remote,
+            ...u,
+            canAccessTasklets: Boolean(remote.canAccessTasklets || u.canAccessTasklets)
+          });
+        } else {
+          byId.set(u.id, { ...u });
+        }
+      });
+      return Array.from(byId.values());
+    }
+
+    async function persistWorkspaceState(options = {}) {
+      const { itemsOnly = false, changedItem = null, deletedItemId = null } = options;
       saveCachedLocalWorkspaceState();
       if (!db || !isCloudReady) {
         hasDirtyUnsyncedLocalChanges = true;
@@ -1657,16 +1761,49 @@
       }
       hasPendingLocalWrite = true;
       try {
-        const ref = doc(db, 'artifacts', appId, 'public', 'data', 'niwas_workspace', 'state');
-        await setDoc(ref, {
-          items: state.items,
-          nodals: state.nodals,
-          deletedNodals: state.deletedNodals,
-          connectedInboxes: state.connectedInboxes,
-          emailProposals: state.emailProposals,
-          emailTemplates: state.emailTemplates,
-          updatedAt: new Date().toISOString()
-        });
+        const itemsDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'niwas_workspace', 'items');
+        const stateDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'niwas_workspace', 'state');
+        const nowIso = new Date().toISOString();
+
+        const writeTasks = [
+          setDoc(itemsDocRef, {
+            items: state.items,
+            deletedItemIds: Array.from(deletedItemIds),
+            updatedAt: nowIso
+          }, { merge: true })
+        ];
+
+        if (changedItem && changedItem.id) {
+          const singleItemRef = doc(db, 'artifacts', appId, 'public', 'data', 'niwas_items', changedItem.id);
+          writeTasks.push(setDoc(singleItemRef, {
+            ...normalizeItemRecord(changedItem),
+            updatedAt: nowIso
+          }, { merge: true }));
+        }
+
+        if (deletedItemId) {
+          const singleItemRef = doc(db, 'artifacts', appId, 'public', 'data', 'niwas_items', deletedItemId);
+          writeTasks.push(deleteDoc(singleItemRef).catch(() => {}));
+        }
+
+        if (itemsOnly) {
+          writeTasks.push(setDoc(stateDocRef, {
+            items: state.items,
+            updatedAt: nowIso
+          }, { merge: true }));
+        } else {
+          writeTasks.push(setDoc(stateDocRef, {
+            items: state.items,
+            nodals: state.nodals,
+            deletedNodals: state.deletedNodals,
+            connectedInboxes: state.connectedInboxes,
+            emailProposals: state.emailProposals,
+            emailTemplates: state.emailTemplates,
+            updatedAt: nowIso
+          }, { merge: true }));
+        }
+
+        await Promise.all(writeTasks);
         hasDirtyUnsyncedLocalChanges = false;
       } catch (err) {
         hasDirtyUnsyncedLocalChanges = true;
@@ -1736,6 +1873,58 @@
           });
 
           const stateRef = doc(db, 'artifacts', appId, 'public', 'data', 'niwas_workspace', 'state');
+          const itemsRef = doc(db, 'artifacts', appId, 'public', 'data', 'niwas_workspace', 'items');
+          const itemsColRef = collection(db, 'artifacts', appId, 'public', 'data', 'niwas_items');
+
+          onSnapshot(
+            itemsColRef,
+            (colSnap) => {
+              if (hasPendingLocalWrite || colSnap.metadata?.hasPendingWrites) return;
+              const individualCloudItems = [];
+              colSnap.forEach(docSnap => {
+                if (docSnap.exists()) {
+                  individualCloudItems.push({ id: docSnap.id, ...docSnap.data() });
+                }
+              });
+              if (individualCloudItems.length > 0) {
+                state.items = mergeItemsCollection(state.items, individualCloudItems);
+                saveCachedLocalWorkspaceState();
+                renderAll();
+                if (state.activeTab === 'details') {
+                  renderItemDetailsView();
+                }
+              }
+            },
+            (err) => {
+              console.warn('Individual items collection snapshot unavailable:', err?.code || err);
+            }
+          );
+
+          onSnapshot(
+            itemsRef,
+            (itemsSnap) => {
+              if (hasPendingLocalWrite || itemsSnap.metadata?.hasPendingWrites) return;
+              if (itemsSnap.exists()) {
+                const itemsData = itemsSnap.data();
+                if (Array.isArray(itemsData.deletedItemIds)) {
+                  itemsData.deletedItemIds.forEach(id => deletedItemIds.add(id));
+                  state.items = state.items.filter(i => !deletedItemIds.has(i.id));
+                }
+                if (Array.isArray(itemsData.items)) {
+                  state.items = mergeItemsCollection(state.items, itemsData.items);
+                  saveCachedLocalWorkspaceState();
+                  renderAll();
+                  if (state.activeTab === 'details') {
+                    renderItemDetailsView();
+                  }
+                }
+              }
+            },
+            (err) => {
+              console.warn('Shared items snapshot unavailable:', err?.code || err);
+            }
+          );
+
           onSnapshot(
             stateRef,
             async (snap) => {
@@ -1747,17 +1936,15 @@
                 }
                 const data = snap.data();
                 if (Array.isArray(data.items)) {
-                  const normalizedCloudItems = data.items.map(i => (i && i.type === 'Tasklet' && i.status === 'Ongoing') ? { ...i, status: 'Active' } : i);
-                  const cloudIds = new Set(normalizedCloudItems.map(i => i.id));
-                  const localOnlyItems = state.items.filter(i => !cloudIds.has(i.id));
-                  if (localOnlyItems.length > 0) {
-                    state.items = [...localOnlyItems, ...normalizedCloudItems];
+                  const beforeJson = JSON.stringify(state.items);
+                  state.items = mergeItemsCollection(state.items, data.items);
+                  if (JSON.stringify(state.items) !== beforeJson) {
                     hasDirtyUnsyncedLocalChanges = true;
-                  } else {
-                    state.items = normalizedCloudItems;
                   }
                 }
-                if (Array.isArray(data.nodals) && data.nodals.length > 0) state.nodals = data.nodals;
+                if (Array.isArray(data.nodals) && data.nodals.length > 0) {
+                  state.nodals = mergeNodalsCollection(state.nodals, data.nodals);
+                }
                 if (Array.isArray(data.deletedNodals)) state.deletedNodals = data.deletedNodals;
                 if (Array.isArray(data.connectedInboxes)) state.connectedInboxes = data.connectedInboxes;
                 if (Array.isArray(data.emailProposals)) state.emailProposals = data.emailProposals;
@@ -1774,7 +1961,7 @@
                   renderItemDetailsView();
                 }
                 if (wasFirstCloudSync && hasDirtyUnsyncedLocalChanges) {
-                  persistWorkspaceState();
+                  persistWorkspaceState({ itemsOnly: true });
                 }
               } else {
                 persistWorkspaceState();
@@ -2546,7 +2733,7 @@
         action: `Added update #${item.updates.length}`,
         by: currentUser.name
       });
-      persistWorkspaceState();
+      persistWorkspaceState({ itemsOnly: true, changedItem: item });
       renderItemDetailsView();
       renderAll();
       showToast('Tasklet update added.');
@@ -2649,7 +2836,7 @@
         if (!Array.isArray(item.history)) item.history = [];
         item.history.push({ timestamp: now, action: 'Marked Tasklet as Completed', by: actor });
         closeTaskletLifecycleModal();
-        persistWorkspaceState();
+        persistWorkspaceState({ itemsOnly: true, changedItem: item });
         renderItemDetailsView();
         renderAll();
         showToast('Tasklet marked as Completed and locked.');
@@ -2674,7 +2861,7 @@
         if (!Array.isArray(item.history)) item.history = [];
         item.history.push({ timestamp: now, action: `Abandoned Tasklet: ${reason}`, by: actor });
         closeTaskletLifecycleModal();
-        persistWorkspaceState();
+        persistWorkspaceState({ itemsOnly: true, changedItem: item });
         renderItemDetailsView();
         renderAll();
         showToast('Tasklet marked as Abandoned and locked.');
@@ -2699,22 +2886,17 @@
         if (!Array.isArray(item.history)) item.history = [];
         item.history.push({ timestamp: now, action: `Reopened Tasklet: ${reason}`, by: actor });
         closeTaskletLifecycleModal();
-        persistWorkspaceState();
+        persistWorkspaceState({ itemsOnly: true, changedItem: item });
         renderItemDetailsView();
         renderAll();
         showToast('Tasklet reopened for editing.');
       }
     };
 
+
     window.openItemDetails = function (itemId) {
       state.selectedItemId = itemId;
-      state.showTaskletActivityHistory = false;
       switchTab('details');
-      renderItemDetailsView();
-    };
-
-    window.toggleTaskletActivityHistory = function () {
-      state.showTaskletActivityHistory = !state.showTaskletActivityHistory;
       renderItemDetailsView();
     };
 
@@ -2803,24 +2985,7 @@
           </div>`;
 
       const activityHistorySectionHtml = isTasklet
-        ? `<div class="space-y-2 pt-2 border-t border-slate-100">
-            <div class="flex items-center justify-between gap-2">
-              <div class="text-xs font-bold uppercase tracking-wider text-slate-500">Activity History (${history.length})</div>
-              <button type="button" onclick="toggleTaskletActivityHistory()" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold transition-colors">
-                ${state.showTaskletActivityHistory ? 'Hide Activity History' : 'Show Activity History'}
-              </button>
-            </div>
-            ${state.showTaskletActivityHistory ? `
-              <div class="space-y-1.5 max-h-44 overflow-y-auto custom-scrollbar pt-1">
-                ${history.slice().reverse().map(h => `
-                  <div class="flex items-center justify-between gap-2 text-xs py-1 border-b border-slate-100/80">
-                    <span class="text-slate-700 font-medium">${escapeHtml(h.action)}</span>
-                    <span class="text-[11px] text-slate-400 whitespace-nowrap">${escapeHtml(h.by || '')} • ${escapeHtml(formatDateDDMMYY(h.timestamp || '', true))}</span>
-                  </div>
-                `).join('')}
-              </div>
-            ` : ''}
-          </div>`
+        ? ''
         : `<div class="space-y-2 pt-2 border-t border-slate-100">
             <div class="text-xs font-bold uppercase tracking-wider text-slate-500">Activity History</div>
             <div class="space-y-1.5 max-h-44 overflow-y-auto custom-scrollbar">
@@ -2961,7 +3126,7 @@
         item.lastChanged = now;
         item.history = item.history || [];
         item.history.push({ timestamp: now, action: `Uploaded ${file.name}`, by: getCurrentUser().name });
-        persistWorkspaceState();
+        persistWorkspaceState({ itemsOnly: true, changedItem: item });
         renderItemDetailsView();
         renderAll();
         showToast(`Uploaded ${file.name}`);
@@ -2995,7 +3160,7 @@
       item.history = item.history || [];
       item.history.push({ timestamp: now, action: 'Attached external URL', by: getCurrentUser().name });
       input.value = '';
-      persistWorkspaceState();
+      persistWorkspaceState({ itemsOnly: true, changedItem: item });
       renderItemDetailsView();
       renderAll();
       showToast('URL attached.');
@@ -3009,7 +3174,7 @@
       item.lastChanged = now;
       item.history = item.history || [];
       item.history.push({ timestamp: now, action: `Removed ${removed?.name || 'document'}`, by: getCurrentUser().name });
-      persistWorkspaceState();
+      persistWorkspaceState({ itemsOnly: true, changedItem: item });
       renderItemDetailsView();
       renderAll();
       showToast('Document removed.');
@@ -3023,7 +3188,7 @@
       item.lastChanged = now;
       item.history = item.history || [];
       item.history.push({ timestamp: now, action: 'Converted Task to Project', by: getCurrentUser().name });
-      persistWorkspaceState();
+      persistWorkspaceState({ itemsOnly: true, changedItem: item });
       renderItemDetailsView();
       renderAll();
       showToast('Task converted to Project.');
@@ -3158,6 +3323,7 @@
       const now = formatNowTimestamp();
       const actor = getCurrentUser().name;
 
+      let savedItem = null;
       if (id) {
         const existing = state.items.find(i => i.id === id);
         if (existing) {
@@ -3170,10 +3336,11 @@
           existing.lastChanged = now;
           existing.history = existing.history || [];
           existing.history.push({ timestamp: now, action: `Updated ${existing.type}`, by: actor });
+          savedItem = existing;
         }
       } else {
         const prefix = type === 'Project' ? 'prj' : (type === 'Tasklet' ? 'tkl' : 'tsk');
-        state.items.unshift({
+        savedItem = {
           id: `${prefix}-${Date.now()}`,
           type,
           title,
@@ -3185,11 +3352,12 @@
           documents: state.modalDocuments,
           updates: [],
           history: [{ timestamp: now, action: `${type} Created`, by: actor }]
-        });
+        };
+        state.items.unshift(savedItem);
       }
 
       closeItemModal();
-      persistWorkspaceState();
+      persistWorkspaceState({ itemsOnly: true, changedItem: savedItem });
       if (state.activeTab === 'details') renderItemDetailsView();
       renderAll();
       showToast(`${type} saved.`);
@@ -3197,8 +3365,9 @@
 
     window.deleteItemRecord = function (itemId) {
       if (!getRoleCapabilities().canDelete) return;
+      deletedItemIds.add(itemId);
       state.items = state.items.filter(i => i.id !== itemId);
-      persistWorkspaceState();
+      persistWorkspaceState({ itemsOnly: true, deletedItemId: itemId });
       renderAll();
       showToast('Record deleted.');
     };
@@ -3286,7 +3455,7 @@
       const now = formatNowTimestamp();
       const user = getCurrentUser();
 
-      state.items.unshift({
+      const newTasklet = {
         id: `tkl-${Date.now()}`,
         type: 'Tasklet',
         title,
@@ -3298,10 +3467,11 @@
         documents: state.taskletModalDocument ? [state.taskletModalDocument] : [],
         updates: [],
         history: [{ timestamp: now, action: 'Tasklet Created', by: user.name }]
-      });
+      };
+      state.items.unshift(newTasklet);
 
       closeTaskletModal();
-      persistWorkspaceState();
+      persistWorkspaceState({ itemsOnly: true, changedItem: newTasklet });
       renderAll();
       showToast('Tasklet created.');
     };
