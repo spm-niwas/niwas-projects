@@ -2998,6 +2998,40 @@
             </div>
           </div>`;
 
+      const titleHeadingClass = isTasklet
+        ? 'text-base sm:text-lg font-bold text-slate-900 break-words leading-snug'
+        : 'text-xl sm:text-2xl font-extrabold text-slate-900 break-words';
+
+      const createdByName = isTasklet
+        ? ((Array.isArray(item.history) && item.history[0]?.by) ? item.history[0].by : nodal.name)
+        : nodal.name;
+
+      const metadataBoxHtml = isTasklet
+        ? `<div class="grid grid-cols-2 gap-3 bg-slate-50/40 rounded-xl px-3.5 py-2.5 border border-slate-200/40 text-[11px] text-slate-500">
+            <div>
+              <div class="text-slate-400 font-semibold uppercase tracking-wider text-[10px]">Created By</div>
+              <div class="font-medium text-slate-600 mt-0.5">${escapeHtml(createdByName)}</div>
+            </div>
+            <div>
+              <div class="text-slate-400 font-semibold uppercase tracking-wider text-[10px]">Created Date</div>
+              <div class="font-medium text-slate-600 mt-0.5">${escapeHtml(formatDateDDMMYY(item.dueDate || '') || '—')}</div>
+            </div>
+          </div>`
+        : `<div class="grid grid-cols-2 sm:grid-cols-3 gap-3 bg-slate-50 rounded-2xl p-4 border border-slate-200/80 text-xs">
+            <div>
+              <div class="text-slate-400 font-bold uppercase tracking-wider text-[10px]">Nodal Officer</div>
+              <div class="font-bold text-slate-900 mt-0.5">${escapeHtml(nodal.name)}</div>
+            </div>
+            <div>
+              <div class="text-slate-400 font-bold uppercase tracking-wider text-[10px]">Target / Created Date</div>
+              <div class="font-bold text-slate-900 mt-0.5">${escapeHtml(formatDateDDMMYY(item.dueDate || '') || '—')}</div>
+            </div>
+            <div>
+              <div class="text-slate-400 font-bold uppercase tracking-wider text-[10px]">Last Updated</div>
+              <div class="font-bold text-slate-900 mt-0.5">${escapeHtml(formatDateDDMMYY(item.lastChanged || '', true) || '—')}</div>
+            </div>
+          </div>`;
+
       container.innerHTML = `
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
           <div class="lg:col-span-7 space-y-5">
@@ -3007,7 +3041,7 @@
                   ${getTypeBadgeHtml(item.type)}
                   ${getStatusBadgeHtml(item.status)}
                 </div>
-                <h2 class="text-xl sm:text-2xl font-extrabold text-slate-900 break-words">${escapeHtml(item.title)}</h2>
+                <h2 class="${titleHeadingClass}">${escapeHtml(item.title)}</h2>
               </div>
               ${lifecycleActionsHtml}
             </div>
@@ -3023,20 +3057,7 @@
               <p class="text-sm text-slate-700 leading-relaxed whitespace-pre-line">${escapeHtml(item.description || 'No description provided.')}</p>
             </div>
 
-            <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 bg-slate-50 rounded-2xl p-4 border border-slate-200/80 text-xs">
-              <div>
-                <div class="text-slate-400 font-bold uppercase tracking-wider text-[10px]">Nodal Officer</div>
-                <div class="font-bold text-slate-900 mt-0.5">${escapeHtml(nodal.name)}</div>
-              </div>
-              <div>
-                <div class="text-slate-400 font-bold uppercase tracking-wider text-[10px]">Target / Created Date</div>
-                <div class="font-bold text-slate-900 mt-0.5">${escapeHtml(formatDateDDMMYY(item.dueDate || '') || '—')}</div>
-              </div>
-              <div>
-                <div class="text-slate-400 font-bold uppercase tracking-wider text-[10px]">Last Updated</div>
-                <div class="font-bold text-slate-900 mt-0.5">${escapeHtml(formatDateDDMMYY(item.lastChanged || '', true) || '—')}</div>
-              </div>
-            </div>
+            ${metadataBoxHtml}
 
             <div class="space-y-2.5">
               <div class="text-xs font-bold uppercase tracking-wider text-slate-500">Attached Documents &amp; Links (${docs.length})</div>
