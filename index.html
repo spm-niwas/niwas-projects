@@ -281,7 +281,7 @@
             <button type="button" onclick="toggleSettingsMenu(event)" title="User Profile &amp; Session" class="p-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
             </button>
-            <div id="settings-dropdown" onclick="event.stopPropagation()" class="hidden absolute right-0 mt-2 w-72 bg-white rounded-2xl shadow-xl border border-slate-200 p-4 z-50 space-y-3"></div>
+            <div id="settings-dropdown" onclick="event.stopPropagation()" class="hidden absolute right-0 mt-2 w-80 bg-white rounded-2xl shadow-xl border border-slate-200 p-4 z-50 space-y-3"></div>
           </div>
         </div>
       </header>
@@ -818,7 +818,7 @@
                 <button type="button" onclick="toggleDetailsSettingsMenu(event)" title="User Profile &amp; Session" class="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors">
                   <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
                 </button>
-                <div id="details-settings-dropdown" onclick="event.stopPropagation()" class="hidden absolute right-0 mt-2 w-72 bg-white rounded-2xl shadow-xl border border-slate-200 p-4 z-50 space-y-3"></div>
+                <div id="details-settings-dropdown" onclick="event.stopPropagation()" class="hidden absolute right-0 mt-2 w-80 bg-white rounded-2xl shadow-xl border border-slate-200 p-4 z-50 space-y-3"></div>
               </div>
             </div>
           </div>
@@ -1003,6 +1003,57 @@
                 </table>
               </div>
               <div id="pagination-usage" class="hidden border-t border-slate-200 bg-slate-50/80 px-4 py-3 flex flex-wrap items-center justify-between gap-2 text-xs text-slate-600"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- VIEW 5B: 2026 SPM NIWAS OFFICE CALENDAR (MAIN WINDOW) -->
+        <section id="view-calendar" class="hidden space-y-4">
+          <div class="bg-white rounded-2xl border border-slate-200 p-4 sm:p-5 flex flex-wrap items-center justify-between gap-3">
+            <div class="flex flex-wrap items-center gap-4 text-xs">
+              <span class="inline-flex items-center gap-1.5 font-semibold text-slate-700">
+                <span class="w-3 h-3 rounded-md bg-rose-600 inline-block"></span>
+                Gazetted Holiday (Red Day)
+              </span>
+              <span class="inline-flex items-center gap-1.5 font-semibold text-slate-700">
+                <span class="w-3 h-3 rounded-md bg-rose-50 border border-rose-200 inline-block"></span>
+                Sunday / Saturday (Red Day)
+              </span>
+              <span class="inline-flex items-center gap-1.5 font-semibold text-slate-700">
+                <span class="w-3 h-3 rounded-md bg-indigo-100 border border-indigo-200 inline-block"></span>
+                Restricted Holiday
+              </span>
+            </div>
+            <div class="flex items-center gap-2.5 flex-wrap">
+              <div id="office-calendar-selected-banner" class="text-xs font-semibold text-indigo-700 bg-indigo-50 border border-indigo-200 px-3 py-1.5 rounded-xl">
+                Click any highlighted date to view holiday details
+              </div>
+              <button type="button" onclick="closeOfficeCalendarModal()" class="px-3.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold transition-colors">
+                ← Back
+              </button>
+            </div>
+          </div>
+
+          <div id="office-calendar-months-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"></div>
+
+          <div class="bg-white rounded-2xl border border-slate-200 p-4 sm:p-5 space-y-4">
+            <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-3">
+              <h4 class="text-sm font-extrabold text-slate-900">List of Holidays — 2026</h4>
+              <span class="text-[11px] font-medium text-slate-400">Ref: NO. C.G.E.W.C.C./Kol/Holiday-2026/2025-26/16 dated 16.09.2025</span>
+            </div>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-5 text-xs">
+              <div class="space-y-2.5">
+                <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-rose-50 text-rose-700 border border-rose-200 font-extrabold text-[11px] uppercase tracking-wider">
+                  Gazetted Holidays (Red Days)
+                </div>
+                <div id="office-calendar-gazetted-list" class="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1.5 pt-0.5"></div>
+              </div>
+              <div class="space-y-2.5">
+                <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-indigo-50 text-indigo-700 border border-indigo-200 font-extrabold text-[11px] uppercase tracking-wider">
+                  Restricted Holidays
+                </div>
+                <div id="office-calendar-restricted-list" class="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1.5 pt-0.5"></div>
+              </div>
             </div>
           </div>
         </section>
@@ -1334,7 +1385,7 @@
             <label for="item-title" class="block text-xs font-bold uppercase tracking-wider text-slate-500">Title <span class="text-rose-500">*</span></label>
             <button type="button" onclick="proposeTitleAndDescriptionWithAI()" class="text-xs font-bold text-indigo-600 hover:text-indigo-700">✨ Draft with AI</button>
           </div>
-          <input type="text" id="item-title" required="" placeholder="Enter project title..." class="w-full px-3.5 py-2.5 text-sm font-semibold bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500">
+          <input type="text" id="item-title" required="" oninput="handleSingleTaskNameInput(this)" placeholder="Enter project title..." class="w-full px-3.5 py-2.5 text-sm font-semibold bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500">
         </div>
 
         <div>
@@ -1594,7 +1645,7 @@
         <input type="hidden" id="edit-user-id">
         <div>
           <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">Full Name</label>
-          <input type="text" id="edit-user-name" required="" class="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500">
+          <input type="text" id="edit-user-name" required="" oninput="handleSingleTaskNameInput(this)" class="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500">
         </div>
         <div>
           <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">Google Email</label>
@@ -1655,7 +1706,7 @@
       <form id="add-user-form" onsubmit="handleAddNodalUser(event)" class="space-y-4">
         <div>
           <label for="new-user-name" class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">Name</label>
-          <input type="text" id="new-user-name" required="" placeholder="Full Name" class="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500">
+          <input type="text" id="new-user-name" required="" oninput="handleSingleTaskNameInput(this)" placeholder="Full Name" class="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500">
         </div>
 
         <div>
@@ -1678,8 +1729,8 @@
         </div>
 
         <div class="pt-3 border-t border-slate-100">
-          <button type="submit" class="w-full px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold transition-colors">
-            Add and Send Welcome Email
+          <button type="submit" id="btn-submit-add-user" class="w-full px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold transition-colors">
+            Add
           </button>
         </div>
       </form>
@@ -1957,6 +2008,13 @@
         isSystem: true
       },
       {
+        id: 'tpl-user-removed',
+        name: 'User Access Removed',
+        subject: 'Access Removed — SPM-NIWAS Task & Project Management Portal',
+        body: 'Dear {{name}},\n\nYour access to the SPM-NIWAS Task & Project Management Portal ({{email}}) has been removed by the workspace administrator.\n\nIf you believe this was done in error or need access restored, please contact the SPM-NIWAS Coordination Desk.\n\nRegards,\nSPM-NIWAS Coordination Desk',
+        isSystem: true
+      },
+      {
         id: 'tpl-assignment',
         name: 'Task / Project Assignment',
         subject: 'New Assignment: {{title}} — SPM-NIWAS',
@@ -2046,6 +2104,7 @@
 
     const state = {
       activeTab: 'overview',
+      previousTabBeforeCalendar: 'overview',
       usersSubTab: 'all',
       selectedItemId: null,
       selectedTaskletId: null,
@@ -2168,23 +2227,114 @@
       senderName: "SPM-NIWAS Coordination Desk"
     };
 
-    function resolveAppsScriptWebAppUrl(cfg = {}) {
-      const explicitUrl = String(cfg.webAppUrl || DEFAULT_APPS_SCRIPT_CONFIG.webAppUrl || '').trim();
-      if (explicitUrl) return explicitUrl;
-      const depId = String(cfg.deploymentId || DEFAULT_APPS_SCRIPT_CONFIG.deploymentId || '').trim();
-      return depId ? `https://script.google.com/macros/s/${depId}/exec` : '';
+    // 2026 SPM NIWAS Holiday Calendar (All Sundays & Saturdays are Red Days + Gazetted Holidays circled in Red)
+    const SPM_NIWAS_CALENDAR_2026 = {
+      year: 2026,
+      reference: "NO. C.G.E.W.C.C./Kol/Holiday-2026/2025-26/16 dated 16.09.2025",
+      gazettedHolidays: {
+        "2026-01-23": "Basant Panchami / Netaji Subhash Chandra Bose's Birthday / Sri Panchami",
+        "2026-01-26": "Republic Day",
+        "2026-03-04": "Holi",
+        "2026-03-21": "Id-ul-Fitr",
+        "2026-03-31": "Mahavir Jayanti",
+        "2026-04-03": "Good Friday",
+        "2026-05-01": "Buddha Purnima",
+        "2026-05-27": "Id-Uz-Zuha (Bakrid)",
+        "2026-06-26": "Muharram",
+        "2026-08-15": "Independence Day",
+        "2026-08-26": "Milad-un-Nabi (Birth Day of Prophet Mohammad)",
+        "2026-10-02": "Mahatma Gandhi's Birth Day",
+        "2026-10-19": "Dussehra (Maha Ashtami)",
+        "2026-10-20": "Dussehra (Mahanavami)",
+        "2026-11-08": "Diwali (Deepavali)",
+        "2026-11-24": "Guru Nanak's Birthday",
+        "2026-12-25": "Christmas Day"
+      },
+      restrictedHolidays: {
+        "2026-01-01": "New Year's Day",
+        "2026-01-03": "Hazarat Ali's Birthday",
+        "2026-01-14": "Makar Sankranti",
+        "2026-01-28": "Jan-Republic Day (Restricted)",
+        "2026-02-01": "Guru Ravidas Birthday",
+        "2026-02-12": "Birthday of Swami Dayanand Saraswati",
+        "2026-02-15": "Maha Shivaratri",
+        "2026-02-19": "Shivaji Jayanti",
+        "2026-03-03": "Holika Dahan / Dolyatra",
+        "2026-03-19": "Chaitra Sukladi / Gudi Padava / Ugadi / Cheti Chand",
+        "2026-03-20": "Jamat-ul-Vida",
+        "2026-03-26": "Ram Navami",
+        "2026-04-05": "Easter Sunday",
+        "2026-04-14": "Vaisakhi / Vishu / Meshadi",
+        "2026-04-15": "Vaisakhadi (Bengal) / Bohag Bihu (Assam)",
+        "2026-05-09": "Birthday of Guru Rabindranath Tagore",
+        "2026-07-16": "Rath Yatra",
+        "2026-08-28": "Raksha Bandhan",
+        "2026-09-04": "Janmashtami",
+        "2026-09-14": "Ganesha Chaturthi / Vinayaka Chaturthi",
+        "2026-10-18": "Dussehra (Saptami)",
+        "2026-10-26": "Maharshi Valmiki's Birthday",
+        "2026-10-29": "Karaka Chaturthi (Karwa Chouth)",
+        "2026-11-09": "Govardhan Puja",
+        "2026-11-11": "Bhai Duj",
+        "2026-11-15": "Chhat Puja",
+        "2026-11-18": "Jagaddhatri Puja",
+        "2026-12-23": "Hazrat Ali's Birthday",
+        "2026-12-24": "Christmas Eve"
+      }
+    };
+
+    function getSpmNiwasHoliday2026(dateStr) {
+      const normalized = String(dateStr || '').trim().split(' ')[0];
+      if (!normalized) return null;
+      const gazetted = SPM_NIWAS_CALENDAR_2026.gazettedHolidays[normalized];
+      const parsed = new Date(`${normalized}T00:00:00`);
+      const dayOfWeek = !isNaN(parsed.getTime()) ? parsed.getDay() : -1;
+      const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
+
+      if (gazetted) {
+        return { isRedDay: true, type: 'Gazetted Holiday', description: gazetted };
+      }
+      if (isWeekend) {
+        return { isRedDay: true, type: 'Weekly Off', description: dayOfWeek === 0 ? 'Sunday' : 'Saturday' };
+      }
+      const restricted = SPM_NIWAS_CALENDAR_2026.restrictedHolidays[normalized];
+      if (restricted) {
+        return { isRedDay: false, type: 'Restricted Holiday', description: restricted };
+      }
+      return null;
     }
+
+    function isSpmNiwasHoliday2026(dateStr) {
+      return Boolean(getSpmNiwasHoliday2026(dateStr)?.isRedDay);
+    }
+
+    window.SPM_NIWAS_CALENDAR_2026 = SPM_NIWAS_CALENDAR_2026;
+    window.getSpmNiwasHoliday2026 = getSpmNiwasHoliday2026;
+    window.isSpmNiwasHoliday2026 = isSpmNiwasHoliday2026;
 
     function resolveFirebaseConfigObject() {
       try {
         if (typeof __firebase_config !== 'undefined' && __firebase_config) {
-          const parsed = typeof __firebase_config === 'string' ? JSON.parse(__firebase_config) : __firebase_config;
-          if (parsed && parsed.apiKey) return parsed;
+          const parsed = typeof __firebase_config === 'string'
+            ? JSON.parse(__firebase_config)
+            : __firebase_config;
+          if (parsed && parsed.apiKey && parsed.authDomain) {
+            return parsed;
+          }
         }
-      } catch (err) {
-        console.warn('Invalid custom Firebase config format:', err);
-      }
+      } catch (_) {}
       return DEFAULT_FIREBASE_CONFIG;
+    }
+
+    function resolveAppsScriptWebAppUrl(cfg = state.appsScriptConfig) {
+      const explicitUrl = String(cfg?.webAppUrl || '').trim();
+      if (explicitUrl) return explicitUrl;
+      const defaultUrl = String(DEFAULT_APPS_SCRIPT_CONFIG.webAppUrl || '').trim();
+      if (defaultUrl) return defaultUrl;
+      const depId = String(cfg?.deploymentId || DEFAULT_APPS_SCRIPT_CONFIG.deploymentId || '').trim();
+      if (!depId) return '';
+      if (/^https?:\/\//i.test(depId)) return depId;
+      return `https://script.google.com/macros/s/${depId}/exec`;
     }
 
     function escapeHtml(str) {
@@ -2196,61 +2346,65 @@
         .replace(/'/g, '&#39;');
     }
 
-    function stripHtmlTagsToPlainText(htmlStr) {
+    function stripHtmlTagsToPlainText(html) {
       const tmp = document.createElement('div');
-      tmp.innerHTML = String(htmlStr || '');
+      tmp.innerHTML = String(html || '');
       return (tmp.textContent || tmp.innerText || '').replace(/\s+/g, ' ').trim();
     }
 
     function countWords(text) {
-      const trimmed = String(text || '').trim();
-      if (!trimmed) return 0;
-      return trimmed.split(/\s+/).filter(Boolean).length;
+      const cleaned = String(text || '').trim();
+      if (!cleaned) return 0;
+      return cleaned.split(/\s+/).filter(Boolean).length;
     }
 
     function enforceWordLimit(textareaEl, maxWords) {
       if (!textareaEl) return;
-      const val = String(textareaEl.value || '');
-      const words = val.trim().split(/\s+/).filter(Boolean);
-      if (words.length <= maxWords) return;
-      textareaEl.value = words.slice(0, maxWords).join(' ');
+      const val = textareaEl.value;
+      const matches = val.match(/\S+/g);
+      if (!matches || matches.length <= maxWords) return;
+
+      let wordCount = 0;
+      let cutoffIndex = val.length;
+      const regex = /\S+/g;
+      let match;
+      while ((match = regex.exec(val)) !== null) {
+        wordCount += 1;
+        if (wordCount === maxWords) {
+          cutoffIndex = match.index + match[0].length;
+          break;
+        }
+      }
+      textareaEl.value = val.slice(0, cutoffIndex);
     }
 
-    function showToast(message) {
+    let toastTimer = null;
+    function showToast(msg) {
       const banner = document.getElementById('toast-banner');
-      const msgEl = document.getElementById('toast-message');
-      if (!banner || !msgEl) return;
-      msgEl.textContent = message;
+      const textEl = document.getElementById('toast-message');
+      if (!banner || !textEl) return;
+      textEl.textContent = msg;
       banner.classList.remove('hidden');
-      clearTimeout(window.__toastTimer);
-      window.__toastTimer = setTimeout(() => {
-        banner.classList.add('hidden');
-      }, 3600);
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => banner.classList.add('hidden'), 3600);
     }
 
     function formatNowTimestamp() {
-      const now = new Date();
-      const yyyy = now.getFullYear();
-      const mm = String(now.getMonth() + 1).padStart(2, '0');
-      const dd = String(now.getDate()).padStart(2, '0');
-      const hh = String(now.getHours()).padStart(2, '0');
-      const min = String(now.getMinutes()).padStart(2, '0');
-      return `${yyyy}-${mm}-${dd} ${hh}:${min}`;
+      const d = new Date();
+      const pad = n => String(n).padStart(2, '0');
+      return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
     }
 
-    function formatDateDDMMYY(rawDateOrTimestamp, includeTime = false) {
-      const raw = String(rawDateOrTimestamp || '').trim();
-      if (!raw) return '';
-      const [datePart, timePart] = raw.split(/\s+/);
+    function formatDateDDMMYY(rawInput, includeTime = false) {
+      const str = String(rawInput || '').trim();
+      if (!str) return '';
+      const [datePart, timePart] = str.split(' ');
       let formattedDate = datePart;
-      const isoMatch = datePart.match(/^(\d{4})-(\d{2})-(\d{2})$/);
-      const dmyMatch = datePart.match(/^(\d{2})-(\d{2})-(\d{2,4})$/);
-      if (isoMatch) {
-        formattedDate = `${isoMatch[3]}-${isoMatch[2]}-${isoMatch[1].slice(-2)}`;
-      } else if (dmyMatch) {
-        formattedDate = `${dmyMatch[1]}-${dmyMatch[2]}-${dmyMatch[3].slice(-2)}`;
+      if (/^\d{4}-\d{2}-\d{2}$/.test(datePart)) {
+        const [yyyy, mm, dd] = datePart.split('-');
+        formattedDate = `${dd}-${mm}-${yyyy.slice(-2)}`;
       } else {
-        const parsed = new Date(raw);
+        const parsed = new Date(datePart);
         if (!isNaN(parsed.getTime())) {
           const dd = String(parsed.getDate()).padStart(2, '0');
           const mm = String(parsed.getMonth() + 1).padStart(2, '0');
@@ -2747,6 +2901,10 @@
                     const defaultTaskletTpl = INITIAL_EMAIL_TEMPLATES.find(t => t.id === 'tpl-tasklet-access');
                     if (defaultTaskletTpl) state.emailTemplates.splice(1, 0, JSON.parse(JSON.stringify(defaultTaskletTpl)));
                   }
+                  if (!state.emailTemplates.some(t => t.id === 'tpl-user-removed')) {
+                    const defaultRemovedTpl = INITIAL_EMAIL_TEMPLATES.find(t => t.id === 'tpl-user-removed');
+                    if (defaultRemovedTpl) state.emailTemplates.splice(2, 0, JSON.parse(JSON.stringify(defaultRemovedTpl)));
+                  }
                 }
                 if (data.appsScriptConfig && typeof data.appsScriptConfig === 'object') {
                   state.appsScriptConfig = { ...state.appsScriptConfig, ...data.appsScriptConfig };
@@ -2767,88 +2925,155 @@
               }
             },
             (err) => {
-              isCloudReady = false;
-              console.warn('Firestore snapshot unavailable (running in local workspace mode):', err?.code || err);
+              console.warn('Cloud state snapshot unavailable:', err?.code || err);
             }
           );
         }
       } catch (err) {
-        isCloudReady = false;
+        console.warn('Firebase initialization warning:', err);
         updateAuthGateVisibility();
-        console.warn('Running in local mode:', err);
       }
     }
 
-    window.signInPreviewSuperAdmin = function () {
+    function signInPreviewSuperAdmin() {
       const superAdmin = BUILTIN_SUPER_ADMINS[0];
-      recordFreshSevenDaySession();
+      if (!superAdmin) return;
       state.authUser = {
         uid: superAdmin.id,
         email: superAdmin.email,
         displayName: superAdmin.name,
+        photoURL: '',
         isAnonymous: false,
-        providerData: [{ providerId: 'google.com' }]
+        providerData: [{ providerId: 'google.com', email: superAdmin.email }]
       };
-      document.getElementById('login-gate-error')?.classList.add('hidden');
-      renderAll();
-      showToast(`Signed in as ${superAdmin.name}`);
-    };
+      recordFreshSevenDaySession();
+    }
 
     window.signInWithGoogleAccount = async function () {
+      document.getElementById('login-gate-error')?.classList.add('hidden');
       if (!auth) {
         await initFirebaseCloud();
       }
       if (!auth) {
-        showToast('Unable to initialize Google Sign-In. Please refresh the page.');
+        if (isEmbeddedDesignPreview()) {
+          signInPreviewSuperAdmin();
+          renderAll();
+          showToast('Signed in as Director SPM-NIWAS');
+        }
         return;
       }
+
       try {
-        await setPersistence(auth, browserLocalPersistence);
         const provider = new GoogleAuthProvider();
         provider.setCustomParameters({ prompt: 'select_account' });
         const result = await signInWithPopup(auth, provider);
-        const signedInEmail = result.user?.email || '';
-        const registeredUser = findRegisteredWorkspaceUser(signedInEmail);
-
-        if (!isGoogleAuthenticatedUser(result.user) || !registeredUser) {
+        const signedUser = result?.user;
+        if (!signedUser || !findRegisteredWorkspaceUser(signedUser.email)) {
           state.authUser = null;
           clearSevenDaySessionTimestamp();
-          try {
-            await signOut(auth);
-          } catch (_) {}
+          await signOut(auth).catch(() => {});
           document.getElementById('login-gate-error')?.classList.remove('hidden');
           renderAll();
           showUnauthorizedLoginModal();
           return;
         }
-
         recordFreshSevenDaySession();
-        document.getElementById('login-gate-error')?.classList.add('hidden');
-        state.authUser = result.user;
-        recordUserLoginActivity(signedInEmail);
-        closeSettingsMenu();
+        state.authUser = signedUser;
+        recordUserLoginActivity(signedUser.email);
         renderAll();
-        showToast(`Signed in as ${registeredUser.name} (${signedInEmail})`);
+        showToast(`Signed in as ${getCurrentUser().name}`);
       } catch (err) {
-        const code = err?.code || '';
-        if (code === 'auth/unauthorized-domain') {
-          showToast(`Add "${window.location.hostname}" to Firebase Auth → Authorized domains.`);
-        } else {
-          showToast('Google Sign-In cancelled or blocked by browser popup settings.');
+        if (isEmbeddedDesignPreview()) {
+          signInPreviewSuperAdmin();
+          renderAll();
+          showToast('Signed in as Director SPM-NIWAS');
+          return;
+        }
+        if (err?.code !== 'auth/popup-closed-by-user') {
+          showToast(err?.message || 'Google sign-in failed.');
         }
       }
     };
 
     window.signOutGoogleAccount = async function () {
-      try {
-        if (auth) await signOut(auth);
-      } catch (_) {}
+      closeSettingsMenu();
       state.authUser = null;
       clearSevenDaySessionTimestamp();
-      closeSettingsMenu();
+      if (auth) {
+        try {
+          await signOut(auth);
+        } catch (_) {}
+      }
       renderAll();
       showToast('Signed out.');
     };
+
+    function buildMiniMonthCalendarHtml() {
+      const now = new Date();
+      const year = now.getFullYear();
+      const monthIdx = now.getMonth();
+      const monthNames = [
+        'January', 'February', 'March', 'April', 'May', 'June',
+        'July', 'August', 'September', 'October', 'November', 'December'
+      ];
+      // Week starts on Monday
+      const dayHeaders = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
+      const firstDayOffset = (new Date(year, monthIdx, 1).getDay() + 6) % 7;
+      const daysInMonth = new Date(year, monthIdx + 1, 0).getDate();
+      const mm = String(monthIdx + 1).padStart(2, '0');
+      const todayIso = formatNowTimestamp().split(' ')[0];
+
+      const blanks = Array.from({ length: firstDayOffset }, () => `<div class="h-8"></div>`).join('');
+      const cells = Array.from({ length: daysInMonth }, (_, dIdx) => {
+        const dayNum = dIdx + 1;
+        const dd = String(dayNum).padStart(2, '0');
+        const isoDate = `${year}-${mm}-${dd}`;
+        const info = year === 2026 ? getSpmNiwasHoliday2026(isoDate) : null;
+        const dayOfWeek = new Date(year, monthIdx, dayNum).getDay();
+        const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
+        const isToday = isoDate === todayIso;
+
+        let cellCls = 'text-slate-700 hover:bg-slate-200/70 font-semibold';
+        let titleAttr = 'Working Day';
+
+        if (info?.type === 'Gazetted Holiday') {
+          cellCls = 'bg-rose-600 text-white font-extrabold hover:bg-rose-700';
+          titleAttr = `${info.description} (Gazetted Holiday)`;
+        } else if (info?.type === 'Weekly Off' || isWeekend) {
+          cellCls = 'text-rose-600 font-bold hover:bg-rose-100/70';
+          titleAttr = dayOfWeek === 0 ? 'Sunday' : 'Saturday';
+        } else if (info?.type === 'Restricted Holiday') {
+          cellCls = 'text-indigo-700 font-extrabold bg-indigo-100/80 hover:bg-indigo-100';
+          titleAttr = `${info.description} (Restricted Holiday)`;
+        }
+
+        const todayRing = isToday ? 'ring-2 ring-indigo-600' : '';
+        return `
+          <button type="button" title="${escapeHtml(titleAttr)}" class="h-8 w-8 mx-auto rounded-lg text-xs flex items-center justify-center transition-colors ${cellCls} ${todayRing}">
+            ${dayNum}
+          </button>
+        `;
+      }).join('');
+
+      return `
+        <div class="pt-2.5 border-t border-slate-100">
+          <div class="rounded-2xl border border-slate-200/80 bg-slate-50/70 p-3 space-y-2">
+            <div class="flex items-center justify-between px-0.5">
+              <span class="text-xs font-extrabold text-slate-900 tracking-tight">${monthNames[monthIdx]} ${year}</span>
+              <button type="button" onclick="openOfficeCalendarModal()" class="px-2 py-0.5 rounded-md bg-indigo-50 hover:bg-indigo-100 border border-indigo-200/70 text-[10px] font-bold uppercase tracking-wider text-indigo-700 transition-colors">Office Calendar</button>
+            </div>
+            <div>
+              <div class="grid grid-cols-7 text-center text-[11px] font-bold uppercase tracking-wider mb-1">
+                ${dayHeaders.map((dh, i) => `<div class="${i >= 5 ? 'text-rose-600' : 'text-slate-400'}">${dh}</div>`).join('')}
+              </div>
+              <div class="grid grid-cols-7 gap-0.5 text-center">
+                ${blanks}${cells}
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
 
     function buildSettingsDropdownHtml() {
       const user = getCurrentUser();
@@ -2871,6 +3096,8 @@
           </div>
         </div>
 
+        ${buildMiniMonthCalendarHtml()}
+
         <div class="pt-2 border-t border-slate-100">
           <button type="button" onclick="signOutGoogleAccount()" class="w-full px-3.5 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-bold transition-colors text-center">
             Logout
@@ -2878,6 +3105,145 @@
         </div>
       `;
     }
+
+    function formatShortCalDate(isoDate) {
+      const monthShort = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      const parts = String(isoDate || '').split('-');
+      if (parts.length !== 3) return isoDate;
+      const mIdx = parseInt(parts[1], 10) - 1;
+      return `${parts[2]} ${monthShort[mIdx] || parts[1]}`;
+    }
+
+    window.selectOfficeCalendarDate = function (isoDate) {
+      const banner = document.getElementById('office-calendar-selected-banner');
+      if (!banner) return;
+      const info = getSpmNiwasHoliday2026(isoDate);
+      const niceDate = formatDateDDMMYY(isoDate);
+      if (!info) {
+        banner.className = 'text-xs font-semibold text-slate-700 bg-white border border-slate-200 px-3 py-1.5 rounded-xl';
+        banner.textContent = `${niceDate} — Regular Working Day`;
+      } else if (info.type === 'Gazetted Holiday') {
+        banner.className = 'text-xs font-bold text-rose-700 bg-rose-50 border border-rose-200 px-3 py-1.5 rounded-xl';
+        banner.textContent = `${niceDate} • Gazetted Holiday: ${info.description}`;
+      } else if (info.type === 'Restricted Holiday') {
+        banner.className = 'text-xs font-bold text-indigo-700 bg-indigo-50 border border-indigo-200 px-3 py-1.5 rounded-xl';
+        banner.textContent = `${niceDate} • Restricted Holiday: ${info.description}`;
+      } else {
+        banner.className = 'text-xs font-bold text-rose-700 bg-rose-50 border border-rose-200 px-3 py-1.5 rounded-xl';
+        banner.textContent = `${niceDate} • Weekly Off (${info.description})`;
+      }
+    };
+
+    function renderOfficeCalendarModal() {
+      const monthsGrid = document.getElementById('office-calendar-months-grid');
+      const gazettedListEl = document.getElementById('office-calendar-gazetted-list');
+      const restrictedListEl = document.getElementById('office-calendar-restricted-list');
+      if (!monthsGrid) return;
+
+      const monthNames = [
+        'January', 'February', 'March', 'April', 'May', 'June',
+        'July', 'August', 'September', 'October', 'November', 'December'
+      ];
+      // Week starts on Monday
+      const dayHeaders = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
+      const todayIso = formatNowTimestamp().split(' ')[0];
+
+      monthsGrid.innerHTML = monthNames.map((mName, mIdx) => {
+        const firstDayOffset = (new Date(2026, mIdx, 1).getDay() + 6) % 7;
+        const daysInMonth = new Date(2026, mIdx + 1, 0).getDate();
+        const mm = String(mIdx + 1).padStart(2, '0');
+
+        const blanks = Array.from({ length: firstDayOffset }, () => `<div class="h-8"></div>`).join('');
+        const cells = Array.from({ length: daysInMonth }, (_, dIdx) => {
+          const dayNum = dIdx + 1;
+          const dd = String(dayNum).padStart(2, '0');
+          const isoDate = `2026-${mm}-${dd}`;
+          const info = getSpmNiwasHoliday2026(isoDate);
+          const dayOfWeek = new Date(2026, mIdx, dayNum).getDay();
+          const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
+          const isToday = isoDate === todayIso;
+
+          let cellCls = 'text-slate-700 hover:bg-slate-100 font-semibold';
+          let titleAttr = 'Working Day';
+
+          if (info?.type === 'Gazetted Holiday') {
+            cellCls = 'bg-rose-600 text-white font-extrabold hover:bg-rose-700';
+            titleAttr = `${info.description} (Gazetted Holiday)`;
+          } else if (info?.type === 'Weekly Off' || isWeekend) {
+            cellCls = 'text-rose-600 font-bold hover:bg-rose-50';
+            titleAttr = dayOfWeek === 0 ? 'Sunday' : 'Saturday';
+          } else if (info?.type === 'Restricted Holiday') {
+            cellCls = 'text-indigo-700 font-extrabold bg-indigo-50 border border-indigo-200 hover:bg-indigo-100';
+            titleAttr = `${info.description} (Restricted Holiday)`;
+          }
+
+          const todayRing = isToday ? 'ring-2 ring-indigo-600' : '';
+
+          return `
+            <button type="button" onclick="selectOfficeCalendarDate('${isoDate}')" title="${escapeHtml(titleAttr)}" class="h-8 w-8 mx-auto rounded-lg text-xs flex items-center justify-center transition-colors ${cellCls} ${todayRing}">
+              ${dayNum}
+            </button>
+          `;
+        }).join('');
+
+        return `
+          <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden flex flex-col">
+            <div class="bg-slate-50 border-b border-slate-100 px-3.5 py-2.5 flex items-center justify-between">
+              <span class="text-xs font-extrabold text-slate-900 tracking-tight">${mName}</span>
+              <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">2026</span>
+            </div>
+            <div class="p-3">
+              <div class="grid grid-cols-7 text-center text-[11px] font-bold uppercase tracking-wider mb-1">
+                ${dayHeaders.map((dh, i) => `<div class="${i >= 5 ? 'text-rose-600' : 'text-slate-400'}">${dh}</div>`).join('')}
+              </div>
+              <div class="grid grid-cols-7 gap-0.5 text-center">
+                ${blanks}${cells}
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      if (gazettedListEl) {
+        gazettedListEl.innerHTML = Object.entries(SPM_NIWAS_CALENDAR_2026.gazettedHolidays)
+          .map(([iso, desc]) => `
+            <button type="button" onclick="selectOfficeCalendarDate('${iso}')" class="text-left flex items-start gap-2 py-0.5 hover:text-rose-700 transition-colors">
+              <span class="font-extrabold text-rose-600 whitespace-nowrap">${escapeHtml(formatShortCalDate(iso))} -</span>
+              <span class="text-slate-700 leading-snug">${escapeHtml(desc)}</span>
+            </button>
+          `).join('');
+      }
+
+      if (restrictedListEl) {
+        restrictedListEl.innerHTML = Object.entries(SPM_NIWAS_CALENDAR_2026.restrictedHolidays)
+          .map(([iso, desc]) => `
+            <button type="button" onclick="selectOfficeCalendarDate('${iso}')" class="text-left flex items-start gap-2 py-0.5 hover:text-indigo-700 transition-colors">
+              <span class="font-extrabold text-indigo-700 whitespace-nowrap">${escapeHtml(formatShortCalDate(iso))} -</span>
+              <span class="text-slate-700 leading-snug">${escapeHtml(desc)}</span>
+            </button>
+          `).join('');
+      }
+    }
+
+    window.openOfficeCalendarModal = function () {
+      if (state.activeTab !== 'calendar') {
+        state.previousTabBeforeCalendar = state.activeTab || 'overview';
+      }
+      closeSettingsMenu();
+      switchTab('calendar');
+      renderOfficeCalendarModal();
+      const todayIso = formatNowTimestamp().split(' ')[0];
+      if (todayIso.startsWith('2026-')) {
+        selectOfficeCalendarDate(todayIso);
+      }
+    };
+
+    window.closeOfficeCalendarModal = function () {
+      const targetTab = (state.previousTabBeforeCalendar && state.previousTabBeforeCalendar !== 'calendar')
+        ? state.previousTabBeforeCalendar
+        : 'overview';
+      switchTab(targetTab);
+    };
 
     window.toggleSettingsMenu = function (event) {
       if (event) event.stopPropagation();
@@ -2934,7 +3300,7 @@
         activeNav.classList.remove('text-slate-300', 'hover:bg-slate-800');
       }
 
-      const views = ['overview', 'projects', 'tasks', 'tasklets', 'details', 'nodals', 'email-settings', 'email-templates', 'tasklet-settings'];
+      const views = ['overview', 'projects', 'tasks', 'tasklets', 'details', 'calendar', 'nodals', 'email-settings', 'email-templates', 'tasklet-settings'];
       views.forEach(v => {
         const el = document.getElementById(`view-${v}`);
         if (el) el.classList.toggle('hidden', v !== tabName);
@@ -2958,6 +3324,7 @@
         projects: ['Projects', 'Manage major multi-milestone initiatives and nodal ownership.'],
         tasks: ['Tasks', 'Track action items, reminders, deadlines, documents, and progress updates.'],
         tasklets: ['Tasklet', 'Manage quick, deadline-driven tasklets across overdue, active, abandoned, and closed stages.'],
+        calendar: ['Office Calendar 2026', 'Dr. Syama Prasad Mookerjee National Institute of Water and Sanitation • Govt. of India'],
         nodals: ['Users & Permissions', 'Manage authorized Google users, roles, and nodal assignments.'],
         'email-settings': ['Email & AI Inbox', 'Connect Gmail inboxes and extract tasks or updates with AI.'],
         'email-templates': ['Email Templates', 'Customize outbound email templates used across the portal.'],
@@ -2982,9 +3349,17 @@
       const nameInput = document.getElementById('tasklet-name-input');
       const dateInput = document.getElementById('tasklet-deadline-date');
       const timeInput = document.getElementById('tasklet-deadline-time');
+      const nowParts = formatNowTimestamp().split(' ');
+      const todayStr = nowParts[0];
       if (nameInput) nameInput.value = '';
-      if (dateInput) dateInput.value = '';
-      if (timeInput) timeInput.value = '';
+      if (dateInput) {
+        dateInput.min = todayStr;
+        dateInput.value = '';
+      }
+      if (timeInput) {
+        timeInput.removeAttribute('min');
+        timeInput.value = '';
+      }
       document.getElementById('tasklet-modal')?.classList.remove('hidden');
       setTimeout(() => nameInput?.focus(), 30);
     };
@@ -3020,6 +3395,18 @@
 
       const now = formatNowTimestamp();
       const todayStr = now.split(' ')[0];
+      if (deadlineDate < todayStr) {
+        showToast('Deadline cannot be a past date.');
+        dateInput?.focus();
+        return;
+      }
+      const deadlineDateTime = new Date(`${deadlineDate}T${deadlineTime}:00`);
+      if (!isNaN(deadlineDateTime.getTime()) && deadlineDateTime.getTime() < Date.now()) {
+        showToast('Deadline date and time cannot be in the past.');
+        timeInput?.focus();
+        return;
+      }
+
       const user = getCurrentUser();
 
       const createdTasklet = {
@@ -5383,7 +5770,7 @@
       event.preventDefault();
       const id = document.getElementById('item-id').value;
       const type = document.getElementById('item-type').value || 'Project';
-      const title = document.getElementById('item-title').value.trim();
+      const title = capitalizeFirstLetter(document.getElementById('item-title').value.trim());
       const description = document.getElementById('item-description').value.trim();
       const nodalId = document.getElementById('item-nodal').value;
       const status = document.getElementById('item-status').value;
@@ -5681,12 +6068,44 @@
       document.getElementById('add-user-modal')?.classList.add('hidden');
     };
 
-    window.handleAddNodalUser = function (event) {
+    function compileEmailTemplateForUser(user, templateId) {
+      const tpl = state.emailTemplates.find(t => t.id === templateId) || state.emailTemplates[0];
+      const replaceVars = (str) => String(str || '')
+        .replace(/\{\{name\}\}/g, user.name || '')
+        .replace(/\{\{email\}\}/g, user.email || '')
+        .replace(/\{\{role\}\}/g, user.permission || '')
+        .replace(/\{\{loginUrl\}\}/g, window.location.origin);
+
+      return {
+        templateName: tpl?.name || 'Notification',
+        subject: replaceVars(tpl?.subject || 'Notification — SPM-NIWAS'),
+        body: replaceVars(tpl?.body || '')
+      };
+    }
+
+    async function sendAutomaticUserEmail(user, templateId, successLabel) {
+      if (!user || !user.email) return;
+      const compiled = compileEmailTemplateForUser(user, templateId);
+      try {
+        await dispatchEmailViaAppsScript({
+          to: user.email,
+          subject: compiled.subject,
+          body: compiled.body,
+          templateName: compiled.templateName
+        });
+        showToast(`${successLabel} (${user.email}).`);
+      } catch (err) {
+        showToast(`Saved, but email could not be sent: ${err.message || 'Check Email settings.'}`);
+      }
+    }
+
+    window.handleAddNodalUser = async function (event) {
       event.preventDefault();
-      const name = document.getElementById('new-user-name').value.trim();
+      const name = capitalizeFirstLetter(document.getElementById('new-user-name').value.trim());
       const email = document.getElementById('new-user-email').value.trim().toLowerCase();
       const role = document.querySelector('input[name="new-user-role-radio"]:checked')?.value || 'User';
       const errEl = document.getElementById('add-user-error');
+      const submitBtn = document.getElementById('btn-submit-add-user');
 
       if (state.nodals.some(u => u.email.toLowerCase() === email)) {
         if (errEl) {
@@ -5705,11 +6124,23 @@
         lastLogin: '',
         usageHours30d: 0
       };
+
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Adding...';
+      }
+
       state.nodals.push(newUser);
       closeAddUserModal();
       persistWorkspaceState();
       renderAll();
-      openWelcomeEmailModal(newUser.id, 'tpl-welcome');
+
+      if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Add';
+      }
+
+      await sendAutomaticUserEmail(newUser, 'tpl-welcome', 'User added and welcome email sent to');
     };
 
     window.openEditUserModal = function (userId) {
@@ -5730,7 +6161,7 @@
     window.handleSaveEditedUser = function (event) {
       event.preventDefault();
       const userId = document.getElementById('edit-user-id').value;
-      const name = document.getElementById('edit-user-name').value.trim();
+      const name = capitalizeFirstLetter(document.getElementById('edit-user-name').value.trim());
       const email = document.getElementById('edit-user-email').value.trim().toLowerCase();
       const permission = document.getElementById('edit-user-permission').value;
       const user = state.nodals.find(u => u.id === userId);
@@ -5760,12 +6191,11 @@
       const pending = state.pendingUserEdit;
       if (!pending) return;
       const user = state.nodals.find(u => u.id === pending.userId);
-      if (user) {
-        user.name = pending.name;
-        user.email = pending.email;
-        user.permission = pending.permission;
-      }
       closeConfirmUserEditModal();
+      if (!user) return;
+      user.name = pending.name;
+      user.email = pending.email;
+      user.permission = pending.permission;
       persistWorkspaceState();
       renderAll();
       showToast('User details updated.');
@@ -5773,25 +6203,32 @@
 
     window.initiateDeleteUser = function (userId) {
       const user = state.nodals.find(u => u.id === userId);
-      if (!user) return;
-      const assigned = state.items.filter(i => i.nodalId === userId);
-      if (assigned.length > 0) {
+      if (!user || user.isSuperAdmin || user.permission === 'Super Admin') return;
+      const assignedItems = state.items.filter(i => i.nodalId === userId && i.status !== 'Archived');
+      if (assignedItems.length > 0) {
         state.reassignTargetUserId = userId;
         const otherUsers = state.nodals.filter(u => u.id !== userId);
-        document.getElementById('reassign-modal-subtitle').textContent = `${user.name} has ${assigned.length} assigned items. Reassign them before removal.`;
-        document.getElementById('bulk-reassign-select').innerHTML = otherUsers.map(u => `<option value="${u.id}">${escapeHtml(u.name)}</option>`).join('');
-        document.getElementById('reassign-items-list').innerHTML = assigned.map(item => `
-          <div class="flex items-center justify-between gap-2 bg-slate-50 p-2.5 rounded-xl border border-slate-200 text-xs">
-            <span class="font-bold text-slate-800 truncate">${escapeHtml(item.title)}</span>
-            <select data-reassign-item="${item.id}" class="px-2.5 py-1 rounded-lg bg-white border border-slate-200">
-              ${otherUsers.map(u => `<option value="${u.id}">${escapeHtml(u.name)}</option>`).join('')}
-            </select>
-          </div>
-        `).join('');
+        const optionsHtml = otherUsers.map(u => `<option value="${escapeHtml(u.id)}">${escapeHtml(u.name)} (${escapeHtml(u.email)})</option>`).join('');
+        const bulkSel = document.getElementById('bulk-reassign-select');
+        if (bulkSel) bulkSel.innerHTML = optionsHtml;
+        const subEl = document.getElementById('reassign-modal-subtitle');
+        if (subEl) subEl.textContent = `${user.name} currently owns ${assignedItems.length} active item(s). Reassign them before removal.`;
+        const listEl = document.getElementById('reassign-items-list');
+        if (listEl) {
+          listEl.innerHTML = assignedItems.map(item => `
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-3 rounded-2xl bg-slate-50 border border-slate-200 text-xs">
+              <div class="font-bold text-slate-900 truncate">${escapeHtml(item.title)}</div>
+              <select data-reassign-item="${escapeHtml(item.id)}" class="px-3 py-1.5 rounded-xl bg-white border border-slate-200 font-semibold text-slate-800">
+                ${optionsHtml}
+              </select>
+            </div>
+          `).join('');
+        }
         document.getElementById('reassign-modal')?.classList.remove('hidden');
       } else {
         state.pendingDeleteUserId = userId;
-        document.getElementById('confirm-delete-user-message').textContent = `Remove ${user.name} (${user.email}) from the workspace?`;
+        const msgEl = document.getElementById('confirm-delete-user-message');
+        if (msgEl) msgEl.textContent = `Are you sure you want to remove ${user.name} (${user.email})? They will also receive an intimation email.`;
         document.getElementById('confirm-delete-user-modal')?.classList.remove('hidden');
       }
     };
@@ -5808,9 +6245,10 @@
       });
     };
 
-    window.confirmReassignAndDeleteUser = function () {
+    window.confirmReassignAndDeleteUser = async function () {
       const userId = state.reassignTargetUserId;
       if (!userId) return;
+      const removedUser = state.nodals.find(u => u.id === userId);
       document.querySelectorAll('select[data-reassign-item]').forEach(sel => {
         const item = state.items.find(i => i.id === sel.getAttribute('data-reassign-item'));
         if (item) item.nodalId = sel.value;
@@ -5819,7 +6257,11 @@
       closeReassignModal();
       persistWorkspaceState();
       renderAll();
-      showToast('Items reassigned and user removed.');
+      if (removedUser) {
+        await sendAutomaticUserEmail(removedUser, 'tpl-user-removed', 'Items reassigned, user removed, and intimation sent to');
+      } else {
+        showToast('Items reassigned and user removed.');
+      }
     };
 
     window.closeConfirmDeleteUserModal = function () {
@@ -5827,14 +6269,19 @@
       document.getElementById('confirm-delete-user-modal')?.classList.add('hidden');
     };
 
-    window.confirmDirectDeleteUser = function () {
+    window.confirmDirectDeleteUser = async function () {
       const userId = state.pendingDeleteUserId;
       if (!userId) return;
+      const removedUser = state.nodals.find(u => u.id === userId);
       state.nodals = state.nodals.filter(u => u.id !== userId);
       closeConfirmDeleteUserModal();
       persistWorkspaceState();
       renderAll();
-      showToast('User removed.');
+      if (removedUser) {
+        await sendAutomaticUserEmail(removedUser, 'tpl-user-removed', 'User removed and intimation email sent to');
+      } else {
+        showToast('User removed.');
+      }
     };
 
     window.openWelcomeEmailModal = function (userId, templateId = 'tpl-welcome') {
@@ -6186,6 +6633,8 @@
     };
 
     window.handleTemplateFieldInput = function () {
+      const nameInput = document.getElementById('template-editor-name');
+      if (nameInput) handleSingleTaskNameInput(nameInput);
       const status = document.getElementById('template-editor-status');
       if (status) status.textContent = 'Unsaved changes...';
     };
@@ -6207,7 +6656,7 @@
     window.saveSelectedEmailTemplate = function () {
       const selected = state.emailTemplates.find(t => t.id === state.selectedTemplateId);
       if (!selected) return;
-      selected.name = document.getElementById('template-editor-name').value.trim() || selected.name;
+      selected.name = capitalizeFirstLetter(document.getElementById('template-editor-name').value.trim()) || selected.name;
       selected.subject = document.getElementById('template-editor-subject').value;
       selected.body = document.getElementById('template-editor-body').value;
       const status = document.getElementById('template-editor-status');
