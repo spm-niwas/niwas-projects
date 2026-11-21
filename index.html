@@ -1009,6 +1009,52 @@
 
         <!-- VIEW 6: EMAIL & AI INBOX -->
         <section id="view-email-settings" class="hidden space-y-6">
+          <!-- Google Apps Script Automated Email Delivery Card -->
+          <div class="bg-white rounded-2xl border border-slate-200 p-5 sm:p-6 space-y-4">
+            <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-4">
+              <div>
+                <div class="flex items-center gap-2">
+                  <h2 class="text-base font-extrabold text-slate-900">Google Apps Script Email Engine</h2>
+                  <span id="apps-script-status-badge" class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-50 text-amber-700 border border-amber-200">Not Configured</span>
+                </div>
+                <p class="text-xs text-slate-500 mt-0.5">Send automated emails directly from your Google Workspace / Gmail account without opening a compose tab.</p>
+              </div>
+              <div class="flex items-center gap-2">
+                <button type="button" onclick="sendTestAppsScriptEmail()" id="btn-test-apps-script" class="px-3.5 py-2 rounded-xl border border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700 text-xs font-semibold transition-colors">
+                  Send Test Email
+                </button>
+                <button type="button" onclick="saveAppsScriptSettings()" class="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold transition-colors">
+                  Save Configuration
+                </button>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
+              <div class="lg:col-span-6">
+                <label for="apps-script-url-input" class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Apps Script Web App URL <span class="text-rose-500">*</span></label>
+                <input type="url" id="apps-script-url-input" placeholder="https://script.google.com/macros/s/.../exec" class="w-full px-3.5 py-2 text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+              </div>
+              <div class="lg:col-span-3">
+                <label for="apps-script-secret-input" class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Secret Key <span class="text-rose-500">*</span></label>
+                <input type="password" id="apps-script-secret-input" placeholder="Enter secret key..." class="w-full px-3.5 py-2 text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+              </div>
+              <div class="lg:col-span-3">
+                <label for="apps-script-sender-input" class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Sender Display Name</label>
+                <input type="text" id="apps-script-sender-input" placeholder="SPM-NIWAS Coordination Desk" class="w-full px-3.5 py-2 text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+              </div>
+            </div>
+
+            <div class="pt-2 border-t border-slate-100 space-y-2">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold uppercase tracking-wider text-slate-500">Recent Outbound Email Log</span>
+                <button type="button" onclick="clearSentEmailLog()" class="text-[11px] font-semibold text-slate-400 hover:text-rose-600">Clear Log</button>
+              </div>
+              <div id="apps-script-sent-log" class="space-y-1.5 max-h-40 overflow-y-auto custom-scrollbar text-xs">
+                <div class="text-slate-400 italic py-2">No emails dispatched via Apps Script yet.</div>
+              </div>
+            </div>
+          </div>
+
           <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <!-- Connected Gmail Inboxes -->
             <div class="bg-white rounded-2xl border border-slate-200 p-5 sm:p-6 space-y-4">
@@ -1462,18 +1508,19 @@
 
         <div class="flex items-center justify-end gap-2.5 pt-3 border-t border-slate-100">
           <button type="button" onclick="closeTaskletModal()" class="px-4 py-2.5 rounded-xl border border-slate-200 text-slate-700 hover:bg-slate-50 text-sm font-semibold">Cancel</button>
-          <button type="submit" class="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold">Add</button>
+          <button type="submit" class="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold">Add Tasklet</button>
         </div>
       </form>
     </div>
   </div>
 
-  <!-- MODAL 2: WELCOME EMAIL (1-CLICK GMAIL COMPOSE) -->
+  <!-- MODAL 2: WELCOME EMAIL (GOOGLE APPS SCRIPT + GMAIL FALLBACK) -->
+  <!-- MODAL 2: SEND EMAIL -->
   <div id="welcome-email-modal" class="hidden fixed inset-0 bg-slate-900/50 backdrop-blur-xs z-50 flex items-center justify-center p-4">
     <div class="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-7 shadow-2xl border border-slate-200 space-y-4">
       <div class="flex items-center justify-between border-b border-slate-100 pb-3">
         <div>
-          <h3 id="welcome-modal-title" class="text-lg font-extrabold text-slate-900">Send Welcome Email</h3>
+          <h3 id="welcome-modal-title" class="text-lg font-extrabold text-slate-900">Send Email</h3>
           <p id="welcome-modal-recipient" class="text-xs text-slate-500 mt-0.5"></p>
         </div>
         <button type="button" onclick="closeWelcomeEmailModal()" class="p-2 rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-100">
@@ -1481,12 +1528,19 @@
         </button>
       </div>
       <div id="welcome-email-status-banner" class="bg-indigo-50 border border-indigo-200 rounded-xl p-3 text-xs text-indigo-900 font-medium">
-        Click below to open Gmail with the welcome message pre-filled for your new user.
+        Review the subject and message below, then click <strong>Send Email</strong> to dispatch.
       </div>
-      <textarea id="welcome-email-preview" rows="5" readonly="" class="w-full px-3.5 py-2.5 text-xs bg-slate-50 border border-slate-200 rounded-xl text-slate-700 focus:outline-none"></textarea>
-      <div class="flex items-center justify-end gap-2.5 pt-2">
-        <button type="button" onclick="copyWelcomeEmailText()" class="px-3.5 py-2 rounded-xl border border-slate-200 text-slate-700 hover:bg-slate-50 text-xs font-semibold">Copy Text</button>
-        <button type="button" onclick="launchOneClickGmailWelcome()" class="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold">Send via Gmail (1-Click)</button>
+      <div>
+        <label for="welcome-email-subject-input" class="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1">Subject</label>
+        <input type="text" id="welcome-email-subject-input" class="w-full px-3.5 py-2 text-xs font-semibold bg-slate-50 border border-slate-200 rounded-xl text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+      </div>
+      <div>
+        <label for="welcome-email-preview" class="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1">Message Body</label>
+        <textarea id="welcome-email-preview" rows="6" class="w-full px-3.5 py-2.5 text-xs bg-slate-50 border border-slate-200 rounded-xl text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"></textarea>
+      </div>
+      <div class="flex flex-wrap items-center justify-end gap-2 pt-2">
+        <button type="button" onclick="copyWelcomeEmailText()" class="px-3 py-2 rounded-xl border border-slate-200 text-slate-700 hover:bg-slate-50 text-xs font-semibold">Copy Text</button>
+        <button type="button" id="btn-send-apps-script-modal" onclick="sendModalEmailViaAppsScript()" class="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold">Send Email</button>
       </div>
     </div>
   </div>
@@ -2038,7 +2092,13 @@
         }
       ],
       emailTemplates: JSON.parse(JSON.stringify(INITIAL_EMAIL_TEMPLATES)),
-      selectedTemplateId: 'tpl-welcome'
+      selectedTemplateId: 'tpl-welcome',
+      appsScriptConfig: {
+        webAppUrl: '',
+        secretKey: '',
+        senderName: 'SPM-NIWAS Coordination Desk'
+      },
+      sentEmailLogs: []
     };
 
     function loadCachedLocalWorkspaceState() {
@@ -2056,6 +2116,12 @@
         if (Array.isArray(parsed.emailTemplates) && parsed.emailTemplates.length > 0) {
           state.emailTemplates = parsed.emailTemplates;
         }
+        if (parsed.appsScriptConfig && typeof parsed.appsScriptConfig === 'object') {
+          state.appsScriptConfig = { ...state.appsScriptConfig, ...parsed.appsScriptConfig };
+        }
+        if (Array.isArray(parsed.sentEmailLogs)) {
+          state.sentEmailLogs = parsed.sentEmailLogs;
+        }
       } catch (_) {}
     }
 
@@ -2067,7 +2133,9 @@
           deletedNodals: state.deletedNodals,
           connectedInboxes: state.connectedInboxes,
           emailProposals: state.emailProposals,
-          emailTemplates: state.emailTemplates
+          emailTemplates: state.emailTemplates,
+          appsScriptConfig: state.appsScriptConfig,
+          sentEmailLogs: state.sentEmailLogs
         }));
       } catch (_) {}
     }
@@ -2092,10 +2160,26 @@
       appId: "1:217295743479:web:142510cdd7bcb3a31726f2"
     };
 
+    // Paste your Google Apps Script Deployment ID or full Web App URL below:
+    const DEFAULT_APPS_SCRIPT_CONFIG = {
+      deploymentId: "AKfycbzeHzx6bLdRCnqjU1_G8QCcLfIZWz4EWBTVZnkbWm12D3P8pjMVDXekLl3bcVEUyrlbpA",
+      webAppUrl: "https://script.google.com/macros/s/AKfycbzeHzx6bLdRCnqjU1_G8QCcLfIZWz4EWBTVZnkbWm12D3P8pjMVDXekLl3bcVEUyrlbpA/exec",
+      secretKey: "NIWAS_2026_SECURE_MAIL_KEY",
+      senderName: "SPM-NIWAS Coordination Desk"
+    };
+
+    function resolveAppsScriptWebAppUrl(cfg = {}) {
+      const explicitUrl = String(cfg.webAppUrl || DEFAULT_APPS_SCRIPT_CONFIG.webAppUrl || '').trim();
+      if (explicitUrl) return explicitUrl;
+      const depId = String(cfg.deploymentId || DEFAULT_APPS_SCRIPT_CONFIG.deploymentId || '').trim();
+      return depId ? `https://script.google.com/macros/s/${depId}/exec` : '';
+    }
+
     function resolveFirebaseConfigObject() {
       try {
-        if (typeof window.FIREBASE_CONFIG !== 'undefined' && window.FIREBASE_CONFIG) {
-          return typeof window.FIREBASE_CONFIG === 'string' ? JSON.parse(window.FIREBASE_CONFIG) : window.FIREBASE_CONFIG;
+        if (typeof __firebase_config !== 'undefined' && __firebase_config) {
+          const parsed = typeof __firebase_config === 'string' ? JSON.parse(__firebase_config) : __firebase_config;
+          if (parsed && parsed.apiKey) return parsed;
         }
       } catch (err) {
         console.warn('Invalid custom Firebase config format:', err);
@@ -2190,10 +2274,10 @@
       const todayMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate());
       const diffMs = Math.max(0, todayMidnight.getTime() - parsed.getTime());
       const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-      const daysLabel = diffDays === 1 ? '1 Day' : `${diffDays} Days`;
+      const daysLabel = diffDays <= 1 ? `${diffDays} Day` : `${diffDays} Days`;
       return {
         daysLabel,
-        formattedDate: formatDateDDMMYY(dateStr)
+        formattedDate: escapeHtml(formatDateDDMMYY(dateStr))
       };
     }
 
@@ -2506,6 +2590,8 @@
             connectedInboxes: state.connectedInboxes,
             emailProposals: state.emailProposals,
             emailTemplates: state.emailTemplates,
+            appsScriptConfig: state.appsScriptConfig,
+            sentEmailLogs: state.sentEmailLogs.slice(0, 50),
             updatedAt: nowIso
           }, { merge: true }));
         }
@@ -2661,6 +2747,12 @@
                     const defaultTaskletTpl = INITIAL_EMAIL_TEMPLATES.find(t => t.id === 'tpl-tasklet-access');
                     if (defaultTaskletTpl) state.emailTemplates.splice(1, 0, JSON.parse(JSON.stringify(defaultTaskletTpl)));
                   }
+                }
+                if (data.appsScriptConfig && typeof data.appsScriptConfig === 'object') {
+                  state.appsScriptConfig = { ...state.appsScriptConfig, ...data.appsScriptConfig };
+                }
+                if (Array.isArray(data.sentEmailLogs)) {
+                  state.sentEmailLogs = data.sentEmailLogs;
                 }
                 saveCachedLocalWorkspaceState();
                 renderAll();
@@ -5751,15 +5843,28 @@
       state.welcomeTargetUser = user;
       state.activeEmailTemplateId = templateId;
       const tpl = state.emailTemplates.find(t => t.id === templateId) || state.emailTemplates[0];
-      const body = (tpl?.body || '')
+      const replaceVars = (str) => String(str || '')
         .replace(/\{\{name\}\}/g, user.name)
         .replace(/\{\{email\}\}/g, user.email)
         .replace(/\{\{role\}\}/g, user.permission)
         .replace(/\{\{loginUrl\}\}/g, window.location.origin);
 
+      const subject = replaceVars(tpl?.subject || 'Welcome to SPM-NIWAS');
+      const body = replaceVars(tpl?.body || '');
+
       document.getElementById('welcome-modal-title').textContent = tpl?.name || 'Send Email';
       document.getElementById('welcome-modal-recipient').textContent = `To: ${user.name} <${user.email}>`;
+      const subjInput = document.getElementById('welcome-email-subject-input');
+      if (subjInput) subjInput.value = subject;
       document.getElementById('welcome-email-preview').value = body;
+
+      const banner = document.getElementById('welcome-email-status-banner');
+      const isConfigured = Boolean(resolveAppsScriptWebAppUrl(state.appsScriptConfig) && (state.appsScriptConfig?.secretKey || DEFAULT_APPS_SCRIPT_CONFIG.secretKey));
+      if (banner) {
+        banner.innerHTML = isConfigured
+          ? 'Review the subject and message below, then click <strong>Send Email</strong>.'
+          : 'Email service is not configured yet. Please check <strong>Settings → Email &amp; AI Inbox</strong>.';
+      }
       document.getElementById('welcome-email-modal')?.classList.remove('hidden');
     };
 
@@ -5775,17 +5880,178 @@
       showToast('Email text copied to clipboard.');
     };
 
-    window.launchOneClickGmailWelcome = function () {
+    async function dispatchEmailViaAppsScript({ to, subject, body, templateName = 'Custom' }) {
+      const cfg = state.appsScriptConfig || {};
+      const webAppUrl = resolveAppsScriptWebAppUrl(cfg);
+      const secretKey = String(cfg.secretKey || DEFAULT_APPS_SCRIPT_CONFIG.secretKey || '').trim();
+      const senderName = String(cfg.senderName || DEFAULT_APPS_SCRIPT_CONFIG.senderName || 'SPM-NIWAS Coordination Desk').trim();
+
+      if (!webAppUrl || !secretKey) {
+        throw new Error('Add your Apps Script Deployment ID / Web App URL and Secret Key in index.html or Settings.');
+      }
+
+      const response = await fetch(webAppUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify({
+          secret: secretKey,
+          to,
+          subject,
+          body,
+          senderName
+        })
+      });
+
+      const rawText = await response.text();
+      let parsed = null;
+      try {
+        parsed = JSON.parse(rawText);
+      } catch (_) {
+        throw new Error('Unexpected response from Google Apps Script. Ensure Web App access is set to "Anyone".');
+      }
+
+      if (!parsed || !parsed.ok) {
+        throw new Error(parsed?.error || 'Google Apps Script rejected the email request.');
+      }
+
+      state.sentEmailLogs.unshift({
+        id: `log-${Date.now()}`,
+        to,
+        subject,
+        templateName,
+        timestamp: formatNowTimestamp(),
+        by: getCurrentUser().name
+      });
+      state.sentEmailLogs = state.sentEmailLogs.slice(0, 50);
+      persistWorkspaceState();
+      renderEmailInboxView();
+      return parsed;
+    }
+
+    window.sendModalEmailViaAppsScript = async function () {
       const user = state.welcomeTargetUser;
       if (!user) return;
-      const tpl = state.emailTemplates.find(t => t.id === state.activeEmailTemplateId) || state.emailTemplates[0];
-      const subject = encodeURIComponent(tpl?.subject || 'Welcome to SPM-NIWAS');
-      const body = encodeURIComponent(document.getElementById('welcome-email-preview')?.value || '');
-      window.open(`https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(user.email)}&su=${subject}&body=${body}`, '_blank');
-      closeWelcomeEmailModal();
+      const tpl = state.emailTemplates.find(t => t.id === state.activeEmailTemplateId);
+      const subject = (document.getElementById('welcome-email-subject-input')?.value || '').trim();
+      const body = (document.getElementById('welcome-email-preview')?.value || '').trim();
+      const btn = document.getElementById('btn-send-apps-script-modal');
+
+      if (!subject || !body) {
+        showToast('Subject and message body are required.');
+        return;
+      }
+
+      if (btn) {
+        btn.disabled = true;
+        btn.textContent = 'Sending...';
+      }
+
+      try {
+        await dispatchEmailViaAppsScript({
+          to: user.email,
+          subject,
+          body,
+          templateName: tpl?.name || 'Notification'
+        });
+        closeWelcomeEmailModal();
+        showToast(`Email sent to ${user.email}.`);
+      } catch (err) {
+        showToast(err.message || 'Failed to send email.');
+      } finally {
+        if (btn) {
+          btn.disabled = false;
+          btn.textContent = 'Send Email';
+        }
+      }
+    };
+
+    window.saveAppsScriptSettings = function () {
+      const webAppUrl = (document.getElementById('apps-script-url-input')?.value || '').trim();
+      const secretKey = (document.getElementById('apps-script-secret-input')?.value || '').trim();
+      const senderName = (document.getElementById('apps-script-sender-input')?.value || '').trim() || 'SPM-NIWAS Coordination Desk';
+
+      if (webAppUrl && !/^https:\/\/script\.google\.com\/macros\/s\/.+\/exec$/i.test(webAppUrl)) {
+        showToast('Web App URL should look like https://script.google.com/macros/s/.../exec');
+        return;
+      }
+
+      state.appsScriptConfig = { webAppUrl, secretKey, senderName };
+      persistWorkspaceState();
+      renderEmailInboxView();
+      showToast('Google Apps Script configuration saved.');
+    };
+
+    window.sendTestAppsScriptEmail = async function () {
+      const user = getCurrentUser();
+      const targetEmail = user.email || 'admin@spmniwas.in';
+      const btn = document.getElementById('btn-test-apps-script');
+      if (btn) {
+        btn.disabled = true;
+        btn.textContent = 'Sending Test...';
+      }
+      try {
+        await dispatchEmailViaAppsScript({
+          to: targetEmail,
+          subject: 'Test Email — SPM-NIWAS Google Apps Script Integration',
+          body: `Hello ${user.name || 'Admin'},\n\nYour Google Apps Script email integration for SPM-NIWAS is active and working properly.\n\nTimestamp: ${formatNowTimestamp()}`,
+          templateName: 'Test Email'
+        });
+        showToast(`Test email sent to ${targetEmail}!`);
+      } catch (err) {
+        showToast(err.message || 'Test email failed.');
+      } finally {
+        if (btn) {
+          btn.disabled = false;
+          btn.textContent = 'Send Test Email';
+        }
+      }
+    };
+
+    window.clearSentEmailLog = function () {
+      state.sentEmailLogs = [];
+      persistWorkspaceState();
+      renderEmailInboxView();
+      showToast('Sent email log cleared.');
     };
 
     function renderEmailInboxView() {
+      const urlInput = document.getElementById('apps-script-url-input');
+      const secretInput = document.getElementById('apps-script-secret-input');
+      const senderInput = document.getElementById('apps-script-sender-input');
+      const statusBadge = document.getElementById('apps-script-status-badge');
+      const logContainer = document.getElementById('apps-script-sent-log');
+
+      const cfg = state.appsScriptConfig || {};
+      const resolvedUrl = resolveAppsScriptWebAppUrl(cfg);
+      const resolvedSecret = cfg.secretKey || DEFAULT_APPS_SCRIPT_CONFIG.secretKey || '';
+      if (urlInput && document.activeElement !== urlInput) urlInput.value = resolvedUrl;
+      if (secretInput && document.activeElement !== secretInput) secretInput.value = resolvedSecret;
+      if (senderInput && document.activeElement !== senderInput) senderInput.value = cfg.senderName || DEFAULT_APPS_SCRIPT_CONFIG.senderName || 'SPM-NIWAS Coordination Desk';
+
+      const isConfigured = Boolean(resolvedUrl && resolvedSecret);
+      if (statusBadge) {
+        statusBadge.textContent = isConfigured ? 'Active & Configured' : 'Not Configured';
+        statusBadge.className = isConfigured
+          ? 'px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200'
+          : 'px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-50 text-amber-700 border border-amber-200';
+      }
+
+      if (logContainer) {
+        if (!Array.isArray(state.sentEmailLogs) || state.sentEmailLogs.length === 0) {
+          logContainer.innerHTML = `<div class="text-slate-400 italic py-2">No emails dispatched via Apps Script yet.</div>`;
+        } else {
+          logContainer.innerHTML = state.sentEmailLogs.map(log => `
+            <div class="flex items-center justify-between gap-2 px-3 py-2 rounded-xl bg-slate-50 border border-slate-200/80">
+              <div class="min-w-0 flex-1">
+                <div class="font-bold text-slate-800 truncate">${escapeHtml(log.subject)}</div>
+                <div class="text-[11px] text-slate-500 truncate">To: ${escapeHtml(log.to)} • Template: ${escapeHtml(log.templateName || 'Custom')}</div>
+              </div>
+              <span class="text-[11px] text-slate-400 whitespace-nowrap">${escapeHtml(formatDateDDMMYY(log.timestamp, true))}</span>
+            </div>
+          `).join('');
+        }
+      }
+
       const inboxesEl = document.getElementById('connected-inboxes-list');
       const proposalsEl = document.getElementById('email-proposals-list');
       if (inboxesEl) {
