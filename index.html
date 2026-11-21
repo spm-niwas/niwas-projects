@@ -459,17 +459,20 @@
           <div class="flex flex-col lg:flex-row items-stretch gap-4 w-full">
             <!-- Left Pane (45%): Added Tasklets -->
             <div class="w-full lg:w-[45%] flex-shrink-0 bg-white rounded-2xl border border-slate-200 overflow-hidden flex flex-col">
-              <div class="bg-slate-100 border-b border-slate-200 grid grid-cols-12 divide-x divide-slate-200 select-none" role="tablist" aria-label="Tasklet status tabs">
-                <button type="button" id="tasklets-tab-overdue" onclick="switchTaskletsStatusTab('Overdue')" role="tab" aria-selected="false" class="col-span-3 px-1.5 py-3 text-xs font-semibold text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-all text-center whitespace-nowrap border-b-2 border-transparent">
+              <div class="bg-slate-100 border-b border-slate-200 flex items-stretch divide-x divide-slate-200 select-none overflow-x-auto" role="tablist" aria-label="Tasklet status tabs">
+                <button type="button" id="tasklets-tab-all" onclick="switchTaskletsStatusTab('All')" role="tab" aria-selected="false" class="flex-1 min-w-0 px-1.5 py-3 text-xs font-semibold text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-all text-center whitespace-nowrap border-b-2 border-transparent">
+                  All <span id="tasklets-tab-count-all" class="ml-0.5 inline-flex items-center justify-center px-1.5 py-0.5 rounded-full text-[11px] font-bold bg-slate-200/80 text-slate-700">0</span>
+                </button>
+                <button type="button" id="tasklets-tab-overdue" onclick="switchTaskletsStatusTab('Overdue')" role="tab" aria-selected="false" class="flex-1 min-w-0 px-1.5 py-3 text-xs font-semibold text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-all text-center whitespace-nowrap border-b-2 border-transparent">
                   Overdue <span id="tasklets-tab-count-overdue" class="ml-0.5 inline-flex items-center justify-center px-1.5 py-0.5 rounded-full text-[11px] font-bold bg-slate-200/80 text-slate-700">0</span>
                 </button>
-                <button type="button" id="tasklets-tab-active" onclick="switchTaskletsStatusTab('Active')" role="tab" aria-selected="true" class="col-span-3 px-1.5 py-3 text-xs font-extrabold bg-white text-emerald-700 border-b-2 border-emerald-600 shadow-xs transition-all text-center whitespace-nowrap">
+                <button type="button" id="tasklets-tab-active" onclick="switchTaskletsStatusTab('Active')" role="tab" aria-selected="true" class="flex-1 min-w-0 px-1.5 py-3 text-xs font-extrabold bg-white text-emerald-700 border-b-2 border-emerald-600 shadow-xs transition-all text-center whitespace-nowrap">
                   Active <span id="tasklets-tab-count-active" class="ml-0.5 inline-flex items-center justify-center px-1.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-800">0</span>
                 </button>
-                <button type="button" id="tasklets-tab-abandoned" onclick="switchTaskletsStatusTab('Abandoned')" role="tab" aria-selected="false" class="col-span-4 px-1.5 py-3 text-xs font-semibold text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-all text-center whitespace-nowrap border-b-2 border-transparent">
+                <button type="button" id="tasklets-tab-abandoned" onclick="switchTaskletsStatusTab('Abandoned')" role="tab" aria-selected="false" class="flex-[1.25] min-w-0 px-1.5 py-3 text-xs font-semibold text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-all text-center whitespace-nowrap border-b-2 border-transparent">
                   Abandoned <span id="tasklets-tab-count-abandoned" class="ml-0.5 inline-flex items-center justify-center px-1.5 py-0.5 rounded-full text-[11px] font-bold bg-slate-200/80 text-slate-700">0</span>
                 </button>
-                <button type="button" id="tasklets-tab-closed" onclick="switchTaskletsStatusTab('Closed')" role="tab" aria-selected="false" class="col-span-2 px-1 py-3 text-xs font-semibold text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-all text-center whitespace-nowrap border-b-2 border-transparent">
+                <button type="button" id="tasklets-tab-closed" onclick="switchTaskletsStatusTab('Closed')" role="tab" aria-selected="false" class="flex-1 min-w-0 px-1.5 py-3 text-xs font-semibold text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-all text-center whitespace-nowrap border-b-2 border-transparent">
                   Closed <span id="tasklets-tab-count-closed" class="ml-0.5 inline-flex items-center justify-center px-1.5 py-0.5 rounded-full text-[11px] font-bold bg-slate-200/80 text-slate-700">0</span>
                 </button>
               </div>
@@ -9426,14 +9429,16 @@
 
     function syncTaskletsTabUI(counts) {
       const currentTab = state.taskletsStatusTab || 'Active';
-      const tabs = ['Overdue', 'Active', 'Abandoned', 'Closed'];
+      const tabs = ['All', 'Overdue', 'Active', 'Abandoned', 'Closed'];
       const tabSpanClasses = {
-        Overdue: 'col-span-3 px-1.5',
-        Active: 'col-span-3 px-1.5',
-        Abandoned: 'col-span-4 px-1.5',
-        Closed: 'col-span-2 px-1'
+        All: 'flex-1 min-w-0 px-1.5',
+        Overdue: 'flex-1 min-w-0 px-1.5',
+        Active: 'flex-1 min-w-0 px-1.5',
+        Abandoned: 'flex-[1.25] min-w-0 px-1.5',
+        Closed: 'flex-1 min-w-0 px-1.5'
       };
       const activeStyles = {
+        All: { text: 'text-slate-900', border: 'border-slate-800', badge: 'bg-slate-800 text-white' },
         Overdue: { text: 'text-rose-700', border: 'border-rose-600', badge: 'bg-rose-100 text-rose-800' },
         Active: { text: 'text-emerald-700', border: 'border-emerald-600', badge: 'bg-emerald-100 text-emerald-800' },
         Abandoned: { text: 'text-amber-700', border: 'border-amber-600', badge: 'bg-amber-100 text-amber-800' },
@@ -9446,7 +9451,7 @@
         const countEl = document.getElementById(`tasklets-tab-count-${key}`);
         const isSelected = tabName === currentTab;
         const theme = activeStyles[tabName] || activeStyles.Active;
-        const spanCls = tabSpanClasses[tabName] || 'col-span-3 px-1.5';
+        const spanCls = tabSpanClasses[tabName] || 'flex-1 min-w-0 px-1.5';
 
         if (countEl) {
           if (counts && typeof counts[tabName] === 'number') {
@@ -9476,7 +9481,7 @@
         return `${t.title || ''} ${t.deadlineDate || ''} ${t.deadlineTime || ''}`.toLowerCase().includes(searchVal);
       });
 
-      const counts = { Overdue: 0, Active: 0, Abandoned: 0, Closed: 0 };
+      const counts = { All: searchFiltered.length, Overdue: 0, Active: 0, Abandoned: 0, Closed: 0 };
       searchFiltered.forEach(t => {
         const bucket = getTaskletBucket(t);
         if (counts[bucket] !== undefined) counts[bucket] += 1;
@@ -9485,7 +9490,9 @@
       const activeTab = state.taskletsStatusTab || 'Active';
       syncTaskletsTabUI(counts);
 
-      const filtered = searchFiltered.filter(t => getTaskletBucket(t) === activeTab);
+      const filtered = activeTab === 'All'
+        ? searchFiltered
+        : searchFiltered.filter(t => getTaskletBucket(t) === activeTab);
 
       const taskletsPageSize = 10;
       const totalPages = Math.max(1, Math.ceil(filtered.length / taskletsPageSize));
@@ -9496,7 +9503,7 @@
       if (pageItems.length === 0) {
         grid.innerHTML = `
           <div class="w-full py-10 text-center text-xs sm:text-sm text-slate-400">
-            No ${escapeHtml(activeTab.toLowerCase())} tasklets found.
+            No ${activeTab === 'All' ? '' : `${escapeHtml(activeTab.toLowerCase())} `}tasklets found.
           </div>
         `;
         renderPaginationBar('pagination-tasklets', 'tasklets', 0, 1, taskletsPageSize);
@@ -9513,7 +9520,8 @@
         const deadlineText = (t.deadlineDate && t.deadlineTime)
           ? `${escapeHtml(formatDateDDMMYY(t.deadlineDate))} at ${escapeHtml(t.deadlineTime)}`
           : (t.deadlineDate ? escapeHtml(formatDateDDMMYY(t.deadlineDate)) : '—');
-        const isOverdueItem = activeTab === 'Overdue';
+        const bucket = getTaskletBucket(t);
+        const isOverdueItem = bucket === 'Overdue';
         const isSelected = state.selectedTaskletId === t.id;
 
         return `
